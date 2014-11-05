@@ -1,0 +1,26 @@
+{
+  "name": "mykoop-transaction",
+  "role": "transaction",
+  "mykoop": {
+    "dependencies": {}
+  },
+  "version": "1.0.0-beta",
+  "description": "transaction module for My Koop",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/my-koop/module.transaction.git"
+  },
+  "author": "",
+  "license": "GNU GPL v2",
+  "bugs": {
+    "url": "https://github.com/my-koop/module.transaction/issues"
+  },
+  "homepage": "https://github.com/my-koop/module.transaction",
+  "dependencies": {
+    "mykoop-utils": "git://github.com/my-koop/module.utils#beta"
+  }
+}
