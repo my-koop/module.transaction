@@ -10,6 +10,7 @@ var MKListModButtons = require("mykoop-core/components/ListModButtons");
 
 // Use this to provide localization strings.
 var __ = require("language").__;
+var formatMoney = require("language").formatMoney;
 var _ = require("lodash");
 var actions = require("actions");
 var util = require("util");
@@ -76,7 +77,8 @@ var NewTransactionPage = React.createClass({
       var item = _.pick(option.original.item,
         "id",
         "name",
-        "code"
+        "code",
+        "price"
       );
       item.quantity = 1;
       transactionItems.push(item);
@@ -88,9 +90,16 @@ var NewTransactionPage = React.createClass({
     var self = this;
     // TableSorter Config
     var CONFIG = {
+      defaultOrdering: ["code", "name", "price", "quantity", "actions"],
       columns: {
         name: {
           name: __("inventory::name"),
+        },
+        price: {
+          name: __("inventory::price"),
+          cellGenerator: function(item, i) {
+            return formatMoney(item.price);
+          }
         },
         quantity: {
           name: __("inventory::quantity"),
