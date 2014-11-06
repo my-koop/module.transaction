@@ -17,14 +17,14 @@ var _ = require("lodash");
 var actions = require("actions");
 var util = require("util");
 
-var NewTransactionPage = React.createClass({
+var NewBillPage = React.createClass({
   ////////////////////////////
   /// Life Cycle methods
 
   getInitialState: function() {
     return {
       items: [],
-      transaction: []
+      bill: []
     }
   },
 
@@ -59,9 +59,9 @@ var NewTransactionPage = React.createClass({
           }
         },
         callback: function() {
-          var transaction = _.reject(self.state.transaction, { id: item.id });
+          var bill = _.reject(self.state.bill, { id: item.id });
           self.setState({
-            transaction: transaction
+            bill: bill
           });
         }
       }
@@ -70,7 +70,7 @@ var NewTransactionPage = React.createClass({
 
   onItemSelected: function(option) {
     var id = option.original.item.id;
-    var transactionItems = this.state.transaction;
+    var transactionItems = this.state.bill;
     var i = _.findIndex(transactionItems, function(item) {
       return item.id === id;
     });
@@ -86,7 +86,7 @@ var NewTransactionPage = React.createClass({
       item.quantity = 1;
       transactionItems.push(item);
     }
-    this.setState({transaction: transactionItems});
+    this.setState({bill: transactionItems});
   },
 
   render: function() {
@@ -110,9 +110,9 @@ var NewTransactionPage = React.createClass({
             var link = {
               value: item.quantity || 0,
               requestChange: function(newValue) {
-                self.state.transaction[i].quantity = parseInt(newValue);
+                self.state.bill[i].quantity = parseInt(newValue);
                 self.setState({
-                  transaction: self.state.transaction
+                  bill: self.state.bill
                 });
               }
             }
@@ -150,7 +150,7 @@ var NewTransactionPage = React.createClass({
     return (
       <BSCol md={12}>
         <h1>
-          {__("transaction::newTransactionWelcome")}
+          {__("transaction::newBillWelcome")}
         </h1>
         <BSPanel header={__("transaction::itemList")}>
           <BSRow>
@@ -175,7 +175,7 @@ var NewTransactionPage = React.createClass({
           <BSRow>
             <MKTableSorter
               config={CONFIG}
-              items={this.state.transaction}
+              items={this.state.bill}
               striped
               condensed
               hover
@@ -190,4 +190,4 @@ var NewTransactionPage = React.createClass({
 
 });
 
-module.exports = NewTransactionPage;
+module.exports = NewBillPage;
