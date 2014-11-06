@@ -7,6 +7,7 @@ var BSInput = require("react-bootstrap/Input");
 
 var MKTableSorter = require("mykoop-core/components/TableSorter");
 var MKListModButtons = require("mykoop-core/components/ListModButtons");
+var MKSpinner = require("mykoop-core/components/Spinner");
 
 // Use this to provide localization strings.
 var __ = require("language").__;
@@ -28,8 +29,9 @@ var NewTransactionPage = React.createClass({
 
   componentDidMount: function () {
     var self = this;
-
+    MKSpinner.showGlobalSpinner();
     actions.inventory.list(function (err, res) {
+      MKSpinner.hideGlobalSpinner();
       if (err) {
         console.error(err);
         return;
