@@ -10,6 +10,7 @@ var MKListModButtons = require("mykoop-core/components/ListModButtons");
 
 // Use this to provide localization strings.
 var __ = require("language").__;
+var _ = require("lodash");
 var actions = require("actions");
 var util = require("util");
 
@@ -34,8 +35,7 @@ var NewTransactionPage = React.createClass({
       }
 
       self.setState({
-        items: res.items,
-        transaction: res.items
+        items: res.items
       });
     });
   },
@@ -64,6 +64,25 @@ var NewTransactionPage = React.createClass({
     ];
   },
 
+  onItemSelected: function(option) {
+    var id = option.original.item.id;
+    var transactionItems = this.state.transaction;
+    var i = _.findIndex(transactionItems, function(item) {
+      return item.id === id;
+    });
+    if(~i) {
+      transactionItems[i].quantity++;
+    } else {
+      var item = _.pick(option.original.item,
+        "id",
+        "name",
+        "code"
+      );
+      item.quantity = 1;
+      transactionItems.push(item);
+    }
+    this.setState({transaction: transactionItems});
+  },
 
   render: function() {
     var self = this;
@@ -109,7 +128,11 @@ var NewTransactionPage = React.createClass({
     };
 
     var addItemOptions = _.map(this.state.items, function(item) {
-      return util.format("%s: %s", _(item.code).toString(), _(item.name).toString());
+      return {
+        display: util.format("%s: %s", _(item.code).toString(), _(item.name).toString()),
+        toString: function(){ return this.display; },
+        item: item
+      };
     });
 
     return (
@@ -129,7 +152,10 @@ var NewTransactionPage = React.createClass({
           <BSCol md={2} sm={4} >
             <Typeahead
               options={addItemOptions}
+              onOptionSelected={this.onItemSelected}
+              clearOnSelect
               maxVisible={4}
+              // FIXME:: selected Item has "hover" class, but no css handle that class
               customClasses={{
                 input: "form-control",
                 results: "list-group",
