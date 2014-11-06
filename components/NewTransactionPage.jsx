@@ -2,6 +2,7 @@ var React = require("react");
 var Typeahead = require("react-typeahead").Typeahead;
 var PropTypes = React.PropTypes;
 var BSCol = require("react-bootstrap/Col");
+var BSRow = require("react-bootstrap/Row");
 var BSPanel = require("react-bootstrap/Panel");
 var BSInput = require("react-bootstrap/Input");
 
@@ -152,29 +153,36 @@ var NewTransactionPage = React.createClass({
           {__("transaction::newTransactionWelcome")}
         </h1>
         <BSPanel header={__("transaction::itemList")}>
-          <MKTableSorter
-            config={CONFIG}
-            items={this.state.transaction}
-            striped
-            condensed
-            hover
-            responsive
-          />
-          <BSCol md={2} sm={4} >
-            <Typeahead
-              options={addItemOptions}
-              onOptionSelected={this.onItemSelected}
-              clearOnSelect
-              maxVisible={4}
-              // FIXME:: selected Item has "hover" class, but no css handle that class
-              customClasses={{
-                input: "form-control",
-                results: "list-group",
-                listItem: "list-group-item",
-                listAnchor: "",
-              }}
+          <BSRow>
+            <BSCol md={4} sm={6}>
+              <label>
+                New item
+              </label>
+              <Typeahead
+                options={addItemOptions}
+                onOptionSelected={this.onItemSelected}
+                clearOnSelect
+                maxVisible={4}
+                customClasses={{
+                  input: "form-control",
+                  results: "mk-typeahead-results",
+                  listItem: "mk-typeahead-item",
+                  listAnchor: "mk-typeahead-anchor",
+                }}
+              />
+            </BSCol>
+          </BSRow>
+          <BSRow>
+            <MKTableSorter
+              config={CONFIG}
+              items={this.state.transaction}
+              striped
+              condensed
+              hover
+              responsive
             />
-          </BSCol>
+          </BSRow>
+
         </BSPanel>
       </BSCol>
     );

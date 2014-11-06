@@ -5,3 +5,33 @@
 .module-custom-class {
   color: @brand-warning;
 }
+
+.mk-typeahead-results {
+  .list-group;
+  height: 0px;
+  .pull-left();
+  overflow: visible;
+}
+
+.mk-typeahead-item {
+  .list-group-item;
+  .pull-left();
+  overflow: visible;
+  width: 100%;
+  &.hover {
+    background-color: @state-success-bg;
+  }
+  &:hover {
+    cursor: pointer;
+    background-color: @table-bg-active;
+  }
+}
+
+.mk-typeahead-anchor {
+  //.list-group-item;
+  color: @text-color;
+  &:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+}
