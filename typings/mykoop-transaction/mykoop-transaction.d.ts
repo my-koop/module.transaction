@@ -6,15 +6,7 @@
 /// <reference path="../mykoop/mykoop.d.ts" />
 declare module mktransaction {
 
-  export interface ModuleClass1 {
-    value: string;
-    id: number;
-  }
   export interface Module extends mykoop.IModule {
-    method1(
-      inParam: {id:number; value:string},
-      callback: (err: Error, res ?: ModuleClass1) => void
-    ): void;
   }
 
 }
