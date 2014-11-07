@@ -70,8 +70,27 @@ var NewBillPage = React.createClass({
     ];
   },
 
+  addCustomItem: function() {
+    var billItems = this.state.bill;
+    billItems.push({
+      id: -1,
+      // FIXME:: baking the name here means switching language won't show the
+      // localized version
+      name: __("transaction::customItem"),
+      code: 0,
+      price: 0,
+      quantity: 1
+    });
+    this.setState({
+      bill: billItems
+    });
+  },
+
   onItemSelected: function(option) {
     var id = option.original.item.id;
+    if(id === -1) {
+      return this.addCustomItem();
+    }
     var billItems = this.state.bill;
     var i = _.findIndex(billItems, function(item) {
       return item.id === id;
@@ -92,7 +111,14 @@ var NewBillPage = React.createClass({
   },
 
   render: function() {
+
     var self = this;
+    var throttledPriceRefresh = _.debounce(function(i, newValue) {
+      self.state.bill[i].price = parseFloat(newValue) || 0;
+      self.setState({
+        bill: self.state.bill
+      });
+    }, 2000);
     // TableSorter Config
     var CONFIG = {
       defaultOrdering: ["code", "name", "price", "quantity", "actions"],
@@ -103,6 +129,19 @@ var NewBillPage = React.createClass({
         price: {
           name: __("inventory::price"),
           cellGenerator: function(item, i) {
+            if(item.id === -1) {
+              var link = {
+                value: item.price,
+                requestChange: function(newValue) {
+                  throttledPriceRefresh(i, newValue);
+                  self.state.bill[i].price = newValue;
+                  self.setState({
+                    bill: self.state.bill
+                  });
+                }
+              }
+              return <BSInput type="text" valueLink={link} addonAfter="$" />
+            }
             return formatMoney(item.price);
           }
         },
@@ -148,9 +187,16 @@ var NewBillPage = React.createClass({
         item: item
       };
     });
+    addItemOptions.push({
+      display: __("transaction::customItem"),
+      toString: function(){ return this.display; },
+      item: {
+        id: -1,
+      }
+    })
 
     var subtotal = _.reduce(this.state.bill, function(subtotal, item) {
-      return subtotal + (item.price * item.quantity);
+      return subtotal + ((item.price * item.quantity) || 0);
     }, 0);
     // FIXME:: Don't use hardcoded values
     var taxInfo = [

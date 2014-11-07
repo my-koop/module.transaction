@@ -8,4 +8,5 @@
   tax: "Taxe",
   tax_tps: "TPS",
   tax_tvq: "TVQ",
+  customItem: "Personnalisé",
 }
