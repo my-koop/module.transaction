@@ -1,15 +1,17 @@
-var React = require("react");
+var React     = require("react");
 var Typeahead = require("react-typeahead").Typeahead;
 var PropTypes = React.PropTypes;
-var BSCol = require("react-bootstrap/Col");
-var BSRow = require("react-bootstrap/Row");
-var BSPanel = require("react-bootstrap/Panel");
-var BSInput = require("react-bootstrap/Input");
+var BSCol     = require("react-bootstrap/Col");
+var BSRow     = require("react-bootstrap/Row");
+var BSPanel   = require("react-bootstrap/Panel");
+var BSInput   = require("react-bootstrap/Input");
 
-var MKTableSorter = require("mykoop-core/components/TableSorter");
-var MKListModButtons = require("mykoop-core/components/ListModButtons");
-var MKSpinner = require("mykoop-core/components/Spinner");
-var MKAlertTrigger = require("mykoop-core/components/AlertTrigger");
+var MKTableSorter       = require("mykoop-core/components/TableSorter");
+var MKListModButtons    = require("mykoop-core/components/ListModButtons");
+var MKSpinner           = require("mykoop-core/components/Spinner");
+var MKCollapsablePanel  = require("mykoop-core/components/CollapsablePanel");
+var MKAlertTrigger      = require("mykoop-core/components/AlertTrigger");
+var MKDiscountTable     = require("./DiscountTable");
 
 // Use this to provide localization strings.
 var __ = require("language").__;
@@ -121,7 +123,7 @@ var NewBillPage = React.createClass({
     }, 2000);
     // TableSorter Config
     var CONFIG = {
-      defaultOrdering: ["code", "name", "price", "quantity", "actions"],
+      defaultOrdering: [ "actions", "code", "name", "price", "quantity"],
       columns: {
         name: {
           name: __("inventory::name"),
@@ -210,7 +212,7 @@ var NewBillPage = React.createClass({
       }
     ];
     var total = subtotal;
-    var taxes = _.map(taxInfo, function(tax) {
+    var taxes = _.map(taxInfo, function(tax, i) {
       var taxAmount = total * tax.rate;
       total += taxAmount;
       var taxText = util.format("%s (%s\%) : %s",
@@ -219,11 +221,12 @@ var NewBillPage = React.createClass({
         formatMoney(taxAmount)
       );
       return (
-        <div>
+        <div key={i}>
           {taxText}
         </div>
       );
     });
+
 
     return (
       <BSCol md={12}>
@@ -261,6 +264,9 @@ var NewBillPage = React.createClass({
             />
           </BSRow>
         </BSPanel>
+        <MKCollapsablePanel header={__("transaction::discountHeader")} defaultExpanded>
+          <MKDiscountTable />
+        </MKCollapsablePanel>
         <BSPanel header={__("transaction::billInfo")}>
           { !_.isEmpty(taxInfo) ? (
               <div>
