@@ -12,6 +12,7 @@ var MKSpinner           = require("mykoop-core/components/Spinner");
 var MKCollapsablePanel  = require("mykoop-core/components/CollapsablePanel");
 var MKAlertTrigger      = require("mykoop-core/components/AlertTrigger");
 var MKDiscountTable     = require("./DiscountTable");
+var MKDebouncerMixin    = require("mykoop-core/components/DebouncerMixin");
 
 // Use this to provide localization strings.
 var __ = require("language").__;
@@ -21,6 +22,7 @@ var actions = require("actions");
 var util = require("util");
 
 var NewBillPage = React.createClass({
+  mixins: [MKDebouncerMixin],
   ////////////////////////////
   /// Life Cycle methods
 
@@ -115,12 +117,6 @@ var NewBillPage = React.createClass({
   render: function() {
 
     var self = this;
-    var throttledPriceRefresh = _.debounce(function(i, newValue) {
-      self.state.bill[i].price = parseFloat(newValue) || 0;
-      self.setState({
-        bill: self.state.bill
-      });
-    }, 2000);
     // TableSorter Config
     var CONFIG = {
       defaultOrdering: [ "actions", "code", "name", "price", "quantity"],
@@ -135,11 +131,9 @@ var NewBillPage = React.createClass({
               var link = {
                 value: item.price,
                 requestChange: function(newValue) {
-                  throttledPriceRefresh(i, newValue);
-                  self.state.bill[i].price = newValue;
-                  self.setState({
-                    bill: self.state.bill
-                  });
+                  self.debounce(["bill", i], "price", function(newValue) {
+                    return parseFloat(newValue) || 0;
+                  }, newValue);
                 }
               }
               return <BSInput type="text" valueLink={link} addonAfter="$" />
@@ -152,15 +146,14 @@ var NewBillPage = React.createClass({
           cellGenerator: function(item, i) {
             var link = {
               value: item.quantity || 0,
-              requestChange: function(newValue) {
-                self.state.bill[i].quantity = parseInt(newValue);
-                self.setState({
-                  bill: self.state.bill
-                });
-              }
+              requestChange: _.bind(self.debounce, self, ["bill", i], "quantity",
+                function(newValue) {
+                  return parseInt(newValue) || 0;
+                }
+              )
             }
             return (
-              <BSInput type="number" valueLink={link} />
+              <BSInput type="text" valueLink={link} />
             );
           }
         },
@@ -200,6 +193,12 @@ var NewBillPage = React.createClass({
     var subtotal = _.reduce(this.state.bill, function(subtotal, item) {
       return subtotal + ((item.price * item.quantity) || 0);
     }, 0);
+    var discounts = this.refs.discountTable ?
+      this.refs.discountTable.getDiscounts()
+      : [];
+    _.forEach(discounts.beforeTax, function(discount) {
+      subtotal = discount(subtotal);
+    });
     // FIXME:: Don't use hardcoded values
     var taxInfo = [
       {
@@ -212,6 +211,7 @@ var NewBillPage = React.createClass({
       }
     ];
     var total = subtotal;
+    // Apply taxes
     var taxes = _.map(taxInfo, function(tax, i) {
       var taxAmount = total * tax.rate;
       total += taxAmount;
@@ -227,6 +227,9 @@ var NewBillPage = React.createClass({
       );
     });
 
+    _.forEach(discounts.afterTax, function(discount) {
+      subtotal = discount(subtotal);
+    });
 
     return (
       <BSCol md={12}>
@@ -265,7 +268,7 @@ var NewBillPage = React.createClass({
           </BSRow>
         </BSPanel>
         <MKCollapsablePanel header={__("transaction::discountHeader")} defaultExpanded>
-          <MKDiscountTable />
+          <MKDiscountTable ref="discountTable"/>
         </MKCollapsablePanel>
         <BSPanel header={__("transaction::billInfo")}>
           { !_.isEmpty(taxInfo) ? (
