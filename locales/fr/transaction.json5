@@ -1,3 +1,11 @@
 {
-  "newBillWelcome": "Créer une facture"
+  newBillWelcome: "Créer une facture",
+  itemList: "Liste d'article",
+  addItemToBill: "Ajouter un article à la facture",
+  billInfo : "Information de la facture",
+  subtotal : "Sous-total",
+  total : "Total",
+  tax: "Taxe",
+  tax_tps: "TPS",
+  tax_tvq: "TVQ",
 }

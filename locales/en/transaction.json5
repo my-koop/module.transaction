@@ -1,3 +1,11 @@
 {
-  "newBillWelcome": "Create bill"
+  newBillWelcome: "Create bill",
+  itemList: "Item list",
+  addItemToBill: "Add Item to bill",
+  billInfo : "Bill information",
+  subtotal : "Subtotal",
+  total : "Total",
+  tax: "Tax",
+  tax_tps: "TPS",
+  tax_tvq: "TVQ",
 }

@@ -9,6 +9,7 @@ var BSInput = require("react-bootstrap/Input");
 var MKTableSorter = require("mykoop-core/components/TableSorter");
 var MKListModButtons = require("mykoop-core/components/ListModButtons");
 var MKSpinner = require("mykoop-core/components/Spinner");
+var MKAlertTrigger = require("mykoop-core/components/AlertTrigger");
 
 // Use this to provide localization strings.
 var __ = require("language").__;
@@ -24,6 +25,7 @@ var NewBillPage = React.createClass({
   getInitialState: function() {
     return {
       items: [],
+      // {id: number, name: string, code: number, price:number, quantity: number}
       bill: []
     }
   },
@@ -35,9 +37,9 @@ var NewBillPage = React.createClass({
       MKSpinner.hideGlobalSpinner();
       if (err) {
         console.error(err);
+        MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
         return;
       }
-
       self.setState({
         items: res.items
       });
@@ -70,12 +72,12 @@ var NewBillPage = React.createClass({
 
   onItemSelected: function(option) {
     var id = option.original.item.id;
-    var transactionItems = this.state.bill;
-    var i = _.findIndex(transactionItems, function(item) {
+    var billItems = this.state.bill;
+    var i = _.findIndex(billItems, function(item) {
       return item.id === id;
     });
     if(~i) {
-      transactionItems[i].quantity++;
+      billItems[i].quantity++;
     } else {
       var item = _.pick(option.original.item,
         "id",
@@ -84,9 +86,9 @@ var NewBillPage = React.createClass({
         "price"
       );
       item.quantity = 1;
-      transactionItems.push(item);
+      billItems.push(item);
     }
-    this.setState({bill: transactionItems});
+    this.setState({bill: billItems});
   },
 
   render: function() {
@@ -147,6 +149,36 @@ var NewBillPage = React.createClass({
       };
     });
 
+    var subtotal = _.reduce(this.state.bill, function(subtotal, item) {
+      return subtotal + (item.price * item.quantity);
+    }, 0);
+    // FIXME:: Don't use hardcoded values
+    var taxInfo = [
+      {
+        type: "tvq",
+        rate: 0.0975
+      },
+      {
+        type: "tps",
+        rate: 0.05
+      }
+    ];
+    var total = subtotal;
+    var taxes = _.map(taxInfo, function(tax) {
+      var taxAmount = total * tax.rate;
+      total += taxAmount;
+      var taxText = util.format("%s (%s\%) : %s",
+        __("transaction::tax", {context: tax.type}),
+        (tax.rate * 100).toFixed(2),
+        formatMoney(taxAmount)
+      );
+      return (
+        <div>
+          {taxText}
+        </div>
+      );
+    });
+
     return (
       <BSCol md={12}>
         <h1>
@@ -156,7 +188,7 @@ var NewBillPage = React.createClass({
           <BSRow>
             <BSCol md={4} sm={6}>
               <label>
-                New item
+                {__("transaction::addItemToBill")}
               </label>
               <Typeahead
                 options={addItemOptions}
@@ -182,7 +214,20 @@ var NewBillPage = React.createClass({
               responsive
             />
           </BSRow>
-
+        </BSPanel>
+        <BSPanel header={__("transaction::billInfo")}>
+          { !_.isEmpty(taxInfo) ? (
+              <div>
+                <div>
+                  {__("transaction::subtotal")} : {formatMoney(subtotal)}
+                </div>
+                {taxes}
+              </div>
+            ) : null
+          }
+          <div>
+            {__("transaction::total")} : {formatMoney(total)}
+          </div>
         </BSPanel>
       </BSCol>
     );
