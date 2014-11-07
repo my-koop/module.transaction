@@ -30,7 +30,9 @@ var NewBillPage = React.createClass({
     return {
       items: [],
       // {id: number, name: string, code: number, price:number, quantity: number}
-      bill: []
+      bill: [],
+      // ((total) => newTotal)[]
+      discounts: []
     }
   },
 
@@ -114,9 +116,16 @@ var NewBillPage = React.createClass({
     this.setState({bill: billItems});
   },
 
-  render: function() {
+  onDiscountChange: function() {
+    var discounts = this.refs.discountTable.getDiscounts();
+    this.setState({discounts: discounts});
+  },
 
+  ////////////////////////////
+  /// Render method
+  render: function() {
     var self = this;
+
     // TableSorter Config
     var CONFIG = {
       defaultOrdering: [ "actions", "code", "name", "price", "quantity"],
@@ -193,9 +202,7 @@ var NewBillPage = React.createClass({
     var subtotal = _.reduce(this.state.bill, function(subtotal, item) {
       return subtotal + ((item.price * item.quantity) || 0);
     }, 0);
-    var discounts = this.refs.discountTable ?
-      this.refs.discountTable.getDiscounts()
-      : [];
+    var discounts = this.state.discounts;
     _.forEach(discounts.beforeTax, function(discount) {
       subtotal = discount(subtotal);
     });
@@ -268,7 +275,7 @@ var NewBillPage = React.createClass({
           </BSRow>
         </BSPanel>
         <MKCollapsablePanel header={__("transaction::discountHeader")} defaultExpanded>
-          <MKDiscountTable ref="discountTable"/>
+          <MKDiscountTable ref="discountTable" onChange={this.onDiscountChange} />
         </MKCollapsablePanel>
         <BSPanel header={__("transaction::billInfo")}>
           { !_.isEmpty(taxInfo) ? (

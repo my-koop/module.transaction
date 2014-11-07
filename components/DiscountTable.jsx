@@ -32,6 +32,10 @@ var discountInfo = [
 
 var DiscountTable = React.createClass({
   mixins: [MKDebouncerMixin],
+
+  propTypes: {
+      onChange: React.PropTypes.func.isRequired
+  },
   ////////////////////////////
   /// Life Cycle methods
   getInitialState: function() {
@@ -40,7 +44,6 @@ var DiscountTable = React.createClass({
       discounts: []
     }
   },
-
 
   ////////////////////////////
   /// Component methods
@@ -69,9 +72,13 @@ var DiscountTable = React.createClass({
       type: 0
     }
     this.state.discounts.push(discount);
+    this.setDiscounts(this.state.discounts);
+  },
+
+  setDiscounts: function(discounts) {
     this.setState({
-      discounts: this.state.discounts
-    })
+      discounts: discounts
+    }, this.props.onChange);
   },
 
   ////////////////////////////
@@ -86,6 +93,7 @@ var DiscountTable = React.createClass({
         value: discount.value,
         requestChange: _.bind(self.debounce, self, ["discounts", iDiscount], "value",
           function(newValue) {
+            self.props.onChange();
             return parseFloat(newValue) || 0;
           }
         )
@@ -105,9 +113,7 @@ var DiscountTable = React.createClass({
           };
           buttonDef.callback = function() {
             discount.type = type;
-            self.setState({
-              discounts: self.state.discounts
-            });
+            self.setDiscounts(self.state.discounts);
           }
         }
         return buttonDef;
@@ -120,9 +126,7 @@ var DiscountTable = React.createClass({
           warningMessage: __("areYouSure"),
           callback: function() {
             self.state.discounts.splice(iDiscount, 1);
-            self.setState({
-              discounts: self.state.discounts
-            })
+            self.setDiscounts(self.state.discounts);
           }
         },
         {
@@ -131,7 +135,7 @@ var DiscountTable = React.createClass({
           callback: function() {
             var discounts = self.state.discounts;
             discounts.splice(iDiscount - 1, 0, discounts.splice(iDiscount, 1)[0]);
-            self.setState({discounts: discounts});
+            self.setDiscounts(discounts);
           }
         },
         {
@@ -140,7 +144,7 @@ var DiscountTable = React.createClass({
           callback: function() {
             var discounts = self.state.discounts;
             discounts.splice(iDiscount + 1, 0, discounts.splice(iDiscount, 1)[0]);
-            self.setState({discounts: discounts});
+            self.setDiscounts(discounts);
           }
         },
       ];
