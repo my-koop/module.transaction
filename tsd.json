@@ -7,9 +7,24 @@
   "installed": {
     "mykoop/mykoop.d.ts": {
       "commit": "752be10a0060330c01ff0ffc9b84abec3f289e3f"
+    },
+    "mysql/mysql.d.ts": {
+      "commit": "22499b9683686c3d424137d6e395a0106d5a6090"
+    },
+    "express/express.d.ts": {
+      "commit": "22499b9683686c3d424137d6e395a0106d5a6090"
+    },
+    "node/node.d.ts": {
+      "commit": "22499b9683686c3d424137d6e395a0106d5a6090"
+    },
+    "mykoop-database/mykoop-database.d.ts": {
+      "commit": "22499b9683686c3d424137d6e395a0106d5a6090"
     }
   },
   "dependencies": {
     "mykoop": {}
+  },
+  "owned": {
+    "mykoop-transaction": {}
   }
 }
