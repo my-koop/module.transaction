@@ -1,5 +1,4 @@
 var React     = require("react");
-var PropTypes = React.PropTypes;
 var BSInput   = require("react-bootstrap/Input");
 var BSCol     = require("react-bootstrap/Col");
 
@@ -13,6 +12,7 @@ var formatMoney = require("language").formatMoney;
 var _ = require("lodash");
 var util = require("util");
 
+// Possible type of discount
 var discountInfo = [
   {
     name: "percentage",

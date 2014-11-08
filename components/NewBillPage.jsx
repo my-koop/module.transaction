@@ -1,20 +1,20 @@
 var React     = require("react");
 var Typeahead = require("react-typeahead").Typeahead;
-var PropTypes = React.PropTypes;
 var BSCol     = require("react-bootstrap/Col");
 var BSRow     = require("react-bootstrap/Row");
 var BSPanel   = require("react-bootstrap/Panel");
 var BSInput   = require("react-bootstrap/Input");
 
+// My Koop components
 var MKTableSorter       = require("mykoop-core/components/TableSorter");
 var MKListModButtons    = require("mykoop-core/components/ListModButtons");
 var MKSpinner           = require("mykoop-core/components/Spinner");
 var MKCollapsablePanel  = require("mykoop-core/components/CollapsablePanel");
 var MKAlertTrigger      = require("mykoop-core/components/AlertTrigger");
-var MKDiscountTable     = require("./DiscountTable");
 var MKDebouncerMixin    = require("mykoop-core/components/DebouncerMixin");
+var MKDiscountTable     = require("./DiscountTable");
 
-// Use this to provide localization strings.
+// Utilities
 var __ = require("language").__;
 var formatMoney = require("language").formatMoney;
 var _ = require("lodash");
@@ -39,6 +39,8 @@ var NewBillPage = React.createClass({
   componentDidMount: function () {
     var self = this;
     MKSpinner.showGlobalSpinner();
+
+    // Fetch inventory from database
     actions.inventory.list(function (err, res) {
       MKSpinner.hideGlobalSpinner();
       if (err) {
@@ -46,6 +48,7 @@ var NewBillPage = React.createClass({
         MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
         return;
       }
+
       self.setState({
         items: res.items
       });
@@ -94,9 +97,11 @@ var NewBillPage = React.createClass({
 
   onItemSelected: function(option) {
     var id = option.original.item.id;
+    // special case for custom item
     if(id === -1) {
       return this.addCustomItem();
     }
+
     var billItems = this.state.bill;
     var i = _.findIndex(billItems, function(item) {
       return item.id === id;
@@ -127,7 +132,7 @@ var NewBillPage = React.createClass({
     var self = this;
 
     // TableSorter Config
-    var CONFIG = {
+    var BillTableConfig = {
       defaultOrdering: [ "actions", "code", "name", "price", "quantity"],
       columns: {
         name: {
@@ -193,12 +198,14 @@ var NewBillPage = React.createClass({
     });
     addItemOptions.push({
       display: __("transaction::customItem"),
-      toString: function(){ return this.display; },
+      toString: function() { return this.display; },
       item: {
         id: -1,
       }
-    })
+    });
 
+    /////////////////////////////////
+    // Bill total amount calculations
     var subtotal = _.reduce(this.state.bill, function(subtotal, item) {
       return subtotal + ((item.price * item.quantity) || 0);
     }, 0);
@@ -237,6 +244,7 @@ var NewBillPage = React.createClass({
     _.forEach(discounts.afterTax, function(discount) {
       subtotal = discount(subtotal);
     });
+    /////////////////////////////////
 
     return (
       <BSCol md={12}>
@@ -265,7 +273,7 @@ var NewBillPage = React.createClass({
           </BSRow>
           <BSRow>
             <MKTableSorter
-              config={CONFIG}
+              config={BillTableConfig}
               items={this.state.bill}
               striped
               condensed
@@ -274,7 +282,7 @@ var NewBillPage = React.createClass({
             />
           </BSRow>
         </BSPanel>
-        <MKCollapsablePanel header={__("transaction::discountHeader")} defaultExpanded>
+        <MKCollapsablePanel header={__("transaction::discountHeader")} >
           <MKDiscountTable ref="discountTable" onChange={this.onDiscountChange} />
         </MKCollapsablePanel>
         <BSPanel header={__("transaction::billInfo")}>
