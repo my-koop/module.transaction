@@ -242,7 +242,7 @@ var NewBillPage = React.createClass({
     });
 
     _.forEach(discounts.afterTax, function(discount) {
-      subtotal = discount(subtotal);
+      total = discount(total);
     });
     /////////////////////////////////
 
