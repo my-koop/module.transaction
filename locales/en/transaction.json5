@@ -9,6 +9,7 @@
   tax_tps: "TPS",
   tax_tvq: "TVQ",
   customItem: "Custom",
+  billEnterCodeOrName: "Type item code, name or \"Custom\"",
 
   //Discounts
   discountHeader: "Discount Application",
@@ -19,4 +20,7 @@
   changeDiscountType: "Change discount type",
   changeDiscountType_percentage: "Apply a discount by percentage",
   changeDiscountType_fixed: "Apply a fixed amount discount",
+  discountTaxSwitch: "Change when to apply discount",
+  discountTaxSwitch_0: "Apply discount after taxes",
+  discountTaxSwitch_1: "Apply discount before taxes",
 }

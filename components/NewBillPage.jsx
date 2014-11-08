@@ -258,6 +258,7 @@ var NewBillPage = React.createClass({
                 {__("transaction::addItemToBill")}
               </label>
               <Typeahead
+                placeholder={__("transaction::billEnterCodeOrName")}
                 options={addItemOptions}
                 onOptionSelected={this.onItemSelected}
                 clearOnSelect

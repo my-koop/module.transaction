@@ -121,7 +121,7 @@ var DiscountTable = React.createClass({
       });
       // add button to select if discount is applied before or after taxes
       typeSwitchers.push({
-        content: __("tax"),
+        content: __("transaction::tax"),
         tooltip: __("transaction::discountTaxSwitch", {context: discount.isAfterTax}),
         props: {
           className: discount.isAfterTax ? "active" : ""
