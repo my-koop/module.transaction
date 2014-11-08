@@ -131,10 +131,10 @@ var NewBillPage = React.createClass({
       defaultOrdering: [ "actions", "code", "name", "price", "quantity"],
       columns: {
         name: {
-          name: __("inventory::name"),
+          name: __("name"),
         },
         price: {
-          name: __("inventory::price"),
+          name: __("price"),
           cellGenerator: function(item, i) {
             if(item.id === -1) {
               var link = {
@@ -151,7 +151,7 @@ var NewBillPage = React.createClass({
           }
         },
         quantity: {
-          name: __("inventory::quantity"),
+          name: __("quantity"),
           cellGenerator: function(item, i) {
             var link = {
               value: item.quantity || 0,
@@ -167,10 +167,10 @@ var NewBillPage = React.createClass({
           }
         },
         code: {
-          name: __("inventory::code"),
+          name: __("code"),
         },
         actions: {
-          name: __("inventory::actions"),
+          name: __("actions"),
           isStatic: true,
           cellGenerator: function(item) {
             return (

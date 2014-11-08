@@ -9,4 +9,14 @@
   tax_tps: "TPS",
   tax_tvq: "TVQ",
   customItem: "Personnalisé",
+
+  // Discounts
+  discountHeader: "Application de rabais",
+  addDiscount: "Ajouter un rabais",
+  discounts: "Rabais",
+  discountTypes: "Type de rabais",
+  deleteDiscount: "Supprimer ce rabais",
+  changeDiscountType: "Changer le type du rabais",
+  changeDiscountType_percentage: "Appliquer un rabais par pourcentage",
+  changeDiscountType_fixed: "Appliquer un rabais à montant fixe",
 }

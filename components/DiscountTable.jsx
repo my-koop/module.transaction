@@ -103,6 +103,7 @@ var DiscountTable = React.createClass({
       var typeSwitchers = _.map(discountInfo, function(info, type) {
         var buttonDef = {
           content: info.symbol,
+          tooltip: __("transaction::changeDiscountType", {context: info.name}),
           props: {
             className: "active"
           }
@@ -123,6 +124,7 @@ var DiscountTable = React.createClass({
       actionButtons = [
         {
           icon: "remove",
+          tooltip: __("transaction::deleteDiscount"),
           warningMessage: __("areYouSure"),
           callback: function() {
             self.state.discounts.splice(iDiscount, 1);
@@ -131,6 +133,7 @@ var DiscountTable = React.createClass({
         },
         {
           icon: "arrow-up",
+          tooltip: __("moveUp"),
           hide: iDiscount === 0,
           callback: function() {
             var discounts = self.state.discounts;
@@ -140,6 +143,7 @@ var DiscountTable = React.createClass({
         },
         {
           icon: "arrow-down",
+          tooltip: __("moveDown"),
           hide: iDiscount >= (length - 1),
           callback: function() {
             var discounts = self.state.discounts;
@@ -166,10 +170,11 @@ var DiscountTable = React.createClass({
     // Put an Add button at the top of the table
     var addButton = {
       icon: "plus",
+      tooltip: __("transaction::addDiscount"),
       callback: this.addDiscount
     };
     discounts.unshift([
-      <MKListModButtons buttons={[addButton]} />,__("transaction::addDiscount")
+      <MKListModButtons buttons={[addButton]} />
     ]);
 
     return (

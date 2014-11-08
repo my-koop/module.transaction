@@ -9,4 +9,14 @@
   tax_tps: "TPS",
   tax_tvq: "TVQ",
   customItem: "Custom",
+
+  //Discounts
+  discountHeader: "Discount Application",
+  addDiscount: "Add a discount",
+  discounts: "Discounts",
+  discountTypes: "Discount type",
+  deleteDiscount: "Delete this discount",
+  changeDiscountType: "Change discount type",
+  changeDiscountType_percentage: "Apply a discount by percentage",
+  changeDiscountType_fixed: "Apply a fixed amount discount",
 }
