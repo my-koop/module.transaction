@@ -79,13 +79,13 @@ var NewBillPage = React.createClass({
     ];
   },
 
+  // Need a unique id event for custom item, otherwise it deletes them all onDelete
+  customItemId: -1,
   addCustomItem: function() {
     var billItems = this.state.bill;
     billItems.push({
-      id: -1,
-      // FIXME:: baking the name here means switching language won't show the
-      // localized version
-      name: __("transaction::customItem"),
+      id: this.customItemId--,
+      name: {toString: function() {return __("transaction::customItem");} },
       code: 0,
       price: 0,
       quantity: 1
@@ -137,11 +137,14 @@ var NewBillPage = React.createClass({
       columns: {
         name: {
           name: __("name"),
+          cellGenerator: function(item, i) {
+            return item.name.toString();
+          }
         },
         price: {
           name: __("price"),
           cellGenerator: function(item, i) {
-            if(item.id === -1) {
+            if(item.id < 0) {
               var link = {
                 value: item.price,
                 requestChange: function(newValue) {
