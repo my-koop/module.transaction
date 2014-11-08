@@ -18,6 +18,7 @@ var discountInfo = [
     name: "percentage",
     symbol: "%",
     applyDiscount: function(discountValue, amount) {
+      discountValue = Number(discountValue) || 0;
       return amount * ((100 - discountValue) / 100);
     }
   },
@@ -25,6 +26,7 @@ var discountInfo = [
     name: "fixed",
     symbol: "$",
     applyDiscount: function(discountValue, amount) {
+      discountValue = Number(discountValue) || 0;
       return amount - discountValue;
     }
   }
@@ -48,19 +50,13 @@ var DiscountTable = React.createClass({
   ////////////////////////////
   /// Component methods
   getDiscounts: function() {
-    var discounts = {
-      beforeTax: [],
-      afterTax: []
-    };
-    _.forEach(this.state.discounts, function(discount) {
+    var discounts = _.map(this.state.discounts, function(discount) {
       var func = discountInfo[discount.type]
         .applyDiscount.bind(null, discount.value);
-
-      if(discount.isAfterTax) {
-        discounts.afterTax.push(func);
-      } else {
-        discounts.beforeTax.push(func);
-      }
+      return {
+        info: discount,
+        apply: func
+      };
     });
     return discounts;
   },

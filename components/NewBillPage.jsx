@@ -3,6 +3,7 @@ var Typeahead = require("react-typeahead").Typeahead;
 var BSCol     = require("react-bootstrap/Col");
 var BSRow     = require("react-bootstrap/Row");
 var BSPanel   = require("react-bootstrap/Panel");
+var BSTable   = require("react-bootstrap/Table");
 var BSInput   = require("react-bootstrap/Input");
 
 // My Koop components
@@ -126,6 +127,19 @@ var NewBillPage = React.createClass({
     this.setState({discounts: discounts});
   },
 
+  // amount: total amount to apply discounts
+  // afterTax: if true, apply only discounts effective afterTaxes
+  //           if false, apply only discounts effective beforeTaxes
+  applyDiscounts: function(amount, afterTax) {
+    return _.reduce(this.state.discounts, function(total, discount) {
+      // check if the two boolean are equal
+      if(!(discount.info.isAfterTax ^ afterTax)) {
+        return discount.apply(total);
+      }
+      return total;
+    }, amount);
+  },
+
   ////////////////////////////
   /// Render method
   render: function() {
@@ -209,12 +223,27 @@ var NewBillPage = React.createClass({
 
     /////////////////////////////////
     // Bill total amount calculations
+    var infos = [];
     var subtotal = _.reduce(this.state.bill, function(subtotal, item) {
       return subtotal + ((item.price * item.quantity) || 0);
     }, 0);
-    var discounts = this.state.discounts;
-    _.forEach(discounts.beforeTax, function(discount) {
-      subtotal = discount(subtotal);
+    var newSubtotal = this.applyDiscounts(subtotal, false);
+    var discountBeforeTax = subtotal - newSubtotal;
+    if(discountBeforeTax) {
+      infos.push({
+        text: __("transaction::subtotal"),
+        amount: subtotal
+      });
+      infos.push({
+        text: __("transaction::discounts"),
+        amount: discountBeforeTax
+      });
+    }
+    subtotal = newSubtotal;
+    infos.push({
+      text: __("transaction::subtotal"),
+      amount: subtotal,
+      isBold: true
     });
     // FIXME:: Don't use hardcoded values
     var taxInfo = [
@@ -229,23 +258,50 @@ var NewBillPage = React.createClass({
     ];
     var total = subtotal;
     // Apply taxes
-    var taxes = _.map(taxInfo, function(tax, i) {
+    infos = infos.concat(_.map(taxInfo, function(tax, i) {
       var taxAmount = total * tax.rate;
       total += taxAmount;
-      var taxText = util.format("%s (%s\%) : %s",
+      var taxText = util.format("%s (%s\%)",
         __("transaction::tax", {context: tax.type}),
-        (tax.rate * 100).toFixed(2),
-        formatMoney(taxAmount)
+        (tax.rate * 100).toFixed(2)
       );
-      return (
-        <div key={i}>
-          {taxText}
-        </div>
-      );
+      return {
+        text: taxText,
+        amount: taxAmount
+      };
+    }));
+
+    var newTotal = this.applyDiscounts(total, true);
+    var discountAfterTax = total - newTotal;
+    if(discountAfterTax) {
+      infos.push({
+        text: __("transaction::subtotal"),
+        amount: total
+      });
+      infos.push({
+        text: __("transaction::discounts"),
+        amount: discountAfterTax
+      });
+    }
+    total = newTotal;
+    infos.push({
+      text: __("transaction::total"),
+      amount: total,
+      isBold: true
     });
 
-    _.forEach(discounts.afterTax, function(discount) {
-      total = discount(total);
+    var billInfoRows = _.map(infos, function(info, i) {
+      var className = info.isBold ? "bold-row" : "";
+      return (
+        <tr key={i} className={className}>
+          <td>
+            {info.text}
+          </td>
+          <td>
+            {formatMoney(info.amount)}
+          </td>
+        </tr>
+      );
     });
     /////////////////////////////////
 
@@ -290,18 +346,11 @@ var NewBillPage = React.createClass({
           <MKDiscountTable ref="discountTable" onChange={this.onDiscountChange} />
         </MKCollapsablePanel>
         <BSPanel header={__("transaction::billInfo")}>
-          { !_.isEmpty(taxInfo) ? (
-              <div>
-                <div>
-                  {__("transaction::subtotal")} : {formatMoney(subtotal)}
-                </div>
-                {taxes}
-              </div>
-            ) : null
-          }
-          <div>
-            {__("transaction::total")} : {formatMoney(total)}
-          </div>
+          <BSTable className="min-size-table">
+            <tbody>
+              {billInfoRows}
+            </tbody>
+          </BSTable>
         </BSPanel>
       </BSCol>
     );
