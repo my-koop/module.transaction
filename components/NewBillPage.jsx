@@ -14,6 +14,7 @@ var MKCollapsablePanel  = require("mykoop-core/components/CollapsablePanel");
 var MKAlertTrigger      = require("mykoop-core/components/AlertTrigger");
 var MKDebouncerMixin    = require("mykoop-core/components/DebouncerMixin");
 var MKDiscountTable     = require("./DiscountTable");
+var MKBillInfo          = require("./BillInfo");
 
 // Utilities
 var __ = require("language").__;
@@ -167,7 +168,8 @@ var NewBillPage = React.createClass({
                   }, newValue);
                 }
               }
-              return <BSInput type="text" valueLink={link} addonAfter="$" />
+              // FIXME::addon removed until table columnWidth are fixed
+              return <BSInput type="text" valueLink={link} /*addonAfter="$"*/ />
             }
             return formatMoney(item.price);
           }
@@ -289,20 +291,6 @@ var NewBillPage = React.createClass({
       amount: total,
       isBold: true
     });
-
-    var billInfoRows = _.map(infos, function(info, i) {
-      var className = info.isBold ? "bold-row" : "";
-      return (
-        <tr key={i} className={className}>
-          <td>
-            {info.text}
-          </td>
-          <td>
-            {formatMoney(info.amount)}
-          </td>
-        </tr>
-      );
-    });
     /////////////////////////////////
 
     return (
@@ -346,11 +334,7 @@ var NewBillPage = React.createClass({
           <MKDiscountTable ref="discountTable" onChange={this.onDiscountChange} />
         </MKCollapsablePanel>
         <BSPanel header={__("transaction::billInfo")}>
-          <BSTable className="min-size-table">
-            <tbody>
-              {billInfoRows}
-            </tbody>
-          </BSTable>
+          <MKBillInfo infos={infos} />
         </BSPanel>
       </BSCol>
     );
