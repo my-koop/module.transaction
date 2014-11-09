@@ -168,7 +168,6 @@ var DiscountTable = React.createClass({
           <BSInput
             type="text"
             valueLink={link}
-            //addonAfter={discountInfo[discount.type].symbol}
           />,
           <MKListModButtons buttons={typeSwitchers} />
         ]

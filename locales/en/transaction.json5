@@ -1,13 +1,13 @@
 {
   newBillWelcome: "Create bill",
   itemList: "Item list",
-  addItemToBill: "Add Item to bill",
+  addItemToBill: "Add item to bill",
   billInfo : "Bill information",
   subtotal : "Subtotal",
   total : "Total",
-  tax: "Tax",
-  tax_tps: "TPS",
-  tax_tvq: "TVQ",
+  tax: "Taxes",
+  tax_tps: "PST",
+  tax_tvq: "QST",
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
 
