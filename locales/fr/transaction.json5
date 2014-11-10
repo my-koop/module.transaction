@@ -10,6 +10,8 @@
   tax_tvq: "TVQ",
   customItem: "Personnalisé",
   billEnterCodeOrName: "Entrer le code, nom de l'article ou \"Personnalisé\"",
+  createdDate: "Date de création",
+  listBillWelcome: "Liste des factures",
 
   // Discounts
   discountHeader: "Application de rabais",
