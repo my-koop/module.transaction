@@ -21,13 +21,10 @@ export function attachControllers(
     })
   );
 
-
   binder.attach(
     {
       endPoint: endPoints.transaction.bill.list
     },
-    binder.makeSimpleController("listBills", function(req: Express.Request) {
-      return {};
-    })
+    binder.makeSimpleController("listBills")
   );
 }

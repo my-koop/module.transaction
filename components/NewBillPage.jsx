@@ -8,14 +8,17 @@ var BSInput   = require("react-bootstrap/Input");
 var BSButton  = require("react-bootstrap/Button");
 
 // My Koop components
-var MKTableSorter       = require("mykoop-core/components/TableSorter");
-var MKListModButtons    = require("mykoop-core/components/ListModButtons");
-var MKSpinner           = require("mykoop-core/components/Spinner");
-var MKCollapsablePanel  = require("mykoop-core/components/CollapsablePanel");
-var MKAlertTrigger      = require("mykoop-core/components/AlertTrigger");
-var MKDebouncerMixin    = require("mykoop-core/components/DebouncerMixin");
-var MKDiscountTable     = require("./DiscountTable");
-var MKBillInfo          = require("./BillInfo");
+var MKTableSorter         = require("mykoop-core/components/TableSorter");
+var MKListModButtons      = require("mykoop-core/components/ListModButtons");
+var MKSpinner             = require("mykoop-core/components/Spinner");
+var MKCollapsablePanel    = require("mykoop-core/components/CollapsablePanel");
+var MKAlertTrigger        = require("mykoop-core/components/AlertTrigger");
+var MKIcon                = require("mykoop-core/components/Icon");
+var MKDebouncerMixin      = require("mykoop-core/components/DebouncerMixin");
+var MKDiscountTable       = require("./DiscountTable");
+var MKBillInfo            = require("./BillInfo");
+var MKCustomerInformation = require("./CustomerInformation");
+
 
 // Utilities
 var __ = require("language").__;
@@ -364,7 +367,12 @@ var NewBillPage = React.createClass({
           <MKDiscountTable ref="discountTable" onChange={this.onDiscountChange} />
         </MKCollapsablePanel>
         <BSPanel header={__("transaction::billInfo")}>
-          <MKBillInfo infos={infos} />
+          <BSCol md={3}>
+            <MKBillInfo infos={infos} />
+          </BSCol>
+          <BSCol md={3}>
+            <MKCustomerInformation />
+          </BSCol>
         </BSPanel>
         <BSButton onClick={this.saveBill} className="pull-right">
           {__("save")}
