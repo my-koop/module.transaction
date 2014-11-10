@@ -8,7 +8,7 @@ declare module Transaction {
       quantity: number;
     }[];
     discounts?: {
-      type: string;
+      type: number;
       value: number;
       isAfterTax: boolean;
     }[];

@@ -5,10 +5,11 @@
 
 /// <reference path="../mykoop/mykoop.d.ts" />
 /// <reference path="./interfaces.d.ts" />
+/// <reference path="./dbQueryStruct.d.ts" />
 declare module mktransaction {
 
   export interface saveNewBillCallback {
-    (err: MyKoopError, res?: {idBill: number}): void;
+    (err: Error, res?: {idBill: number}): void;
   }
   export interface Module extends mykoop.IModule {
     saveNewBill(

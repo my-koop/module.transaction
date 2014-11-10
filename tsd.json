@@ -19,11 +19,17 @@
     },
     "mykoop-database/mykoop-database.d.ts": {
       "commit": "22499b9683686c3d424137d6e395a0106d5a6090"
+    },
+    "async/async.d.ts": {
+      "commit": "19f97ddf7a0e81bffcf4e4482bb2a3ea6f2bf5b7"
+    },
+    "lodash/lodash.d.ts": {
+      "commit": "19f97ddf7a0e81bffcf4e4482bb2a3ea6f2bf5b7"
     }
   },
   "dependencies": {
     "mykoop": {},
-    "mykoop-database": {},
+    "mykoop-database": {}
   },
   "owned": {
     "mykoop-transaction": {}

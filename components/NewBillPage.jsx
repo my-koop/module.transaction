@@ -60,7 +60,6 @@ var NewBillPage = React.createClass({
   /// component methods
   saveBill: function() {
     var self = this;
-    MKSpinner.showGlobalSpinner();
     actions.transaction.bill.new(
       {
         data: {
@@ -80,7 +79,6 @@ var NewBillPage = React.createClass({
           })
         }
       }, function (err, res) {
-        MKSpinner.hideGlobalSpinner();
         if (err) {
           console.error(err);
           MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
