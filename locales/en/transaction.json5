@@ -1,3 +1,26 @@
 {
-  "newTransactionWelcome": "Create transaction"
+  newBillWelcome: "Create bill",
+  itemList: "Item list",
+  addItemToBill: "Add item to bill",
+  billInfo : "Bill information",
+  subtotal : "Subtotal",
+  total : "Total",
+  tax: "Taxes",
+  tax_tps: "GST",
+  tax_tvq: "QST",
+  customItem: "Custom",
+  billEnterCodeOrName: "Type item code, name or \"Custom\"",
+
+  //Discounts
+  discountHeader: "Discount Application",
+  addDiscount: "Add a discount",
+  discounts: "Discounts",
+  discountTypes: "Discount type",
+  deleteDiscount: "Delete this discount",
+  changeDiscountType: "Change discount type",
+  changeDiscountType_percentage: "Apply a discount by percentage",
+  changeDiscountType_fixed: "Apply a fixed amount discount",
+  discountTaxSwitch: "Change when to apply discount",
+  discountTaxSwitch_0: "Apply discount after taxes",
+  discountTaxSwitch_1: "Apply discount before taxes",
 }

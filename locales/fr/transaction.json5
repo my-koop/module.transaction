@@ -1,3 +1,26 @@
 {
-  "newTransactionWelcome": "Créer une transaction"
+  newBillWelcome: "Créer une facture",
+  itemList: "Liste d'articles",
+  addItemToBill: "Ajouter un article à la facture",
+  billInfo : "Information sur la facture",
+  subtotal : "Sous-total",
+  total : "Total",
+  tax: "Taxes",
+  tax_tps: "TPS",
+  tax_tvq: "TVQ",
+  customItem: "Personnalisé",
+  billEnterCodeOrName: "Entrer le code, nom de l'article ou \"Personnalisé\"",
+
+  // Discounts
+  discountHeader: "Application de rabais",
+  addDiscount: "Ajouter un rabais",
+  discounts: "Rabais",
+  discountTypes: "Type de rabais",
+  deleteDiscount: "Supprimer ce rabais",
+  changeDiscountType: "Changer le type du rabais",
+  changeDiscountType_percentage: "Appliquer un rabais par pourcentage",
+  changeDiscountType_fixed: "Appliquer un rabais à montant fixe",
+  discountTaxSwitch: "Changer le moment d'application du rabais",
+  discountTaxSwitch_0: "Appliquer le rabais après les taxes",
+  discountTaxSwitch_1: "Appliquer le rabais avant les taxes",
 }
