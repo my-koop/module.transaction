@@ -6,7 +6,7 @@
   subtotal : "Subtotal",
   total : "Total",
   tax: "Taxes",
-  tax_tps: "PST",
+  tax_tps: "GST",
   tax_tvq: "QST",
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
