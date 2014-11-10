@@ -5,6 +5,7 @@ var BSRow     = require("react-bootstrap/Row");
 var BSPanel   = require("react-bootstrap/Panel");
 var BSTable   = require("react-bootstrap/Table");
 var BSInput   = require("react-bootstrap/Input");
+var BSButton  = require("react-bootstrap/Button");
 
 // My Koop components
 var MKTableSorter       = require("mykoop-core/components/TableSorter");
@@ -33,18 +34,16 @@ var NewBillPage = React.createClass({
       items: [],
       // {id: number, name: string, code: number, price:number, quantity: number}
       bill: [],
-      // ((total) => newTotal)[]
+      // { info : {isAfterTax: boolean, value: number, type: DiscountType }
+      // apply: ((total) => newTotal)[] }
       discounts: []
     }
   },
 
   componentDidMount: function () {
     var self = this;
-    MKSpinner.showGlobalSpinner();
-
     // Fetch inventory from database
     actions.inventory.list(function (err, res) {
-      MKSpinner.hideGlobalSpinner();
       if (err) {
         console.error(err);
         MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
@@ -59,6 +58,39 @@ var NewBillPage = React.createClass({
 
   ////////////////////////////
   /// component methods
+  saveBill: function() {
+    var self = this;
+    MKSpinner.showGlobalSpinner();
+    actions.transaction.bill.new(
+      {
+        data: {
+          items: _.map(this.state.bill, function(item) {
+            return {
+              id: item.id,
+              price: item.price,
+              quantity: item.quantity
+            };
+          }),
+          discounts: _.map(this.state.discounts, function(discount) {
+            return  {
+              type: discount.info.type,
+              value: discount.info.value,
+              isAfterTax: discount.info.isAfterTax
+            };
+          })
+        }
+      }, function (err, res) {
+        MKSpinner.hideGlobalSpinner();
+        if (err) {
+          console.error(err);
+          MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
+          return;
+        }
+        MKAlertTrigger.showAlert(__("success"));
+      }
+    );
+  },
+
   actionsGenerator: function(item) {
     var self = this;
     return [
@@ -336,6 +368,9 @@ var NewBillPage = React.createClass({
         <BSPanel header={__("transaction::billInfo")}>
           <MKBillInfo infos={infos} />
         </BSPanel>
+        <BSButton onClick={this.saveBill} className="pull-right">
+          {__("save")}
+        </BSButton>
       </BSCol>
     );
   }

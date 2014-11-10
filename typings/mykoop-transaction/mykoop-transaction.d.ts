@@ -4,9 +4,17 @@
 // Definitions: https://github.com/my-koop/type.definitions
 
 /// <reference path="../mykoop/mykoop.d.ts" />
+/// <reference path="./interfaces.d.ts" />
 declare module mktransaction {
 
+  export interface saveNewBillCallback {
+    (err: MyKoopError, res?: {idBill: number}): void;
+  }
   export interface Module extends mykoop.IModule {
+    saveNewBill(
+      params: Transaction.NewBill,
+      callback: saveNewBillCallback
+    );
   }
 
 }

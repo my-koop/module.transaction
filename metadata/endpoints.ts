@@ -1,13 +1,15 @@
 var endpoints = {
   transaction: {
-    /*get1: {
-      path: "/example/:id",
-      method: "get",
-      validation: {
-        resolve: "validation",
-        value: "get1"
+    bill: {
+      new: {
+        path: "/transaction/bill/new",
+        method: "post",
+        validation: {
+          resolve: "validation",
+          value: "newBill"
+        }
       }
-    }*/
+    }
   }
 }
 export = endpoints;
