@@ -13,6 +13,33 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     controllerList.attachControllers(new utils.ModuleControllersBinder(this));
   }
 
+  listBills(
+    params: any,
+    callback: (err, result?) => void
+  ) {
+
+    this.db.getConnection(function(err, connection, cleanup) {
+      if(err) {
+        return callback(new DatabaseError(err));
+      }
+
+      async.waterfall([
+        function(callback) {
+          connection.query(
+            "SELECT * FROM bill",
+            function(err, result) {
+              callback(err && new DatabaseError(err), result);
+            }
+          )
+        }
+
+      ], function(err, result) {
+        cleanup();
+        callback(err, result);
+      });
+    });
+  }
+
   saveNewBill(
     params: Transaction.NewBill,
     callback: mktransaction.saveNewBillCallback

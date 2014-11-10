@@ -10,6 +10,8 @@
   tax_tvq: "QST",
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
+  createdDate: "Date created",
+  listBillWelcome: "List of bills",
 
   //Discounts
   discountHeader: "Discount Application",

@@ -8,6 +8,10 @@ var endpoints = {
           resolve: "validation",
           value: "newBill"
         }
+      },
+      list: {
+        path: "/transaction/bill/list",
+        method: "get"
       }
     }
   }
