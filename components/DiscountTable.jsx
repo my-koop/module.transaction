@@ -13,24 +13,7 @@ var _ = require("lodash");
 var util = require("util");
 
 // Possible type of discount
-var discountInfo = [
-  {
-    name: "percentage",
-    symbol: "%",
-    applyDiscount: function(discountValue, amount) {
-      discountValue = Number(discountValue) || 0;
-      return amount * ((100 - discountValue) / 100);
-    }
-  },
-  {
-    name: "fixed",
-    symbol: "$",
-    applyDiscount: function(discountValue, amount) {
-      discountValue = Number(discountValue) || 0;
-      return amount - discountValue;
-    }
-  }
-];
+var discountInfo = require("../lib/common_modules/discountTypes").DiscountInfo;
 
 var DiscountTable = React.createClass({
   mixins: [MKDebouncerMixin],
