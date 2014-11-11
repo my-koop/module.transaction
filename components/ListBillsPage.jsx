@@ -61,11 +61,16 @@ var ListBillsPage = React.createClass({
       );
     });
   },
-  actionsGenerator: function(item) {
+
+  closeBill: function(bill) {
+
+  },
+
+  actionsGenerator: function(bill) {
     var self = this;
-    return [
+    var buttons = [
       {
-        icon: "remove",
+        icon: "trash",
         warningMessage: __("areYouSure"),
         tooltip: {
           text: __("remove"),
@@ -78,6 +83,23 @@ var ListBillsPage = React.createClass({
         }
       }
     ];
+
+    if(this.state.billState === "open" && bill.total === bill.paid) {
+      buttons.push({
+        icon: "close",
+        warningMessage: __("areYouSure"),
+        tooltip: {
+          text: __("transaction::closeBillTooltip"),
+          overlayProps: {
+            placement: "top"
+          }
+        },
+        callback: function() {
+          self.closeBill(bill);
+        }
+      });
+    }
+    return buttons;
   },
 
   switchBillState: function() {
@@ -142,11 +164,11 @@ var ListBillsPage = React.createClass({
         actions: {
           name: __("actions"),
           isStatic: true,
-          cellGenerator: function(item) {
+          cellGenerator: function(bill) {
             return (
               <MKListModButtons
                 defaultTooltipDelay={500}
-                buttons={self.actionsGenerator(item)}
+                buttons={self.actionsGenerator(bill)}
               />
             );
           }

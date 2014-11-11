@@ -387,6 +387,7 @@ var NewBillPage = React.createClass({
         <BSPanel header={__("transaction::billInfo")}>
           <BSCol md={3}>
             <MKBillInfo infos={infos} />
+            { this.state.bill.length > 0 ?
             <BSButtonGroup>
               { this.state.customerEmail ?
                 <MKConfirmationTrigger
@@ -407,6 +408,7 @@ var NewBillPage = React.createClass({
                 </BSButton>
               </MKConfirmationTrigger>
             </BSButtonGroup>
+          : null }
           </BSCol>
           <BSCol md={3}>
             <MKCustomerInformation onEmailChanged={this.onCustomerEmailChanged} />

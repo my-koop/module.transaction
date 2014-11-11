@@ -99,14 +99,18 @@ var NewBillPage = React.createClass({
     };
 
     var emailAddon = "X";
+    var inputStyle = "";
     switch(self.state.email.state) {
       case "invalid":
-        emailAddon = <MKIcon glyph="close" className="has-error" />;
+        inputStyle = "error";
+        emailAddon = <MKIcon glyph="close" />;
         break;
-      case "waiting": emailAddon =
-        <MKIcon glyph="spinner" className="fa-spin" />;
+      case "waiting":
+        inputStyle = "warning";
+        emailAddon = <MKIcon glyph="spinner" className="fa-spin" />;
         break;
       case "valid":
+        inputStyle = "success";
         emailAddon = <MKIcon glyph="check" />;
         break;
     }
@@ -121,6 +125,7 @@ var NewBillPage = React.createClass({
           <BSInput
             type="email"
             valueLink={emailLink}
+            bsStyle={inputStyle}
             addonBefore={<MKIcon glyph="envelope" className="fa-fw" />}
             addonAfter={emailAddon}
           />

@@ -35,4 +35,5 @@
   listBillWelcome_closed: "List of closed bills",
   switchBillState_open: "Show closed",
   switchBillState_closed: "Show open",
+  closeBillTooltip: "Close this bill",
 }

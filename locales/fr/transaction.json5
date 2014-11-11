@@ -35,4 +35,5 @@
   listBillWelcome_closed: "Liste des factures fermées",
   switchBillState_open: "Afficher fermées",
   switchBillState_closed: "Afficher ouvertes",
+  closeBillTooltip: "Fermer cette facture",
 }
