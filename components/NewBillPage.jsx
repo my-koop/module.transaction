@@ -1,24 +1,24 @@
-var React     = require("react");
-var Typeahead = require("react-typeahead").Typeahead;
-var BSCol     = require("react-bootstrap/Col");
-var BSRow     = require("react-bootstrap/Row");
-var BSPanel   = require("react-bootstrap/Panel");
-var BSTable   = require("react-bootstrap/Table");
-var BSInput   = require("react-bootstrap/Input");
-var BSButton  = require("react-bootstrap/Button");
+var React         = require("react");
+var Typeahead     = require("react-typeahead").Typeahead;
+var BSCol         = require("react-bootstrap/Col");
+var BSRow         = require("react-bootstrap/Row");
+var BSPanel       = require("react-bootstrap/Panel");
+var BSTable       = require("react-bootstrap/Table");
+var BSInput       = require("react-bootstrap/Input");
+var BSButton      = require("react-bootstrap/Button");
+var BSButtonGroup = require("react-bootstrap/ButtonGroup");
 
 // My Koop components
 var MKTableSorter         = require("mykoop-core/components/TableSorter");
 var MKListModButtons      = require("mykoop-core/components/ListModButtons");
-var MKSpinner             = require("mykoop-core/components/Spinner");
 var MKCollapsablePanel    = require("mykoop-core/components/CollapsablePanel");
 var MKAlertTrigger        = require("mykoop-core/components/AlertTrigger");
 var MKIcon                = require("mykoop-core/components/Icon");
 var MKDebouncerMixin      = require("mykoop-core/components/DebouncerMixin");
+var MKConfirmationTrigger = require("mykoop-core/components/ConfirmationTrigger");
 var MKDiscountTable       = require("./DiscountTable");
 var MKBillInfo            = require("./BillInfo");
 var MKCustomerInformation = require("./CustomerInformation");
-
 
 // Utilities
 var __ = require("language").__;
@@ -39,7 +39,8 @@ var NewBillPage = React.createClass({
       bill: [],
       // { info : {isAfterTax: boolean, value: number, type: DiscountType }
       // apply: ((total) => newTotal)[] }
-      discounts: []
+      discounts: [],
+      customerEmail: null
     }
   },
 
@@ -60,12 +61,19 @@ var NewBillPage = React.createClass({
   },
 
   ////////////////////////////
+  // Member fields
+  total: 0,
+
+  ////////////////////////////
   /// component methods
-  saveBill: function() {
+  saveBill: function(archiveBill) {
     var self = this;
     actions.transaction.bill.new(
       {
         data: {
+          total: this.total,
+          archiveBill: archiveBill,
+          customerEmail: this.state.customerEmail,
           items: _.map(this.state.bill, function(item) {
             return {
               id: item.id,
@@ -174,6 +182,12 @@ var NewBillPage = React.createClass({
     }, amount);
   },
 
+  onCustomerEmailChanged: function(email) {
+    this.setState({
+      customerEmail: email
+    });
+  },
+
   ////////////////////////////
   /// Render method
   render: function() {
@@ -241,6 +255,7 @@ var NewBillPage = React.createClass({
       }
     };
 
+    //TypeAhead options
     var addItemOptions = _.map(this.state.items, function(item) {
       return {
         display: util.format("%s: %s", _(item.code).toString(), _(item.name).toString()),
@@ -324,6 +339,7 @@ var NewBillPage = React.createClass({
       amount: total,
       isBold: true
     });
+    this.total = total;
     /////////////////////////////////
 
     return (
@@ -363,20 +379,39 @@ var NewBillPage = React.createClass({
             />
           </BSRow>
         </BSPanel>
+
         <MKCollapsablePanel header={__("transaction::discountHeader")} >
           <MKDiscountTable ref="discountTable" onChange={this.onDiscountChange} />
         </MKCollapsablePanel>
+
         <BSPanel header={__("transaction::billInfo")}>
           <BSCol md={3}>
             <MKBillInfo infos={infos} />
+            <BSButtonGroup>
+              { this.state.customerEmail ?
+                <MKConfirmationTrigger
+                  message={__("areYouSure")}
+                  onYes={_.bind(this.saveBill, this, true)}
+                >
+                  <BSButton bsStyle="success">
+                    {__("transaction::saveForLater")}
+                  </BSButton>
+                </MKConfirmationTrigger>
+              : null }
+              <MKConfirmationTrigger
+                message={__("areYouSure")}
+                onYes={_.bind(this.saveBill, this, false)}
+              >
+                <BSButton  bsStyle="danger">
+                  {__("transaction::recordFullPayment")}
+                </BSButton>
+              </MKConfirmationTrigger>
+            </BSButtonGroup>
           </BSCol>
           <BSCol md={3}>
-            <MKCustomerInformation />
+            <MKCustomerInformation onEmailChanged={this.onCustomerEmailChanged} />
           </BSCol>
         </BSPanel>
-        <BSButton onClick={this.saveBill} className="pull-right">
-          {__("save")}
-        </BSButton>
       </BSCol>
     );
   }

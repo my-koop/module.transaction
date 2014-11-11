@@ -5,19 +5,16 @@ import DiscountTypes = require("../common_modules/discountTypes");
 var _ = require("lodash");
 
 export function newBill(obj) {
+
   var itemConstraint = {
-    id: {
-      presence: true
-    },
+    id: {presence: true},
     price: {
       presence: true,
       numericality: true
     },
     quantity: {
       presence: true,
-      numericality: {
-        onlyInteger: true
-      }
+      numericality: {onlyInteger: true}
     }
   };
 
@@ -33,20 +30,27 @@ export function newBill(obj) {
       presence: true,
       numericality: true
     }
-  }
+  };
+
   var newBillConstraint = {
+    total: {numericality: true},
+    customerEmail: {email: true},
+    archiveBill: {},
     items: {
       presence: true,
-      length: {
-        minimum: 1
-      }
+      length: {minimum: 1}
     },
-    discounts: {
-    }
-  }
+    discounts: {}
+  };
+
   var newBillErrors = validate(obj, newBillConstraint);
   if(newBillErrors) {
     return newBillErrors;
+  }
+  if(!obj.customerEmail && obj.archiveBill) {
+    return {
+      customerEmail: ["can't archive a bill without a customer email"]
+    };
   }
 
   var errors = _(obj.items).map(function(item) {

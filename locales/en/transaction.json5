@@ -12,7 +12,10 @@
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
   createdDate: "Date created",
   listBillWelcome: "List of bills",
+  recordFullPayment: "Pay Now",
+  saveForLater: "Archive",
 
+  customerInformations: "Customer informations",
   //Discounts
   discountHeader: "Discount Application",
   addDiscount: "Add a discount",

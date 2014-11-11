@@ -25,11 +25,15 @@
     },
     "lodash/lodash.d.ts": {
       "commit": "19f97ddf7a0e81bffcf4e4482bb2a3ea6f2bf5b7"
+    },
+    "mykoop-user/mykoop-user.d.ts": {
+      "commit": "19f97ddf7a0e81bffcf4e4482bb2a3ea6f2bf5b7"
     }
   },
   "dependencies": {
     "mykoop": {},
-    "mykoop-database": {}
+    "mykoop-database": {},
+    "mykoop-user": {}
   },
   "owned": {
     "mykoop-transaction": {}

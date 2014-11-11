@@ -1,4 +1,5 @@
 {
   success: "Réussi",
   id: "ID",
+  email: "Email",
 }

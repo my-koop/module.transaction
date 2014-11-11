@@ -30,6 +30,10 @@ var NewBillPage = React.createClass({
   mixins: [MKDebouncerMixin],
   ////////////////////////////
   /// Life Cycle methods
+  propTypes: {
+    // (email: string) => void; Only if email is valid
+    onEmailChanged: React.PropTypes.func.isRequired
+  },
 
   getInitialState: function() {
     return {
@@ -45,9 +49,6 @@ var NewBillPage = React.createClass({
 
   ////////////////////////////
   /// component methods
-  getEmail: function() {
-    return this.state.email.value;
-  },
 
   ////////////////////////////
   /// Render method
@@ -56,42 +57,47 @@ var NewBillPage = React.createClass({
 
     var emailLink = {
       value: this.state.customerEmail,
-      requestChange: function(newValue) {
-        newValue = {
+      requestChange: function(newEmail) {
+        // Assume email is invalid until we get a response from the server
+        self.props.onEmailChanged(null);
+        var newEmailInfo = {
           state: "waiting",
-          value: newValue,
+          value: newEmail,
           reqId: self.state.email.reqId
         };
-        self.debounce([], "email", function(newValue) {
-          var curReqId = newValue.reqId + 1;
-          newValue.reqId = curReqId;
+        self.debounce([], "email", function(newEmailInfo) {
+          var curReqId = newEmailInfo.reqId + 1;
+          newEmailInfo.reqId = curReqId;
           self.setState({
-            email: newValue
+            email: newEmailInfo
           }, function() {
             actions.user.emailExists(
             {
               silent: true,
               data: {
-                email: newValue.value
+                email: newEmailInfo.value
               }
             }, function(err, result) {
               // treat this response only if its the last we made
               if(curReqId === self.state.email.reqId) {
                 var newState = err || !result ? "invalid" : "valid";
-                newValue.state = newState;
+                newEmailInfo.state = newState;
                 self.setState({
-                  email: newValue
+                  email: newEmailInfo
                 });
+                if(result) {
+                  self.props.onEmailChanged(newEmailInfo.value);
+                }
               }
             });
           });
 
-          return newValue;
-        }, 3000, newValue);
+          return newEmailInfo;
+        }, 3000, newEmailInfo);
       }
     };
+
     var emailAddon = "X";
-    console.log(self.state.email.state);
     switch(self.state.email.state) {
       case "invalid":
         emailAddon = <MKIcon glyph="close" className="has-error" />;

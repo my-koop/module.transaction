@@ -12,7 +12,10 @@
   billEnterCodeOrName: "Entrer le code, nom de l'article ou \"Personnalisé\"",
   createdDate: "Date de création",
   listBillWelcome: "Liste des factures",
+  recordFullPayment: "Payer maintenant",
+  saveForLater: "Archiver",
 
+  customerInformations: "Informations du client",
   // Discounts
   discountHeader: "Application de rabais",
   addDiscount: "Ajouter un rabais",
