@@ -50,6 +50,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   ) {
     var self = this;
     var idBill = -1;
+    var idUser = null;
     // can't archive a bill without a customer email
     assert(!params.archiveBill || params.customerEmail);
 
@@ -59,19 +60,24 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       function(callback) {
         logger.debug("checking if email is valid");
         if(params.customerEmail) {
-          return self.user.checkEmailExists({
+          return self.user.getIdForEmail({
               email: params.customerEmail
             },
             callback
           );
         }
         // no email is considered valid if we don't archive the bill
-        callback(null, !params.archiveBill);
+        callback(null, null);
       },
 
-      function(isValid, callback) {
-        logger.debug("email validity is ", isValid);
-        callback(!isValid && new ApplicationError(null, {customerEmail: ["invalid"]}));
+      function(id, callback) {
+        idUser = ~id ? id : null;
+        logger.debug("user id is ", idUser);
+        // an id of -1 is an error, but null is acceptable
+        callback(
+          !(~id) &&
+          new ApplicationError(null, {customerEmail: ["invalid"]})
+        );
       },
 
       function(callback) {
@@ -97,7 +103,8 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         logger.debug("Create new bill id");
         // Create bill
         connection.query(
-          "INSERT INTO bill SET createdDate=now()",
+          "INSERT INTO bill SET createdDate = now(), total = ?, idUser = ?",
+          [params.total, idUser],
           function(err, res) {
             callback(
               err && new DatabaseError(err),

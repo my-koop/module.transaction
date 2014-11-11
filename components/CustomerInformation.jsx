@@ -80,12 +80,13 @@ var NewBillPage = React.createClass({
             }, function(err, result) {
               // treat this response only if its the last we made
               if(curReqId === self.state.email.reqId) {
-                var newState = err || !result ? "invalid" : "valid";
+                var isValid = result && result.isValid;
+                var newState = err || !isValid ? "invalid" : "valid";
                 newEmailInfo.state = newState;
                 self.setState({
                   email: newEmailInfo
                 });
-                if(result) {
+                if(isValid) {
                   self.props.onEmailChanged(newEmailInfo.value);
                 }
               }
