@@ -1,17 +1,21 @@
-var React     = require("react");
-var BSCol     = require("react-bootstrap/Col");
+var React = require("react");
+var BSCol = require("react-bootstrap/Col");
+var Link  = require("react-router").Link;
 
 // My Koop components
-var MKTableSorter    = require("mykoop-core/components/TableSorter");
-var MKListModButtons = require("mykoop-core/components/ListModButtons");
-var MKAlertTrigger   = require("mykoop-core/components/AlertTrigger");
+var MKTableSorter         = require("mykoop-core/components/TableSorter");
+var MKListModButtons      = require("mykoop-core/components/ListModButtons");
+var MKAlertTrigger        = require("mykoop-core/components/AlertTrigger");
+var MKConfirmationTrigger = require("mykoop-core/components/ConfirmationTrigger");
 
 // Utilities
 var __ = require("language").__;
 var formatDate = require("language").formatDate;
+var formatMoney = require("language").formatMoney;
 var _ = require("lodash");
 var actions = require("actions");
 var util = require("util");
+var getRouteName = require("mykoop-utils/frontend/getRouteName");
 
 var ListBillsPage = React.createClass({
   ////////////////////////////
@@ -69,11 +73,40 @@ var ListBillsPage = React.createClass({
 
     // TableSorter Config
     var BillTableConfig = {
-      defaultOrdering: ["idbill", "createdDate", "actions"],
+      defaultOrdering: ["idBill", "idUser", "createdDate", "total", "paid", "actions"],
       columns: {
-        idbill: {
+        idBill: {
           name: __("id"),
           isStatic: true
+        },
+        total: {
+          name: __("transaction::total"),
+          cellGenerator: function(bill, i) {
+            return formatMoney(bill.total);
+          }
+        },
+        paid: {
+          name: __("transaction::paid"),
+          cellGenerator: function(bill, i) {
+            return formatMoney(bill.paid || 0);
+          }
+        },
+        idUser: {
+          name: __("user"),
+          cellGenerator: function(bill, i) {
+            if(bill.idUser === null) return null;
+            // FIXME:: Make a link to the actual user and not to myaccount
+            return (
+              <div key={i}>
+                  <Link
+                    to={getRouteName(["public", "myaccount"])}
+                    params={{id: bill.idUser}}
+                  >
+                    {bill.idUser} TODO
+                  </Link>
+              </div>
+            );
+          }
         },
         createdDate: {
           name: __("transaction::createdDate"),

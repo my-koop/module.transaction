@@ -19,7 +19,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
 
   listBills(
     params: any,
-    callback: (err, result?) => void
+    callback: mktransaction.listBillsCallback
   ) {
 
     this.db.getConnection(function(err, connection, cleanup) {
@@ -30,14 +30,29 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       async.waterfall([
         function(callback) {
           connection.query(
-            "SELECT * FROM bill",
-            function(err, result) {
+            "SELECT bill.idBill, sum(amount) AS paid, createdDate, total, idUser FROM bill\
+                LEFT JOIN bill_transaction\
+                ON bill.idBill=bill_transaction.idBill\
+                LEFT JOIN transaction\
+                ON bill_transaction.idTransaction=transaction.idTransaction\
+                GROUP BY bill.idBill",
+            function(err, rows) {
+              logger.silly("listBills query result", rows);
+              var result: Transaction.Bill[] = _.map(rows, function(row: any) {
+                return {
+                  idBill: row.idBill,
+                  idUser: row.idUser,
+                  createdDate: row.createdDate,
+                  total: row.total,
+                  paid: row.paid
+                };
+              });
               callback(err && new DatabaseError(err), result);
             }
           )
         }
 
-      ], function(err, result) {
+      ], function(err, result: Transaction.Bill[]) {
         cleanup();
         callback(err, result);
       });

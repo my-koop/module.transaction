@@ -16,4 +16,12 @@ declare module Transaction {
       isAfterTax: boolean;
     }[];
   }
+
+  export interface Bill {
+    idBill: number;
+    createdDate: string;
+    total: number;
+    idUser: number; // can be null
+    paid: number;
+  }
 }
