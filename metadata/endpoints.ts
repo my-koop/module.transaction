@@ -11,7 +11,11 @@ var endpoints = {
       },
       list: {
         path: "/transaction/bill/list",
-        method: "get"
+        method: "get",
+        validation: {
+          resolve: "validation",
+          value: "listBill"
+        }
       }
     }
   }

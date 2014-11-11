@@ -18,10 +18,10 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   listBills(
-    params: any,
+    params: Transaction.ListBill,
     callback: mktransaction.listBillsCallback
   ) {
-
+    var selectIsClosed = params.show === "open" ? 0 : 1;
     this.db.getConnection(function(err, connection, cleanup) {
       if(err) {
         return callback(new DatabaseError(err));
@@ -31,11 +31,13 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         function(callback) {
           connection.query(
             "SELECT bill.idBill, sum(amount) AS paid, createdDate, total, idUser FROM bill\
-                LEFT JOIN bill_transaction\
-                ON bill.idBill=bill_transaction.idBill\
-                LEFT JOIN transaction\
-                ON bill_transaction.idTransaction=transaction.idTransaction\
+                LEFT JOIN bill_transaction \
+                ON bill.idBill=bill_transaction.idBill \
+                LEFT JOIN transaction \
+                ON bill_transaction.idTransaction=transaction.idTransaction \
+                WHERE isClosed = ? \
                 GROUP BY bill.idBill",
+            [selectIsClosed],
             function(err, rows) {
               logger.silly("listBills query result", rows);
               var result: Transaction.Bill[] = _.map(rows, function(row: any) {
@@ -118,8 +120,8 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         logger.debug("Create new bill id");
         // Create bill
         connection.query(
-          "INSERT INTO bill SET createdDate = now(), total = ?, idUser = ?",
-          [params.total, idUser],
+          "INSERT INTO bill SET createdDate = now(), total = ?, idUser = ?, isClosed = ?",
+          [params.total, idUser, !params.archiveBill],
           function(err, res) {
             callback(
               err && new DatabaseError(err),

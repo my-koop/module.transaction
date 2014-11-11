@@ -6,6 +6,7 @@ import validation = require("../validation/index");
 
 import assert = require("assert");
 assert.equal(endPoints.transaction.bill.new.method, "post");
+assert.equal(endPoints.transaction.bill.list.method, "get");
 
 export function attachControllers(
   binder: utils.ModuleControllersBinder<mktransaction.Module>
@@ -23,8 +24,12 @@ export function attachControllers(
 
   binder.attach(
     {
-      endPoint: endPoints.transaction.bill.list
+      endPoint: endPoints.transaction.bill.list,
+      validation: validation.listBill
     },
-    binder.makeSimpleController("listBills")
+    binder.makeSimpleController("listBills", function(req: Express.Request) {
+      // Assume the request is a get
+      return req.query;
+    })
   );
 }

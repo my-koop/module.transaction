@@ -2,19 +2,21 @@ var React = require("react");
 var BSCol = require("react-bootstrap/Col");
 var Link  = require("react-router").Link;
 
+var BSButton = require("react-bootstrap/Button");
+
 // My Koop components
 var MKTableSorter         = require("mykoop-core/components/TableSorter");
 var MKListModButtons      = require("mykoop-core/components/ListModButtons");
 var MKAlertTrigger        = require("mykoop-core/components/AlertTrigger");
 var MKConfirmationTrigger = require("mykoop-core/components/ConfirmationTrigger");
+var MKIcon                = require("mykoop-core/components/Icon");
 
 // Utilities
-var __ = require("language").__;
-var formatDate = require("language").formatDate;
-var formatMoney = require("language").formatMoney;
-var _ = require("lodash");
-var actions = require("actions");
-var util = require("util");
+var _            = require("lodash");
+var __           = require("language").__;
+var actions      = require("actions");
+var formatDate   = require("language").formatDate;
+var formatMoney  = require("language").formatMoney;
 var getRouteName = require("mykoop-utils/frontend/getRouteName");
 
 var ListBillsPage = React.createClass({
@@ -24,29 +26,41 @@ var ListBillsPage = React.createClass({
   getInitialState: function() {
     return {
       // id: number, createdDate: Date
-      bills: []
+      bills: [],
+      // can be "open" or "closed"
+      billState: "open",
     }
   },
 
   componentDidMount: function () {
-    var self = this;
-    actions.transaction.bill.list(function (err, bills) {
-      if (err) {
-        console.error(err);
-        MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
-        return;
-      }
-      _.forEach(bills, function(bill) {
-        bill.createdDate = new Date(bill.createdDate);
-      });
-      self.setState({
-        bills: bills
-      });
-    });
+    this.updateList();
   },
 
   ////////////////////////////
   /// component methods
+  updateList: function() {
+    var self = this;
+    actions.transaction.bill.list(
+      {
+        data: {
+          show: this.state.billState
+        }
+      },
+      function (err, bills) {
+        if (err) {
+          console.error(err);
+          MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
+          return;
+        }
+        _.forEach(bills, function(bill) {
+          bill.createdDate = new Date(bill.createdDate);
+        });
+        self.setState({
+          bills: bills
+        }
+      );
+    });
+  },
   actionsGenerator: function(item) {
     var self = this;
     return [
@@ -64,6 +78,17 @@ var ListBillsPage = React.createClass({
         }
       }
     ];
+  },
+
+  switchBillState: function() {
+    var newState = "open";
+    if(this.state.billState === "open") {
+      newState = "closed";
+    }
+
+    this.setState({
+      billState: newState
+    }, this.updateList);
   },
 
   ////////////////////////////
@@ -132,17 +157,21 @@ var ListBillsPage = React.createClass({
     return (
       <BSCol md={12}>
         <h1>
-          {__("transaction::listBillWelcome")}
+          {__("transaction::listBillWelcome", {context: this.state.billState})}
         </h1>
-          <MKTableSorter
-            config={BillTableConfig}
-            items={this.state.bills}
-            bordered
-            striped
-            condensed
-            hover
-            responsive
-          />
+        <BSButton onClick={this.switchBillState}>
+          <MKIcon glyph="exchange" />
+          {__("transaction::switchBillState", {context: this.state.billState})}
+        </BSButton>
+        <MKTableSorter
+          config={BillTableConfig}
+          items={this.state.bills}
+          bordered
+          striped
+          condensed
+          hover
+          responsive
+        />
       </BSCol>
     );
   }

@@ -11,9 +11,9 @@
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
   createdDate: "Date created",
-  listBillWelcome: "List of bills",
   recordFullPayment: "Pay Now",
   saveForLater: "Archive",
+  paid: "Paid",
 
   customerInformations: "Customer informations",
   //Discounts
@@ -28,4 +28,11 @@
   discountTaxSwitch: "Change when to apply discount",
   discountTaxSwitch_0: "Apply discount after taxes",
   discountTaxSwitch_1: "Apply discount before taxes",
+
+  //List bills
+  listBillWelcome: "List of bills",
+  listBillWelcome_open: "List of open bills",
+  listBillWelcome_closed: "List of closed bills",
+  switchBillState_open: "Show closed",
+  switchBillState_closed: "Show open",
 }

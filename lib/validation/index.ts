@@ -62,3 +62,13 @@ export function newBill(obj) {
   }).value();
   return _.isEmpty(errors) ? undefined : errors;
 }
+
+export function listBill(obj) {
+  var constraint = {
+    show: {
+      presence: true,
+      inclusion: ["open", "closed"]
+    }
+  };
+  return validate(obj, constraint);
+}
