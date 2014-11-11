@@ -22,6 +22,7 @@
   "homepage": "https://github.com/my-koop/module.transaction",
   "dependencies": {
     "async": "^0.9.0",
+    "lodash": "^2.4.1",
     "mykoop-logger": "git://github.com/my-koop/module.logger",
     "mykoop-utils": "git://github.com/my-koop/module.utils#beta"
   }
