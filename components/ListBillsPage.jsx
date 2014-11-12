@@ -43,7 +43,7 @@ var ListBillsPage = React.createClass({
     actions.transaction.bill.list(
       {
         data: {
-          show: this.state.billState
+          show: BillState[this.state.billState]
         }
       },
       function (err, bills) {
@@ -210,11 +210,11 @@ var ListBillsPage = React.createClass({
     return (
       <BSCol md={12}>
         <h1>
-          {__("transaction::listBillWelcome", {context: this.state.billState})}
+          {__("transaction::listBillWelcome", {context: BillState[this.state.billState]})}
         </h1>
         <BSButton onClick={this.switchBillState}>
           <MKIcon glyph="exchange" />
-          {__("transaction::switchBillState", {context: this.state.billState})}
+          {__("transaction::switchBillState", {context: BillState[this.state.billState]})}
         </BSButton>
         <MKTableSorter
           config={BillTableConfig}
