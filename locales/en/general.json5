@@ -1,2 +1,5 @@
 {
+  success: "Success",
+  id: "ID",
+  email: "Email",
 }

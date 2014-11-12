@@ -10,7 +10,12 @@
   tax_tvq: "QST",
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
+  createdDate: "Date created",
+  recordFullPayment: "Pay Now",
+  saveForLater: "Archive",
+  paid: "Paid",
 
+  customerInformations: "Customer informations",
   //Discounts
   discountHeader: "Discount Application",
   addDiscount: "Add a discount",
@@ -23,4 +28,13 @@
   discountTaxSwitch: "Change when to apply discount",
   discountTaxSwitch_0: "Apply discount after taxes",
   discountTaxSwitch_1: "Apply discount before taxes",
+
+  //List bills
+  listBillWelcome: "List of bills",
+  listBillWelcome_open: "List of open bills",
+  listBillWelcome_closed: "List of closed bills",
+  switchBillState_open: "Show closed",
+  switchBillState_closed: "Show open",
+  closeBillTooltip: "Close this bill",
+  openBillTooltip: "Reopen this bill",
 }

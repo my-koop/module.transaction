@@ -10,7 +10,12 @@
   tax_tvq: "TVQ",
   customItem: "Personnalisé",
   billEnterCodeOrName: "Entrer le code, nom de l'article ou \"Personnalisé\"",
+  createdDate: "Date de création",
+  recordFullPayment: "Payer maintenant",
+  saveForLater: "Archiver",
+  paid: "Payé",
 
+  customerInformations: "Informations du client",
   // Discounts
   discountHeader: "Application de rabais",
   addDiscount: "Ajouter un rabais",
@@ -23,4 +28,13 @@
   discountTaxSwitch: "Changer le moment d'application du rabais",
   discountTaxSwitch_0: "Appliquer le rabais après les taxes",
   discountTaxSwitch_1: "Appliquer le rabais avant les taxes",
+
+  //List bills
+  listBillWelcome: "Liste des factures",
+  listBillWelcome_open: "Liste des factures ouvertes",
+  listBillWelcome_closed: "Liste des factures fermées",
+  switchBillState_open: "Afficher fermées",
+  switchBillState_closed: "Afficher ouvertes",
+  closeBillTooltip: "Fermer cette facture",
+  openBillTooltip: "Réouvrir la facture",
 }
