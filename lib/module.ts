@@ -4,6 +4,8 @@ import async = require("async");
 import _ = require("lodash");
 import DiscountTypes = require("./common_modules/discountTypes");
 var DatabaseError = utils.errors.DatabaseError;
+var ApplicationError = utils.errors.ApplicationError;
+
 import assert = require("assert");
 var logger = utils.getLogger(module);
 
@@ -15,6 +17,87 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     this.db = <mkdatabase.Module>this.getModuleManager().get("database");
     this.user = <mkuser.Module>this.getModuleManager().get("user");
     controllerList.attachControllers(new utils.ModuleControllersBinder(this));
+  }
+
+  openBill(
+    params: Transaction.BillId,
+    callback: mktransaction.changeBillStateCallback
+  ) {
+    var id = params.idBill;
+    this.db.getConnection(function(err, connection, cleanup) {
+      if(err) {
+        return callback(new DatabaseError(err));
+      }
+
+      connection.query(
+        "UPDATE bill SET isClosed=0 WHERE idBill=?",
+        [id],
+        function(err, rows) {
+          cleanup();
+          if(err) {
+            return callback(new DatabaseError(err));
+          }
+          callback(null, {
+            success: rows && rows.affectedRows === 1
+          });
+        }
+      );
+    });
+  }
+
+  closeBill(
+    params: Transaction.BillId,
+    callback: mktransaction.changeBillStateCallback
+  ) {
+    var id = params.idBill;
+    this.db.getConnection(function(err, connection, cleanup) {
+      if(err) {
+        return callback(new DatabaseError(err));
+      }
+
+      async.waterfall([
+        function(callback) {
+          connection.query(
+            "SELECT total=sum(amount) AS canClose FROM bill\
+              LEFT JOIN bill_transaction\
+              ON bill.idBill=bill_transaction.idBill\
+              LEFT JOIN transaction\
+              ON bill_transaction.idTransaction=transaction.idTransaction\
+              WHERE bill.idBill=? and isClosed=0\
+              GROUP BY bill.idBill",
+            [id],
+            function(err, rows) {
+              callback(
+                err && new DatabaseError(err),
+                rows && rows.length === 1 && rows[0].canClose
+              );
+            }
+          )
+        },
+
+        function(canClose, callback) {
+          if(!canClose) {
+            return callback(new ApplicationError(null, {reason: "can't close"}));
+          }
+          connection.query(
+            "UPDATE bill SET isClosed=1 WHERE idBill=?",
+            [id],
+            function(err, rows) {
+              callback(
+                err && new DatabaseError(err),
+                rows && rows.affectedRows === 1
+              );
+            }
+          );
+        }
+
+      ], function(err, success: any) {
+        cleanup();
+        callback(err, {
+          success: success
+        });
+      });
+    });
   }
 
   listBills(

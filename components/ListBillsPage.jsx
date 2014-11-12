@@ -25,7 +25,7 @@ var ListBillsPage = React.createClass({
 
   getInitialState: function() {
     return {
-      // id: number, createdDate: Date
+      // Transaction.Bill[]
       bills: [],
       // can be "open" or "closed"
       billState: "open",
@@ -62,8 +62,29 @@ var ListBillsPage = React.createClass({
     });
   },
 
-  closeBill: function(bill) {
+  changeBillState: function(action, bill) {
+    var self = this;
+    actions.transaction.bill[action](
+      {
+        data: {
+          id: bill.idBill
+        }
+      },
+      function(err, res) {
+        if(err || (res && !res.success)) {
+          console.error(err);
+          MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
+          return;
+        }
 
+        var bills = _.filter(self.state.bills, function(bill_) {
+          return bill !== bill_;
+        });
+        self.setState({
+          bills: bills
+        });
+      }
+    );
   },
 
   actionsGenerator: function(bill) {
@@ -95,7 +116,21 @@ var ListBillsPage = React.createClass({
           }
         },
         callback: function() {
-          self.closeBill(bill);
+          self.changeBillState("close", bill);
+        }
+      });
+    } else if(this.state.billState === "closed"){
+      buttons.push({
+        icon: "folder-open",
+        warningMessage: __("areYouSure"),
+        tooltip: {
+          text: __("transaction::openBillTooltip"),
+          overlayProps: {
+            placement: "top"
+          }
+        },
+        callback: function() {
+          self.changeBillState("open", bill);
         }
       });
     }

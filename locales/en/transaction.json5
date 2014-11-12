@@ -36,4 +36,5 @@
   switchBillState_open: "Show closed",
   switchBillState_closed: "Show open",
   closeBillTooltip: "Close this bill",
+  openBillTooltip: "Reopen this bill",
 }

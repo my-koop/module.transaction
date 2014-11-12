@@ -17,6 +17,10 @@ declare module Transaction {
     }[];
   }
 
+  export interface BillId {
+    idBill: number;
+  }
+
   export interface ListBill {
     show: string;
   }

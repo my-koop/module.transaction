@@ -16,6 +16,14 @@ var endpoints = {
           resolve: "validation",
           value: "listBill"
         }
+      },
+      close: {
+        path: "/transaction/bill/close/:id",
+        method: "put"
+      },
+      open: {
+        path: "/transaction/bill/open/:id",
+        method: "put"
       }
     }
   }

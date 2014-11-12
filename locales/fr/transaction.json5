@@ -36,4 +36,5 @@
   switchBillState_open: "Afficher fermées",
   switchBillState_closed: "Afficher ouvertes",
   closeBillTooltip: "Fermer cette facture",
+  openBillTooltip: "Réouvrir la facture",
 }

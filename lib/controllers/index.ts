@@ -32,4 +32,26 @@ export function attachControllers(
       return req.query;
     })
   );
+
+  binder.attach(
+    {
+      endPoint: endPoints.transaction.bill.close
+    },
+    binder.makeSimpleController("closeBill", function(req: Express.Request) {
+      return {
+        idBill: req.param("id"),
+      }
+    })
+  );
+
+  binder.attach(
+    {
+      endPoint: endPoints.transaction.bill.open
+    },
+    binder.makeSimpleController("openBill", function(req: Express.Request) {
+      return {
+        idBill: req.param("id"),
+      }
+    })
+  );
 }
