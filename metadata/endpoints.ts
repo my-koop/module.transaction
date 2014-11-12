@@ -2,7 +2,7 @@ var endpoints = {
   transaction: {
     bill: {
       new: {
-        path: "/transaction/bill/new",
+        path: "/transaction/bill",
         method: "post",
         validation: {
           resolve: "validation",

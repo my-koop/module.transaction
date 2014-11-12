@@ -25,22 +25,23 @@ var formatMoney = require("language").formatMoney;
 var _ = require("lodash");
 var actions = require("actions");
 var util = require("util");
+var EmailValidationState = require("../lib/common_modules/EmailValidationState");
 
-var NewBillPage = React.createClass({
+var CustomerInformation = React.createClass({
   mixins: [MKDebouncerMixin],
-  ////////////////////////////
-  /// Life Cycle methods
+
   propTypes: {
     // (email: string) => void; Only if email is valid
     onEmailChanged: React.PropTypes.func.isRequired
   },
 
+  ////////////////////////////
+  /// Life Cycle methods
   getInitialState: function() {
     return {
       email: {
         value: "",
-        // possible values ["invalid", "waiting", "valid"]
-        state: "invalid",
+        validationState: EmailValidationState.Invalid,
         // used to know if the response is still relevant
         reqId: 0
       }
@@ -61,7 +62,7 @@ var NewBillPage = React.createClass({
         // Assume email is invalid until we get a response from the server
         self.props.onEmailChanged(null);
         var newEmailInfo = {
-          state: "waiting",
+          validationState: EmailValidationState.Waiting,
           value: newEmail,
           reqId: self.state.email.reqId
         };
@@ -81,8 +82,11 @@ var NewBillPage = React.createClass({
               // treat this response only if its the last we made
               if(curReqId === self.state.email.reqId) {
                 var isValid = result && result.isValid;
-                var newState = err || !isValid ? "invalid" : "valid";
-                newEmailInfo.state = newState;
+                var newState =
+                  err || !isValid ?
+                    EmailValidationState.Invalid
+                  : EmailValidationState.Valid;
+                newEmailInfo.validationState = newState;
                 self.setState({
                   email: newEmailInfo
                 });
@@ -100,16 +104,17 @@ var NewBillPage = React.createClass({
 
     var emailAddon = "X";
     var inputStyle = "";
-    switch(self.state.email.state) {
-      case "invalid":
+    switch(self.state.email.validationState) {
+      case EmailValidationState.Invalid:
         inputStyle = "error";
         emailAddon = <MKIcon glyph="close" />;
         break;
-      case "waiting":
+      case EmailValidationState.Waiting:
         inputStyle = "warning";
+        //FIXME:: Waiting on https://github.com/my-koop/service.website/issues/261
         emailAddon = <MKIcon glyph="spinner" className="fa-spin" />;
         break;
-      case "valid":
+      case EmailValidationState.Valid:
         inputStyle = "success";
         emailAddon = <MKIcon glyph="check" />;
         break;
@@ -126,7 +131,7 @@ var NewBillPage = React.createClass({
             type="email"
             valueLink={emailLink}
             bsStyle={inputStyle}
-            addonBefore={<MKIcon glyph="envelope" className="fa-fw" />}
+            addonBefore={<MKIcon glyph="envelope" fixedWidth />}
             addonAfter={emailAddon}
           />
         </label>
@@ -136,4 +141,4 @@ var NewBillPage = React.createClass({
 
 });
 
-module.exports = NewBillPage;
+module.exports = CustomerInformation;

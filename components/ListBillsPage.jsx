@@ -18,6 +18,7 @@ var actions      = require("actions");
 var formatDate   = require("language").formatDate;
 var formatMoney  = require("language").formatMoney;
 var getRouteName = require("mykoop-utils/frontend/getRouteName");
+var BillState    = require("../lib/common_modules/BillState");
 
 var ListBillsPage = React.createClass({
   ////////////////////////////
@@ -27,8 +28,7 @@ var ListBillsPage = React.createClass({
     return {
       // Transaction.Bill[]
       bills: [],
-      // can be "open" or "closed"
-      billState: "open",
+      billState: BillState.open,
     }
   },
 
@@ -105,7 +105,7 @@ var ListBillsPage = React.createClass({
       }
     ];
 
-    if(this.state.billState === "open" && bill.total === bill.paid) {
+    if(this.state.billState === BillState.open && bill.total === bill.paid) {
       buttons.push({
         icon: "close",
         warningMessage: __("areYouSure"),
@@ -119,7 +119,7 @@ var ListBillsPage = React.createClass({
           self.changeBillState("close", bill);
         }
       });
-    } else if(this.state.billState === "closed"){
+    } else if(this.state.billState === BillState.closed){
       buttons.push({
         icon: "folder-open",
         warningMessage: __("areYouSure"),
@@ -138,11 +138,7 @@ var ListBillsPage = React.createClass({
   },
 
   switchBillState: function() {
-    var newState = "open";
-    if(this.state.billState === "open") {
-      newState = "closed";
-    }
-
+    var newState = BillState.toggleState(this.state.billState);
     this.setState({
       billState: newState
     }, this.updateList);
