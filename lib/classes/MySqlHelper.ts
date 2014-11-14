@@ -10,6 +10,8 @@ class MySqlHelper {
   private mIsInTransaction = false;
 
   constructor() {
+    // this is to make sure all call to these method uses this
+    // especially usefull when using the methods in a waterfall
     _.bindAll(this);
   }
 
@@ -22,9 +24,10 @@ class MySqlHelper {
   }
 
   public beginTransaction(callback) {
+    var self = this;
     if(this.mConnection) {
       return this.mConnection.beginTransaction(function(err) {
-        this.mIsInTransaction = !err;
+        self.mIsInTransaction = !err;
         callback(err && new DatabaseError(err, "Cannot begin transaction"));
       });
     }
@@ -32,10 +35,11 @@ class MySqlHelper {
   }
 
   public commitTransaction(callback) {
+    var self = this;
     if(this.mConnection) {
       return this.mConnection.commit(function(err) {
         // still in transaction if there's an error
-        this.mIsInTransaction = !(!err);
+        self.mIsInTransaction = !(!err);
         callback(err && new DatabaseError(err, "Cannot commit transaction"));
       });
     }
@@ -43,20 +47,17 @@ class MySqlHelper {
   }
 
   public cleanup(err?, callback?) {
-    if(err) {
-      if(this.mConnection) {
-        if(this.mIsInTransaction) {
-          return this.mConnection.rollback(function() {
-            this.mCleanup();
-            callback && callback(err);
-          });
-        }
-      }
-      this.mCleanup();
-      return callback && callback(err);
+    if(err && this.mConnection && this.mIsInTransaction) {
+      // Cleanup when in transaction
+      var self = this;
+      return this.mConnection.rollback(function() {
+        self.mCleanup();
+        callback && callback(err);
+      });
     }
+
     this.mCleanup();
-    callback && callback(null);
+    callback && callback(err);
   }
 
 }
