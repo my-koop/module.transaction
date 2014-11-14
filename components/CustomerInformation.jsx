@@ -89,10 +89,11 @@ var CustomerInformation = React.createClass({
                 newEmailInfo.validationState = newState;
                 self.setState({
                   email: newEmailInfo
+                }, function() {
+                  if(isValid) {
+                    self.props.onEmailChanged(newEmailInfo.value);
+                  }
                 });
-                if(isValid) {
-                  self.props.onEmailChanged(newEmailInfo.value);
-                }
               }
             });
           });
@@ -122,9 +123,6 @@ var CustomerInformation = React.createClass({
 
     return (
       <div>
-        <h3>
-          {__("transaction::customerInformations")}
-        </h3>
         <label>
           {__("email")}
           <BSInput

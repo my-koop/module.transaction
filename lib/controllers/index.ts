@@ -51,6 +51,7 @@ export function attachControllers(
     binder.makeSimpleController("openBill", function(req: Express.Request) {
       return {
         idBill: req.param("id"),
+        customerEmail: req.param("email")
       }
     })
   );

@@ -10,6 +10,7 @@ var MKListModButtons      = require("mykoop-core/components/ListModButtons");
 var MKAlertTrigger        = require("mykoop-core/components/AlertTrigger");
 var MKConfirmationTrigger = require("mykoop-core/components/ConfirmationTrigger");
 var MKIcon                = require("mykoop-core/components/Icon");
+var MKCustomerInformationModal = require("./CustomerInformationModal");
 
 // Utilities
 var _            = require("lodash");
@@ -62,6 +63,15 @@ var ListBillsPage = React.createClass({
     });
   },
 
+  removeBillFromState: function(bill) {
+    var bills = _.filter(this.state.bills, function(bill_) {
+      return bill !== bill_;
+    });
+    this.setState({
+      bills: bills
+    });
+  },
+
   changeBillState: function(action, bill) {
     var self = this;
     actions.transaction.bill[action](
@@ -76,15 +86,24 @@ var ListBillsPage = React.createClass({
           MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
           return;
         }
-
-        var bills = _.filter(self.state.bills, function(bill_) {
-          return bill !== bill_;
-        });
-        self.setState({
-          bills: bills
-        });
+        self.removeBillFromState(bill);
       }
     );
+  },
+
+  onUpdateCloseBill: function (bill, email, callback) {
+    var self = this;
+    actions.transaction.bill.open({
+      data: {
+        id: bill.idBill,
+        email: email
+      }
+    }, function(err, result) {
+      if(!err && result.success) {
+        self.removeBillFromState(bill);
+      }
+      callback(err, result);
+    });
   },
 
   actionsGenerator: function(bill) {
@@ -119,19 +138,24 @@ var ListBillsPage = React.createClass({
           self.changeBillState("close", bill);
         }
       });
-    } else if(this.state.billState === BillState.closed){
+    } else if(this.state.billState === BillState.closed) {
+      var needToSpecifyCustomerInfo = !_.isNumber(bill.idUser);
       buttons.push({
         icon: "folder-open",
-        warningMessage: __("areYouSure"),
+        warningMessage: !needToSpecifyCustomerInfo ? __("areYouSure") : null,
         tooltip: {
           text: __("transaction::openBillTooltip"),
           overlayProps: {
             placement: "top"
           }
         },
-        callback: function() {
-          self.changeBillState("open", bill);
-        }
+        modalTrigger: needToSpecifyCustomerInfo ? (
+          <MKCustomerInformationModal
+            onSave={self.onUpdateCloseBill.bind(self, bill)}
+          />) : null,
+        callback: !needToSpecifyCustomerInfo ? function() {
+          self.changeBillState("open", bill)
+        } : null
       });
     }
     return buttons;

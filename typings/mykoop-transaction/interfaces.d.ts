@@ -21,6 +21,11 @@ declare module Transaction {
     idBill: number;
   }
 
+  export interface OpenBill {
+    idBill: number;
+    customerEmail?: string;
+  }
+
   export interface ListBill {
     show: string;
   }
