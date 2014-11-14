@@ -41,25 +41,29 @@ var ListBillsPage = React.createClass({
   /// component methods
   updateList: function() {
     var self = this;
-    actions.transaction.bill.list(
-      {
-        data: {
-          show: BillState[this.state.billState]
-        }
-      },
-      function (err, bills) {
-        if (err) {
-          console.error(err);
-          MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
-          return;
-        }
-        _.forEach(bills, function(bill) {
-          bill.createdDate = new Date(bill.createdDate);
-        });
-        self.setState({
-          bills: bills
-        }
-      );
+    this.setState({
+      bills: []
+    }, function() {
+      actions.transaction.bill.list(
+        {
+          data: {
+            show: BillState[this.state.billState]
+          }
+        },
+        function (err, bills) {
+          if (err) {
+            console.error(err);
+            MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
+            return;
+          }
+          _.forEach(bills, function(bill) {
+            bill.createdDate = new Date(bill.createdDate);
+          });
+          self.setState({
+            bills: bills
+          }
+        );
+      });
     });
   },
 

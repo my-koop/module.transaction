@@ -1,9 +1,8 @@
 var React    = require("react/addons");
 var BSButton = require("react-bootstrap/Button");
 var BSModal  = require("react-bootstrap/Modal");
-var BSInput  = require("react-bootstrap/Input");
-var BSAlert  = require("react-bootstrap/Alert");
 
+var MKAlert  = require("mykoop-core/components/Alert");
 var MKCustomerInformation = require("./CustomerInformation");
 
 var actions  = require("actions");
@@ -61,6 +60,9 @@ var CustomerInfoModal = React.createClass({
         {...props}
       >
         <div className="modal-body">
+          <MKAlert bsStyle="danger">
+            {this.state.errorMessage}
+          </MKAlert>
           <MKCustomerInformation
             onEmailChanged={this.onEmailChanged}
           />
