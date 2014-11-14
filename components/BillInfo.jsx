@@ -63,7 +63,7 @@ var NewBillPage = React.createClass({
       var info = self.props.taxInfos[i];
       var taxText = util.format("%s (%s\%)",
         __("transaction::tax", {context: info.localizeKey}),
-        (info.rate * 100).toFixed(2)
+        (info.rate * 100).toFixed(3)
       );
       return {
         text: taxText,

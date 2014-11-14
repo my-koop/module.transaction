@@ -47,14 +47,13 @@ export function calculateBillTotal(
   var subtotalAfterTax = discountBeforeTax.total;
 
   // Apply taxes
+  var totalTax = 0;
   var taxes = _.map(taxInfo, function(tax, i) {
     var taxAmount = subtotalAfterTax * tax.rate;
-    subtotalAfterTax += taxAmount;
+    totalTax += taxAmount;
     return taxAmount;
   });
-
-  var taxAmount = subtotalAfterTax - discountBeforeTax.total;
-
+  subtotalAfterTax += totalTax;
   var discountAfterTax = applyDiscounts(subtotalAfterTax, discounts, true);
 
   return {
