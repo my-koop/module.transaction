@@ -7,7 +7,7 @@ var BSTable       = require("react-bootstrap/Table");
 var BSInput       = require("react-bootstrap/Input");
 var BSButton      = require("react-bootstrap/Button");
 var BSButtonGroup = require("react-bootstrap/ButtonGroup");
-var Router =  require("react-router");
+var Router        =  require("react-router");
 
 // My Koop components
 var MKTableSorter         = require("mykoop-core/components/TableSorter");
