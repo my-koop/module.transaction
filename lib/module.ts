@@ -3,6 +3,7 @@ import controllerList = require("./controllers/index");
 import async = require("async");
 import _ = require("lodash");
 import DiscountTypes = require("./common_modules/discountTypes");
+import billUtils = require("./common_modules/billUtils");
 import MySqlHelper = require("./classes/MySqlHelper");
 var DatabaseError = utils.errors.DatabaseError;
 var ApplicationError = utils.errors.ApplicationError;

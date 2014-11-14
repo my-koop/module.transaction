@@ -44,11 +44,11 @@ var NewBillPage = React.createClass({
       discounts: [],
       customerEmail: null,
       // Transaction.TaxInfo[]
-      taxInfo: []
+      taxInfos: []
     }
   },
 
-  componentWillMount: function () {
+  componentDidMount: function () {
     var self = this;
     // Fetch inventory from database
     actions.inventory.list(function (err, res) {
@@ -289,74 +289,10 @@ var NewBillPage = React.createClass({
 
     var billInfo = billUtils.calculateBillTotal(
       this.state.bill,
-      this.state.taxInfo,
+      this.state.taxInfos,
       this.state.discounts
     );
-    /////////////////////////////////
-    // Bill total amount calculations
-    var infos = [];
-    if(billInfo.discountBeforeTax) {
-      infos.push({
-        text: __("transaction::subtotal"),
-        amount: subtotal
-      });
-      infos.push({
-        text: __("transaction::discounts"),
-        amount: discountBeforeTax
-      });
-    }
-    subtotal = newSubtotal;
-    infos.push({
-      text: __("transaction::subtotal"),
-      amount: subtotal,
-      isBold: true
-    });
-    // FIXME:: Don't use hardcoded values
-    var taxInfo = [
-      {
-        type: "tvq",
-        rate: 0.0975
-      },
-      {
-        type: "tps",
-        rate: 0.05
-      }
-    ];
-    var total = subtotal;
-    // Apply taxes
-    infos = infos.concat(_.map(taxInfo, function(tax, i) {
-      var taxAmount = total * tax.rate;
-      total += taxAmount;
-      var taxText = util.format("%s (%s\%)",
-        __("transaction::tax", {context: tax.type}),
-        (tax.rate * 100).toFixed(2)
-      );
-      return {
-        text: taxText,
-        amount: taxAmount
-      };
-    }));
-
-    var newTotal = this.applyDiscounts(total, true);
-    var discountAfterTax = total - newTotal;
-    if(discountAfterTax) {
-      infos.push({
-        text: __("transaction::subtotal"),
-        amount: total
-      });
-      infos.push({
-        text: __("transaction::discounts"),
-        amount: discountAfterTax
-      });
-    }
-    total = newTotal;
-    infos.push({
-      text: __("transaction::total"),
-      amount: total,
-      isBold: true
-    });
-    this.total = total;
-    /////////////////////////////////
+    this.total = billInfo.total;
 
     return (
       <BSCol md={12}>
@@ -402,7 +338,7 @@ var NewBillPage = React.createClass({
 
         <BSPanel header={__("transaction::billInfo")}>
           <BSCol md={3}>
-            <MKBillInfo infos={infos} />
+            <MKBillInfo billInfo={billInfo} taxInfos={this.state.taxInfos} />
             { this.state.bill.length > 0 ?
             <BSButtonGroup>
               { this.state.customerEmail ?
