@@ -24,7 +24,7 @@ var NewBillPage = React.createClass({
       })
     }).isRequired,
     taxInfos: React.PropTypes.arrayOf(React.PropTypes.shape({
-      type: React.PropTypes.number.isRequired,
+      localizeKey: React.PropTypes.string.isRequired,
       rate: React.PropTypes.number.isRequired
     })).isRequired
   },
@@ -58,7 +58,6 @@ var NewBillPage = React.createClass({
       isBold: true
     });
 
-    // Apply taxes
     infos = infos.concat(_.map(billInfo.taxes, function(taxAmount, i) {
       var info = self.props.taxInfos[i];
       var taxText = util.format("%s (%s\%)",
@@ -100,7 +99,6 @@ var NewBillPage = React.createClass({
         </tr>
       );
     });
-    /////////////////////////////////
 
     return (
       <BSTable className="min-size-table">

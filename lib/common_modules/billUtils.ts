@@ -15,8 +15,8 @@ function applyDiscounts(
   afterTax: boolean
 ) {
   var amountAfterDiscount = _.reduce(discounts, function(total: number, discount) {
-    // check if the two boolean are equal
-    if(!(+discount.info.isAfterTax ^ +afterTax)) {
+    // check if the two booleans are equal
+    if(discount.info.isAfterTax === afterTax) {
       return discount.apply(total);
     }
     return total;
