@@ -53,15 +53,9 @@ export function calculateBillTotal(
     return taxAmount;
   });
 
-  var taxAmount = subtotalAfterTax - subtotal;
+  var taxAmount = subtotalAfterTax - discountBeforeTax.total;
 
   var discountAfterTax = applyDiscounts(subtotalAfterTax, discounts, true);
-
-  //if there are not taxes combine discounts
-  if(!taxAmount) {
-    discountBeforeTax.discountInfo.discount += discountAfterTax.discountInfo.discount;
-    discountAfterTax.discountInfo.discount = 0;
-  }
 
   return {
     total: discountAfterTax.total,

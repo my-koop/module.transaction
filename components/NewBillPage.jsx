@@ -333,7 +333,11 @@ var NewBillPage = React.createClass({
         </BSPanel>
 
         <MKCollapsablePanel header={__("transaction::discountHeader")} >
-          <MKDiscountTable ref="discountTable" onChange={this.onDiscountChange} />
+          <MKDiscountTable
+            ref="discountTable"
+            onChange={this.onDiscountChange}
+            hasTaxes={!_.isEmpty(this.state.taxInfos)}
+          />
         </MKCollapsablePanel>
 
         <BSPanel header={__("transaction::billInfo")}>
