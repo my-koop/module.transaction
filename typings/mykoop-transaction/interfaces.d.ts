@@ -1,20 +1,17 @@
 
 
 declare module Transaction {
+
   export interface NewBill {
-    total: number;
-    customerEmail?: string;
     archiveBill: boolean;
+    customerEmail?: string;
+    discounts?: Discount[];
     items: {
       id: number;
       price: number;
       quantity: number;
     }[];
-    discounts?: {
-      type: number;
-      value: number;
-      isAfterTax: boolean;
-    }[];
+    total: number;
   }
 
   export interface BillId {
@@ -31,5 +28,16 @@ declare module Transaction {
     total: number;
     idUser: number; // can be null
     paid: number;
+  }
+
+  export interface Discount {
+    type: number;
+    value: number;
+    isAfterTax: boolean;
+  }
+
+  export interface TaxInfo {
+    rate: number;
+    localizeKey: string;
   }
 }

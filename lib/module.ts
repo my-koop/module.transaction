@@ -20,6 +20,39 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     controllerList.attachControllers(new utils.ModuleControllersBinder(this));
   }
 
+  getTaxInformation(
+    params: any,
+    callback: (err, taxes?: Transaction.TaxInfo[]) => void
+  ) {
+    this.db.getConnection(function(err, connection, cleanup) {
+      if(err) {
+        return callback(new DatabaseError(err));
+      }
+      async.waterfall([
+        function(callback) {
+          connection.query(
+            "SELECT rate, localizeKey FROM taxes",
+            function(err, rows) {
+              callback(err && new DatabaseError(err), rows);
+            }
+          );
+        },
+        function(rows, callback) {
+          var taxInfos = _.map(rows, function(row: any) {
+            return {
+              rate: row.rate,
+              localizeKey: row.localizeKey
+            };
+          });
+          callback(null, taxInfos);
+        }
+      ], function(err, taxInfos: any[]) {
+        cleanup();
+        callback(err, taxInfos);
+      });
+    });
+  }
+
   openBill(
     params: Transaction.BillId,
     callback: mktransaction.changeBillStateCallback

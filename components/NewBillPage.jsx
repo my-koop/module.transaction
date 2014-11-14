@@ -20,6 +20,8 @@ var MKDiscountTable       = require("./DiscountTable");
 var MKBillInfo            = require("./BillInfo");
 var MKCustomerInformation = require("./CustomerInformation");
 
+var billUtils = require("../lib/common_modules/billUtils");
+
 // Utilities
 var __ = require("language").__;
 var formatMoney = require("language").formatMoney;
@@ -40,11 +42,13 @@ var NewBillPage = React.createClass({
       // { info : {isAfterTax: boolean, value: number, type: DiscountType }
       // apply: ((total) => newTotal)[] }
       discounts: [],
-      customerEmail: null
+      customerEmail: null,
+      // Transaction.TaxInfo[]
+      taxInfo: []
     }
   },
 
-  componentDidMount: function () {
+  componentWillMount: function () {
     var self = this;
     // Fetch inventory from database
     actions.inventory.list(function (err, res) {
@@ -56,6 +60,18 @@ var NewBillPage = React.createClass({
 
       self.setState({
         items: res.items
+      });
+    });
+
+    actions.transaction.taxes.get(function(err, taxInfos) {
+      if (err) {
+        console.error(err);
+        MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
+        return;
+      }
+
+      self.setState({
+        taxInfos: taxInfos
       });
     });
   },
@@ -271,15 +287,15 @@ var NewBillPage = React.createClass({
       }
     });
 
+    var billInfo = billUtils.calculateBillTotal(
+      this.state.bill,
+      this.state.taxInfo,
+      this.state.discounts
+    );
     /////////////////////////////////
     // Bill total amount calculations
     var infos = [];
-    var subtotal = _.reduce(this.state.bill, function(subtotal, item) {
-      return subtotal + ((item.price * item.quantity) || 0);
-    }, 0);
-    var newSubtotal = this.applyDiscounts(subtotal, false);
-    var discountBeforeTax = subtotal - newSubtotal;
-    if(discountBeforeTax) {
+    if(billInfo.discountBeforeTax) {
       infos.push({
         text: __("transaction::subtotal"),
         amount: subtotal
