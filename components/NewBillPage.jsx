@@ -7,6 +7,7 @@ var BSTable       = require("react-bootstrap/Table");
 var BSInput       = require("react-bootstrap/Input");
 var BSButton      = require("react-bootstrap/Button");
 var BSButtonGroup = require("react-bootstrap/ButtonGroup");
+var Router =  require("react-router");
 
 // My Koop components
 var MKTableSorter         = require("mykoop-core/components/TableSorter");
@@ -22,10 +23,11 @@ var MKCustomerInformation = require("./CustomerInformation");
 
 // Utilities
 var __ = require("language").__;
-var formatMoney = require("language").formatMoney;
 var _ = require("lodash");
+var formatMoney = require("language").formatMoney;
 var actions = require("actions");
 var util = require("util");
+var getRouteName = require("mykoop-utils/frontend/getRouteName");
 
 var NewBillPage = React.createClass({
   mixins: [MKDebouncerMixin],
@@ -95,6 +97,7 @@ var NewBillPage = React.createClass({
           MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
           return;
         }
+        Router.transitionTo(getRouteName(["dashboard", "transaction", "bills"]));
         MKAlertTrigger.showAlert(__("success"));
       }
     );
