@@ -3,6 +3,7 @@ import controllerList = require("./controllers/index");
 import async = require("async");
 import _ = require("lodash");
 import DiscountTypes = require("./common_modules/discountTypes");
+import billUtils = require("./common_modules/billUtils");
 import MySqlHelper = require("./classes/MySqlHelper");
 var DatabaseError = utils.errors.DatabaseError;
 var ApplicationError = utils.errors.ApplicationError;
@@ -18,6 +19,39 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     this.db = <mkdatabase.Module>this.getModuleManager().get("database");
     this.user = <mkuser.Module>this.getModuleManager().get("user");
     controllerList.attachControllers(new utils.ModuleControllersBinder(this));
+  }
+
+  getTaxInformation(
+    params: any,
+    callback: (err, taxes?: Transaction.TaxInfo[]) => void
+  ) {
+    this.db.getConnection(function(err, connection, cleanup) {
+      if(err) {
+        return callback(new DatabaseError(err));
+      }
+      async.waterfall([
+        function(callback) {
+          connection.query(
+            "SELECT rate, localizeKey FROM taxes",
+            function(err, rows) {
+              callback(err && new DatabaseError(err), rows);
+            }
+          );
+        },
+        function(rows, callback) {
+          var taxInfos = _.map(rows, function(row: any) {
+            return {
+              rate: row.rate,
+              localizeKey: row.localizeKey
+            };
+          });
+          callback(null, taxInfos);
+        }
+      ], function(err, taxInfos: any[]) {
+        cleanup();
+        callback(err, taxInfos);
+      });
+    });
   }
 
   openBill(

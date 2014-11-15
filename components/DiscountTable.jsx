@@ -19,7 +19,8 @@ var DiscountTable = React.createClass({
   mixins: [MKDebouncerMixin],
 
   propTypes: {
-      onChange: React.PropTypes.func.isRequired
+    onChange: React.PropTypes.func.isRequired,
+    hasTaxes: React.PropTypes.bool
   },
   ////////////////////////////
   /// Life Cycle methods
@@ -99,17 +100,19 @@ var DiscountTable = React.createClass({
         return buttonDef;
       });
       // add button to select if discount is applied before or after taxes
-      typeSwitchers.push({
-        content: __("transaction::tax"),
-        tooltip: __("transaction::discountTaxSwitch", {context: discount.isAfterTax}),
-        props: {
-          className: discount.isAfterTax ? "active" : ""
-        },
-        callback: function() {
-          discount.isAfterTax = !discount.isAfterTax;
-          self.setDiscounts(self.state.discounts);
-        }
-      });
+      if(self.props.hasTaxes) {
+        typeSwitchers.push({
+          content: __("transaction::tax"),
+          tooltip: __("transaction::discountTaxSwitch", {context: discount.isAfterTax}),
+          props: {
+            className: discount.isAfterTax ? "active" : ""
+          },
+          callback: function() {
+            discount.isAfterTax = !discount.isAfterTax;
+            self.setDiscounts(self.state.discounts);
+          }
+        });
+      }
 
       // Delete button
       actionButtons = [

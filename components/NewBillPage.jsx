@@ -21,6 +21,8 @@ var MKDiscountTable       = require("./DiscountTable");
 var MKBillInfo            = require("./BillInfo");
 var MKCustomerInformation = require("./CustomerInformation");
 
+var billUtils = require("../lib/common_modules/billUtils");
+
 // Utilities
 var __ = require("language").__;
 var _ = require("lodash");
@@ -42,7 +44,9 @@ var NewBillPage = React.createClass({
       // { info : {isAfterTax: boolean, value: number, type: DiscountType }
       // apply: ((total) => newTotal)[] }
       discounts: [],
-      customerEmail: null
+      customerEmail: null,
+      // Transaction.TaxInfo[]
+      taxInfos: []
     }
   },
 
@@ -58,6 +62,18 @@ var NewBillPage = React.createClass({
 
       self.setState({
         items: res.items
+      });
+    });
+
+    actions.transaction.taxes.get(function(err, taxInfos) {
+      if (err) {
+        console.error(err);
+        MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
+        return;
+      }
+
+      self.setState({
+        taxInfos: taxInfos
       });
     });
   },
@@ -274,76 +290,12 @@ var NewBillPage = React.createClass({
       }
     });
 
-    /////////////////////////////////
-    // Bill total amount calculations
-    var infos = [];
-    var subtotal = _.reduce(this.state.bill, function(subtotal, item) {
-      return subtotal + ((item.price * item.quantity) || 0);
-    }, 0);
-    var newSubtotal = this.applyDiscounts(subtotal, false);
-    var discountBeforeTax = subtotal - newSubtotal;
-    if(discountBeforeTax) {
-      infos.push({
-        text: __("transaction::subtotal"),
-        amount: subtotal
-      });
-      infos.push({
-        text: __("transaction::discounts"),
-        amount: discountBeforeTax
-      });
-    }
-    subtotal = newSubtotal;
-    infos.push({
-      text: __("transaction::subtotal"),
-      amount: subtotal,
-      isBold: true
-    });
-    // FIXME:: Don't use hardcoded values
-    var taxInfo = [
-      {
-        type: "tvq",
-        rate: 0.0975
-      },
-      {
-        type: "tps",
-        rate: 0.05
-      }
-    ];
-    var total = subtotal;
-    // Apply taxes
-    infos = infos.concat(_.map(taxInfo, function(tax, i) {
-      var taxAmount = total * tax.rate;
-      total += taxAmount;
-      var taxText = util.format("%s (%s\%)",
-        __("transaction::tax", {context: tax.type}),
-        (tax.rate * 100).toFixed(2)
-      );
-      return {
-        text: taxText,
-        amount: taxAmount
-      };
-    }));
-
-    var newTotal = this.applyDiscounts(total, true);
-    var discountAfterTax = total - newTotal;
-    if(discountAfterTax) {
-      infos.push({
-        text: __("transaction::subtotal"),
-        amount: total
-      });
-      infos.push({
-        text: __("transaction::discounts"),
-        amount: discountAfterTax
-      });
-    }
-    total = newTotal;
-    infos.push({
-      text: __("transaction::total"),
-      amount: total,
-      isBold: true
-    });
-    this.total = total;
-    /////////////////////////////////
+    var billInfo = billUtils.calculateBillTotal(
+      this.state.bill,
+      this.state.taxInfos,
+      this.state.discounts
+    );
+    this.total = billInfo.total;
 
     return (
       <BSCol md={12}>
@@ -384,12 +336,16 @@ var NewBillPage = React.createClass({
         </BSPanel>
 
         <MKCollapsablePanel header={__("transaction::discountHeader")} >
-          <MKDiscountTable ref="discountTable" onChange={this.onDiscountChange} />
+          <MKDiscountTable
+            ref="discountTable"
+            onChange={this.onDiscountChange}
+            hasTaxes={!_.isEmpty(this.state.taxInfos)}
+          />
         </MKCollapsablePanel>
 
         <BSPanel header={__("transaction::billInfo")}>
           <BSCol md={3}>
-            <MKBillInfo infos={infos} />
+            <MKBillInfo billInfo={billInfo} taxInfos={this.state.taxInfos} />
             { this.state.bill.length > 0 ?
             <BSButtonGroup>
               { this.state.customerEmail ?
