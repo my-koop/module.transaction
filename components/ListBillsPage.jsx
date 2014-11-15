@@ -193,7 +193,7 @@ var ListBillsPage = React.createClass({
             onSave={self.onUpdateCloseBill.bind(self, bill)}
           />) : null,
         callback: !needToSpecifyCustomerInfo ? function() {
-          self.changeBillState("open", bill)
+          self.changeBillState("open", bill);
         } : null
       });
     }

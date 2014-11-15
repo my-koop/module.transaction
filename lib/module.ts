@@ -142,8 +142,8 @@ class Module extends utils.BaseModule implements mktransaction.Module {
               connection,
               {
                 email: params.customerEmail
-              }
-              , callback
+              },
+              callback
             );
           }
 
