@@ -67,4 +67,13 @@ export function attachControllers(
       }
     })
   );
+
+  binder.attach(
+    {
+      endPoint: endPoints.transaction.taxes.get
+    },
+    binder.makeSimpleController("getTaxInformation")
+  );
+
+
 }

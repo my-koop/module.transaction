@@ -29,6 +29,12 @@ var endpoints = {
                 path: "/transaction/bill/:id/addTransaction",
                 method: "post"
             }
+        },
+        taxes: {
+            get: {
+                path: "/transaction/taxes",
+                method: "get"
+            }
         }
     }
 };

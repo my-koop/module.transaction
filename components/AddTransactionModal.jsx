@@ -25,7 +25,7 @@ var AddTransactionModal = React.createClass({
     }
   },
 
-  onSave: function (hideFnc) {
+  save: function (hideFnc) {
     if(!this.state.amount) {
       return;
     }
@@ -76,7 +76,7 @@ var AddTransactionModal = React.createClass({
         </div>
         <div className="modal-footer">
           <BSButton
-            onClick={this.onSave.bind(this, this.props.onRequestHide)}
+            onClick={this.save.bind(this, this.props.onRequestHide)}
             disabled={!_.isNumber(this.state.amount) || !this.state.amount}
             bsStyle="primary"
           >
