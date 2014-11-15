@@ -8,7 +8,7 @@
 /// <reference path="./dbQueryStruct.d.ts" />
 declare module mktransaction {
 
-  export interface changeBillStateCallback {
+  export interface successCallback {
     (err: Error, res?: {success: boolean}): void;
   }
   export interface saveNewBillCallback {
@@ -18,9 +18,17 @@ declare module mktransaction {
     (err: Error, res?: Transaction.Bill[]): void;
   }
   export interface Module extends mykoop.IModule {
+    addBillTransaction(
+      params: Transaction.AddBillTransaction,
+      callback: successCallback
+    );
+    openBill(
+      params: Transaction.OpenBill,
+      callback: successCallback
+    );
     closeBill(
       params: Transaction.BillId,
-      callback: changeBillStateCallback
+      callback: successCallback
     );
     saveNewBill(
       params: Transaction.NewBill,

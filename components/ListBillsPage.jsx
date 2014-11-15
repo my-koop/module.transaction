@@ -5,21 +5,24 @@ var Link  = require("react-router").Link;
 var BSButton = require("react-bootstrap/Button");
 
 // My Koop components
-var MKTableSorter         = require("mykoop-core/components/TableSorter");
-var MKListModButtons      = require("mykoop-core/components/ListModButtons");
-var MKAlertTrigger        = require("mykoop-core/components/AlertTrigger");
-var MKConfirmationTrigger = require("mykoop-core/components/ConfirmationTrigger");
-var MKIcon                = require("mykoop-core/components/Icon");
+var MKTableSorter              = require("mykoop-core/components/TableSorter");
+var MKListModButtons           = require("mykoop-core/components/ListModButtons");
+var MKAlertTrigger             = require("mykoop-core/components/AlertTrigger");
+var MKConfirmationTrigger      = require("mykoop-core/components/ConfirmationTrigger");
+var MKIcon                     = require("mykoop-core/components/Icon");
 var MKCustomerInformationModal = require("./CustomerInformationModal");
+var MKAddTransactionModal      = require("./AddTransactionModal");
 
 // Utilities
 var _            = require("lodash");
 var __           = require("language").__;
+var async        = require("async");
 var actions      = require("actions");
 var formatDate   = require("language").formatDate;
 var formatMoney  = require("language").formatMoney;
 var getRouteName = require("mykoop-utils/frontend/getRouteName");
 var BillState    = require("../lib/common_modules/BillState");
+
 
 var ListBillsPage = React.createClass({
   ////////////////////////////
@@ -110,38 +113,70 @@ var ListBillsPage = React.createClass({
     });
   },
 
+  addTransaction: function(bill, amount, callback) {
+    if(!amount) {
+      return callback();
+    }
+    var self = this;
+    async.waterfall([
+      function(callback) {
+        actions.transaction.bill.addTransaction(
+        {
+          data: {
+            id: bill.idBill,
+            amount: amount
+          }
+        }, callback);
+      },
+      function(result, res, callback) {
+        if(!result.success) {
+          return callback(new Error("failed to add transaction"));
+        }
+
+        bill.paid += amount;
+        self.setState({
+          bills: self.state.bills
+        }, function() {
+          callback(null, result);
+        });
+      }
+    ], function(err, result) {
+      callback(err, result);
+    });
+  },
+
   actionsGenerator: function(bill) {
     var self = this;
-    var buttons = [
-      {
-        icon: "trash",
-        warningMessage: __("areYouSure"),
-        tooltip: {
-          text: __("remove"),
-          overlayProps: {
-            placement: "top"
-          }
-        },
-        callback: function() {
-          MKAlertTrigger.showAlert("TODO");
-        }
-      }
-    ];
+    var buttons = [];
 
-    if(this.state.billState === BillState.open && bill.total === bill.paid) {
+    if(this.state.billState === BillState.open) {
       buttons.push({
-        icon: "close",
-        warningMessage: __("areYouSure"),
+        icon: "plus",
         tooltip: {
-          text: __("transaction::closeBillTooltip"),
+          text: __("transaction::addTransactionTooltip"),
           overlayProps: {
             placement: "top"
           }
         },
-        callback: function() {
-          self.changeBillState("close", bill);
-        }
+        modalTrigger: <MKAddTransactionModal
+          onSave={_.bind(this.addTransaction, this, bill)}
+        />
       });
+      if(bill.total === bill.paid) {
+        buttons.push({
+          icon: "close",
+          warningMessage: __("areYouSure"),
+          tooltip: {
+            text: __("transaction::closeBillTooltip"),
+            overlayProps: {
+              placement: "top"
+            }
+          },
+          callback: function() {
+            self.changeBillState("close", bill);
+          }
+        });
+      }
     } else if(this.state.billState === BillState.closed) {
       var needToSpecifyCustomerInfo = !_.isNumber(bill.idUser);
       buttons.push({

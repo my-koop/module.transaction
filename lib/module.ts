@@ -20,9 +20,57 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     controllerList.attachControllers(new utils.ModuleControllersBinder(this));
   }
 
+  addBillTransaction(
+    params: Transaction.AddBillTransaction,
+    callback: mktransaction.successCallback
+  ) {
+    var self = this;
+    this.db.getConnection(function(err, connection, cleanup) {
+      if(err) {
+        return callback(new DatabaseError(err));
+      }
+      var helper = new MySqlHelper();
+      helper.setConnection(cleanup, connection);
+      async.waterfall([
+        helper.beginTransaction,
+        function(callback) {
+          self.__addBillTransaction(
+            helper.connection(),
+            {
+              idBill: params.idBill,
+              amount: params.amount
+            },
+            function(err, result) {
+              callback(
+                err ||
+                (!result.success && new ApplicationError(
+                  null,
+                  {},
+                  "Cannot create transaction for bill %d with amount %d",
+                  params.idBill,
+                  params.amount
+                )),
+                result
+              );
+            }
+          )
+        },
+        function(result, callback) {
+          helper.commitTransaction(function(err) {
+            callback(err, result);
+          });
+        }
+      ], function(err, result: any) {
+        helper.cleanup(err, function() {
+          callback(err, result);
+        });
+      });
+    });
+  }
+
   openBill(
     params: Transaction.OpenBill,
-    callback: mktransaction.changeBillStateCallback
+    callback: mktransaction.successCallback
   ) {
     var id = params.idBill;
     var self = this;
@@ -98,7 +146,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
 
   closeBill(
     params: Transaction.BillId,
-    callback: mktransaction.changeBillStateCallback
+    callback: mktransaction.successCallback
   ) {
     var id = params.idBill;
     this.db.getConnection(function(err, connection, cleanup) {
@@ -318,43 +366,88 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       function(callback) {
         // must create a transaction with the full amount
         if(!params.archiveBill) {
-          logger.debug("Create a transaction with full amount for idBill: %d", idBill);
-          mysqlHelper.connection().query(
-            "INSERT INTO transaction SET amount=?",
-            [params.total],
-            function(err, res) {
+          this.__addBillTransaction(
+            mysqlHelper.connection(),
+            {
+              idBill: idBill,
+              amount: params.total
+            },
+            function(err, result) {
               callback(
-                err && new DatabaseError(err),
-                res && res.insertId
-              );
+                err ||
+                (!result.success && new ApplicationError(
+                  null,
+                  {},
+                  "Cannot create transaction for bill %d with amount %d",
+                  idBill,
+                  params.total
+                )
+              ));
             }
-          );
+          )
           return;
         }
         callback(null, 0);
-      },
-
-      function(idTransaction, callback) {
-        if(!params.archiveBill) {
-          logger.debug("Link transaction [%d] to bill [%d]", idTransaction, idBill);
-          mysqlHelper.connection().query(
-            "INSERT INTO bill_transaction SET idBill = ?, idTransaction = ?",
-            [idBill, idTransaction],
-            function(err, res) {
-              callback(
-                err && new DatabaseError(err)
-              );
-            }
-          );
-          return;
-        }
-        callback(null);
       },
 
       mysqlHelper.commitTransaction
     ], <any>_.partialRight(mysqlHelper.cleanup, function(err) {
       callback(err, {idBill: idBill});
     }));
+  }
+
+  __addTransaction(
+    connection: mysql.IConnection,
+    params: {amount: number},
+    callback: (err, result?: {idTransaction: number;}) => void
+  ) {
+    logger.debug("Create a transaction with amount %d", params.amount);
+    connection.query(
+      "INSERT INTO transaction SET amount=?",
+      [params.amount],
+      function(err, res) {
+        var result = {
+          idTransaction: res && res.insertId
+        };
+        callback(
+          err && new DatabaseError(err),
+          result
+        );
+      }
+    );
+  }
+
+  __addBillTransaction(
+    connection: mysql.IConnection,
+    params: {idBill: number; amount: number},
+    callback: (err, result?: {success: boolean;}) => void
+  ) {
+    this.__addTransaction(
+      connection,
+      {amount: params.amount},
+      function(err, res) {
+        if(err) {
+          return callback(err);
+        }
+        logger.debug("Link transaction [%d] to bill [%d]",
+          res.idTransaction,
+          params.idBill
+        );
+        connection.query(
+          "INSERT INTO bill_transaction SET idBill = ?, idTransaction = ?",
+          [params.idBill, res.idTransaction],
+          function(err, row) {
+            var result = {
+              success: row && row.affectedRows === 1
+            };
+            callback(
+              err && new DatabaseError(err, "Error inserting into bill_transaction"),
+              result
+            )
+          }
+        )
+      }
+    )
   }
 }
 
