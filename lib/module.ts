@@ -55,28 +55,78 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   openBill(
-    params: Transaction.BillId,
+    params: Transaction.OpenBill,
     callback: mktransaction.changeBillStateCallback
   ) {
     var id = params.idBill;
+    var self = this;
     this.db.getConnection(function(err, connection, cleanup) {
       if(err) {
         return callback(new DatabaseError(err));
       }
 
-      connection.query(
-        "UPDATE bill SET isClosed=0 WHERE idBill=?",
-        [id],
-        function(err, rows) {
-          cleanup();
-          if(err) {
-            return callback(new DatabaseError(err));
+      async.waterfall([
+        function findCurrentCustomer(callback) {
+          connection.query(
+            "SELECT idUser from bill where idBill = ?",
+            [id],
+            function(err, row) {
+              callback(err && new DatabaseError(err, "Error in findCurrentCustomer"), row);
+            }
+          )
+        },
+        function checkNewCustomer(row, callback) {
+          if(_.isEmpty(row)) {
+            return callback(new ApplicationError(
+              null,
+              {idBill: "Invalid bill id"}
+            ));
           }
-          callback(null, {
-            success: rows && rows.affectedRows === 1
-          });
+          if(!row[0].idUser) {
+            if(_.isEmpty(params.customerEmail)) {
+              return callback(new ApplicationError(
+                null,
+                {customerEmail: "can't be null"},
+                "Missing customer email"
+              ));
+            }
+            return self.user.__getIdForEmail(
+              connection,
+              {
+                email: params.customerEmail
+              },
+              callback
+            );
+          }
+
+          callback(null, row[0].idUser);
+        },
+        function openBill(idUser, callback) {
+          logger.verbose(idUser);
+          if(!_.isNumber(idUser) || idUser === -1) {
+            return callback(new ApplicationError(
+              null,
+              {customerEmail: "invalid"},
+              "Invalid customer email"
+            ));
+          }
+          connection.query(
+            "UPDATE bill SET isClosed=0, idUser=? WHERE idBill=?",
+            [idUser, id],
+            function(err, rows) {
+              callback(
+                err && new DatabaseError(err, "Error in OpenBill"),
+                {
+                  success: rows && rows.affectedRows === 1
+                }
+              );
+            }
+          );
         }
-      );
+      ], function(err, result: any) {
+        cleanup();
+        callback(err, result);
+      });
     });
   }
 

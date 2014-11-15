@@ -370,6 +370,9 @@ var NewBillPage = React.createClass({
           : null }
           </BSCol>
           <BSCol md={3}>
+            <h3>
+              {__("transaction::customerInformations")}
+            </h3>
             <MKCustomerInformation onEmailChanged={this.onCustomerEmailChanged} />
           </BSCol>
         </BSPanel>
