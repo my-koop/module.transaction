@@ -19,7 +19,7 @@ var CustomerInfoModal = React.createClass({
   getInitialState: function() {
     return {
       customerEmail: null
-    }
+    };
   },
 
   onEmailChanged: function(email) {
@@ -28,7 +28,7 @@ var CustomerInfoModal = React.createClass({
     });
   },
 
-  onSave: function (hideFnc) {
+  save: function (hideFnc) {
     if(!this.state.customerEmail) {
       return;
     }
@@ -69,7 +69,7 @@ var CustomerInfoModal = React.createClass({
         </div>
         <div className="modal-footer">
           <BSButton
-            onClick={this.onSave.bind(this, this.props.onRequestHide)}
+            onClick={this.save.bind(this, this.props.onRequestHide)}
             disabled={!this.state.customerEmail}
             bsStyle="primary"
           >
