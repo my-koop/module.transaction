@@ -71,7 +71,7 @@ var AddTransactionModal = React.createClass({
           </MKAlert>
           <label>
             {__("transaction::transactionAmount")}
-            <BSInput type="text" valueLink={amountLink} />
+            <BSInput type="text" valueLink={amountLink} addonAfter="$" />
           </label>
         </div>
         <div className="modal-footer">

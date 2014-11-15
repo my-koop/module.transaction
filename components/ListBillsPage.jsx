@@ -140,9 +140,7 @@ var ListBillsPage = React.createClass({
           callback(null, result);
         });
       }
-    ], function(err, result) {
-      callback(err, result);
-    });
+    ], callback);
   },
 
   actionsGenerator: function(bill) {
