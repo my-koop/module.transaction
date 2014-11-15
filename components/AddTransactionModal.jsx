@@ -16,11 +16,12 @@ var AddTransactionModal = React.createClass({
     // usually added by the ModalTrigger
     onRequestHide: React.PropTypes.func.isRequired,
     onSave: React.PropTypes.func.isRequired,
+    defaultAmount: React.PropTypes.number
   },
 
   getInitialState: function() {
     return {
-      amount: 0,
+      amount: this.props.defaultAmount || 0,
       errorMessage: null
     }
   },

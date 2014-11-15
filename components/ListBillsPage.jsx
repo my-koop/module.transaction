@@ -157,6 +157,7 @@ var ListBillsPage = React.createClass({
           }
         },
         modalTrigger: <MKAddTransactionModal
+          defaultAmount={bill.total - bill.paid}
           onSave={_.bind(this.addTransaction, this, bill)}
         />
       });
