@@ -261,7 +261,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           )
         }
 
-      ], function(err, result: Transaction.Bill[]) {
+      ], function(err, result: any) {
         cleanup();
         callback(err, result);
       });
@@ -394,23 +394,14 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       function(callback) {
         // must create a transaction with the full amount
         if(!params.archiveBill) {
-          this.__addBillTransaction(
+          self.__addBillTransaction(
             mysqlHelper.connection(),
             {
               idBill: idBill,
               amount: params.total
             },
             function(err, result) {
-              callback(
-                err ||
-                (!result.success && new ApplicationError(
-                  null,
-                  {},
-                  "Cannot create transaction for bill %d with amount %d",
-                  idBill,
-                  params.total
-                )
-              ));
+              callback(err);
             }
           )
           return;

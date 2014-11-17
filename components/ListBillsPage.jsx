@@ -23,16 +23,55 @@ var formatMoney  = require("language").formatMoney;
 var getRouteName = require("mykoop-utils/frontend/getRouteName");
 var BillState    = require("../lib/common_modules/BillState");
 
+var thisRouteName = getRouteName(["dashboard", "transaction", "bill", "list"]);
+var openBillsColumns = [
+  "idBill",
+  "idUser",
+  "createdDate",
+  "total",
+  "paid",
+  "actions"
+];
+var closedBillsColumns = [
+  "idBill",
+  "idUser",
+  "createdDate",
+  "closedDate",
+  "total",
+  "actions"
+];
+var columns = {};
+columns[BillState.open] = openBillsColumns;
+columns[BillState.closed] = closedBillsColumns;
 
 var ListBillsPage = React.createClass({
   ////////////////////////////
   /// Life Cycle methods
 
+  getDefaultProps: function() {
+    return {
+      params: {
+        state: "open"
+      }
+    }
+  },
+
   getInitialState: function() {
     return {
       // Transaction.Bill[]
       bills: [],
-      billState: BillState.open,
+      billState: BillState[this.props.params.state]
+    }
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    if(this.props.params.state !== nextProps.params.state) {
+      var self = this;
+      this.setState({
+        billState: BillState[nextProps.params.state]
+      }, function() {
+        self.updateList();
+      });
     }
   },
 
@@ -42,6 +81,18 @@ var ListBillsPage = React.createClass({
 
   ////////////////////////////
   /// component methods
+  getBillState: function() {
+    return this.state.billState;
+  },
+
+  getNextBillState: function() {
+    return BillState.toggleState(this.getBillState());
+  },
+
+  getTableColumns: function() {
+    return columns[this.getBillState()] || openBillsColumns;
+  },
+
   updateList: function() {
     var self = this;
     this.setState({
@@ -50,7 +101,7 @@ var ListBillsPage = React.createClass({
       actions.transaction.bill.list(
         {
           data: {
-            show: BillState[this.state.billState]
+            show: BillState[this.getBillState()]
           }
         },
         function (err, bills) {
@@ -146,7 +197,7 @@ var ListBillsPage = React.createClass({
     var self = this;
     var buttons = [];
 
-    if(this.state.billState === BillState.open) {
+    if(this.getBillState() === BillState.open) {
       buttons.push({
         icon: "plus",
         tooltip: {
@@ -175,7 +226,7 @@ var ListBillsPage = React.createClass({
           }
         });
       }
-    } else if(this.state.billState === BillState.closed) {
+    } else if(this.getBillState() === BillState.closed) {
       var needToSpecifyCustomerInfo = !_.isNumber(bill.idUser);
       buttons.push({
         icon: "folder-open",
@@ -198,13 +249,6 @@ var ListBillsPage = React.createClass({
     return buttons;
   },
 
-  switchBillState: function() {
-    var newState = BillState.toggleState(this.state.billState);
-    this.setState({
-      billState: newState
-    }, this.updateList);
-  },
-
   ////////////////////////////
   /// Render method
   render: function() {
@@ -212,7 +256,7 @@ var ListBillsPage = React.createClass({
 
     // TableSorter Config
     var BillTableConfig = {
-      defaultOrdering: ["idBill", "idUser", "createdDate", "closedDate", "total", "paid", "actions"],
+      defaultOrdering: this.getTableColumns(),
       columns: {
         idBill: {
           name: __("id"),
@@ -277,11 +321,16 @@ var ListBillsPage = React.createClass({
     return (
       <BSCol md={12}>
         <h1>
-          {__("transaction::listBillWelcome", {context: BillState[this.state.billState]})}
+          {__("transaction::listBillWelcome", {context: BillState[this.getBillState()]})}
         </h1>
-        <BSButton onClick={this.switchBillState}>
-          <MKIcon glyph="exchange" />
-          {__("transaction::switchBillState", {context: BillState[this.state.billState]})}
+        <BSButton>
+          <Link
+            to={thisRouteName}
+            params={{state: BillState[this.getNextBillState()]}}
+          >
+            <MKIcon glyph="exchange" />
+            {__("transaction::switchBillState", {context: BillState[this.getBillState()]})}
+          </Link>
         </BSButton>
         <MKTableSorter
           config={BillTableConfig}

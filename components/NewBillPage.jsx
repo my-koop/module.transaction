@@ -113,7 +113,12 @@ var NewBillPage = React.createClass({
           MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
           return;
         }
-        Router.transitionTo(getRouteName(["dashboard", "transaction", "bills"]));
+        Router.transitionTo(
+          getRouteName(["dashboard", "transaction", "bill", "list"]),
+          {
+            state: archiveBill ? "open" : "closed"
+          }
+        );
         MKAlertTrigger.showAlert(__("success"));
       }
     );
