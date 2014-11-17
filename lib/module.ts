@@ -230,15 +230,20 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         function(callback) {
           connection.query(
             "SELECT \
-              bill.idBill, sum(amount) AS paid, createdDate, \
-              closedDate, total, idUser FROM bill\
+              bill.idBill,\
+              sum(amount) AS paid,\
+              createdDate,\
+              closedDate,\
+              total,\
+              idUser\
+            FROM bill\
             LEFT JOIN bill_transaction \
               ON bill.idBill=bill_transaction.idBill \
             LEFT JOIN transaction \
               ON bill_transaction.idTransaction=transaction.idTransaction \
             WHERE closedDate IS " + selectIsClosed + " NULL \
             GROUP BY bill.idBill",
-            [],
+            [selectIsClosed],
             function(err, rows) {
               logger.silly("listBills query result", rows);
               var result: Transaction.Bill[] = _.map(rows, function(row: any) {
@@ -319,7 +324,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         var closedDate = params.archiveBill ? "NULL" : "NOW()";
         // Create bill
         mysqlHelper.connection().query(
-          "INSERT INTO bill SET createdDate = now(), total = ?, idUser = ?, \
+          "INSERT INTO bill SET createdDate = NOW(), total = ?, idUser = ?, \
           closedDate = " + closedDate,
           [params.total, idUser],
           function(err, res) {

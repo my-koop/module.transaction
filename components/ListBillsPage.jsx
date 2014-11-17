@@ -250,16 +250,13 @@ var ListBillsPage = React.createClass({
         createdDate: {
           name: __("transaction::createdDate"),
           cellGenerator: function(bill, i) {
-            return formatDate(bill.createdDate);
+            return formatDate(bill.createdDate, "LLL");
           }
         },
         closedDate: {
           name: __("transaction::closedDate"),
           cellGenerator: function(bill, i) {
-            if(bill.closedDate) {
-              return formatDate(bill.closedDate);
-            }
-            return null;
+            return bill.closedDate ? formatDate(bill.closedDate, "LLL") : null;
           }
         },
         actions: {
