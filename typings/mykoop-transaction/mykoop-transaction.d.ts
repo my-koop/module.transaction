@@ -9,7 +9,7 @@
 declare module mktransaction {
 
   export interface successCallback {
-    (err: Error, res?: {success: boolean}): void;
+    (err: Error): void;
   }
   export interface saveNewBillCallback {
     (err: Error, res?: {idBill: number}): void;

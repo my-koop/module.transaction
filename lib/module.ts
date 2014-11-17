@@ -40,30 +40,17 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             {
               idBill: params.idBill,
               amount: params.amount
-            },
-            function(err, result) {
-              callback(
-                err ||
-                (!result.success && new ApplicationError(
-                  null,
-                  {},
-                  "Cannot create transaction for bill %d with amount %d",
-                  params.idBill,
-                  params.amount
-                )),
-                result
-              );
-            }
+            }, callback
           )
         },
         function(result, callback) {
           helper.commitTransaction(function(err) {
-            callback(err, result);
+            callback(err);
           });
         }
-      ], function(err, result: any) {
+      ], function(err) {
         helper.cleanup(err, function() {
-          callback(err, result);
+          callback(err);
         });
       });
     });
@@ -116,7 +103,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       async.waterfall([
         function findCurrentCustomer(callback) {
           connection.query(
-            "SELECT idUser from bill where idBill = ?",
+            "SELECT idUser from bill where idBill = ? AND isClosed = 1",
             [id],
             function(err, row) {
               callback(err && new DatabaseError(err, "Error in findCurrentCustomer"), row);
@@ -164,16 +151,14 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             function(err, rows) {
               callback(
                 err && new DatabaseError(err, "Error in OpenBill"),
-                {
-                  success: rows && rows.affectedRows === 1
-                }
+                rows && rows.affectedRows === 1
               );
             }
           );
         }
       ], function(err, result: any) {
         cleanup();
-        callback(err, result);
+        callback(err || (!result && new ApplicationError(null, {})));
       });
     });
   }
@@ -226,9 +211,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
 
       ], function(err, success: any) {
         cleanup();
-        callback(err, {
-          success: success
-        });
+        callback(err || (!success && new ApplicationError(null, {})));
       });
     });
   }
@@ -454,7 +437,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   __addBillTransaction(
     connection: mysql.IConnection,
     params: {idBill: number; amount: number},
-    callback: (err, result?: {success: boolean;}) => void
+    callback: (err, result?: {idTransaction: number;}) => void
   ) {
     this.__addTransaction(
       connection,
@@ -471,12 +454,19 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           "INSERT INTO bill_transaction SET idBill = ?, idTransaction = ?",
           [params.idBill, res.idTransaction],
           function(err, row) {
-            var result = {
-              success: row && row.affectedRows === 1
-            };
+            var success = row && row.affectedRows === 1;
             callback(
-              err && new DatabaseError(err, "Error inserting into bill_transaction"),
-              result
+              (err &&
+              new DatabaseError(err, "Error inserting into bill_transaction")) ||
+              (!success &&
+                new ApplicationError(
+                  null,
+                  {},
+                  "Error inserting into bill_transaction"
+                )
+              ),
+              // Send back transaction id
+              res
             )
           }
         )

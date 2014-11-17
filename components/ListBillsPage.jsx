@@ -88,7 +88,7 @@ var ListBillsPage = React.createClass({
         }
       },
       function(err, res) {
-        if(err || (res && !res.success)) {
+        if(err) {
           console.error(err);
           MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
           return;
@@ -106,7 +106,7 @@ var ListBillsPage = React.createClass({
         email: email
       }
     }, function(err, result) {
-      if(!err && result.success) {
+      if(!err) {
         self.removeBillFromState(bill);
       }
       callback(err, result);
@@ -126,18 +126,16 @@ var ListBillsPage = React.createClass({
             id: bill.idBill,
             amount: amount
           }
-        }, callback);
+        }, function(err) {
+          callback(err);
+        });
       },
-      function(result, res, callback) {
-        if(!result.success) {
-          return callback(new Error("failed to add transaction"));
-        }
-
+      function(callback) {
         bill.paid += amount;
         self.setState({
           bills: self.state.bills
         }, function() {
-          callback(null, result);
+          callback();
         });
       }
     ], callback);
