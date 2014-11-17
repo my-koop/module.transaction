@@ -24,6 +24,10 @@ var endpoints = {
       open: {
         path: "/transaction/bill/open/:id",
         method: "put"
+      },
+      addTransaction : {
+        path: "/transaction/bill/:id/addTransaction",
+        method: "post"
       }
     },
     taxes: {

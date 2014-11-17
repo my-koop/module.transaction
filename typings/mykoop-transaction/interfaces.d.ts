@@ -1,6 +1,10 @@
 
 
 declare module Transaction {
+  export interface AddBillTransaction {
+    idBill: number;
+    amount: number;
+  }
 
   export interface NewBill {
     archiveBill: boolean;

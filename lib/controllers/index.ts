@@ -58,6 +58,18 @@ export function attachControllers(
 
   binder.attach(
     {
+      endPoint: endPoints.transaction.bill.addTransaction
+    },
+    binder.makeSimpleController("addBillTransaction", function(req: Express.Request) {
+      return {
+        idBill: req.param("id"),
+        amount: req.param("amount")
+      }
+    })
+  );
+
+  binder.attach(
+    {
       endPoint: endPoints.transaction.taxes.get
     },
     binder.makeSimpleController("getTaxInformation")

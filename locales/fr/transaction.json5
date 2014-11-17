@@ -14,6 +14,9 @@
   recordFullPayment: "Payer maintenant",
   saveForLater: "Archiver",
   paid: "Payé",
+  addTransactionTooltip: "Ajouter paiement/remboursement",
+  recordTransaction: "Enregistrer paiement/remboursement",
+  transactionAmount: "Montant",
 
   customerInformations: "Informations du client",
   // Discounts
