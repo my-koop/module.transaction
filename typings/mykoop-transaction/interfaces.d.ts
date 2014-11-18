@@ -32,11 +32,12 @@ declare module Transaction {
   }
 
   export interface Bill {
-    idBill: number;
+    closedDate: string; // can be null
     createdDate: string;
-    total: number;
+    idBill: number;
     idUser: number; // can be null
     paid: number;
+    total: number;
   }
 
   export interface Discount {

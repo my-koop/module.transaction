@@ -103,7 +103,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       async.waterfall([
         function findCurrentCustomer(callback) {
           connection.query(
-            "SELECT idUser from bill where idBill = ? AND isClosed = 1",
+            "SELECT idUser from bill where idBill = ? AND closedDate IS NOT NULL",
             [id],
             function(err, row) {
               callback(err && new DatabaseError(err, "Error in findCurrentCustomer"), row);
@@ -146,7 +146,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             ));
           }
           connection.query(
-            "UPDATE bill SET isClosed=0, idUser=? WHERE idBill=?",
+            "UPDATE bill SET closedDate=NULL, idUser=? WHERE idBill=?",
             [idUser, id],
             function(err, rows) {
               callback(
@@ -181,7 +181,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
               ON bill.idBill=bill_transaction.idBill\
               LEFT JOIN transaction\
               ON bill_transaction.idTransaction=transaction.idTransaction\
-              WHERE bill.idBill=? and isClosed=0\
+              WHERE bill.idBill=? and closedDate IS NULL\
               GROUP BY bill.idBill",
             [id],
             function(err, rows) {
@@ -198,7 +198,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             return callback(new ApplicationError(null, {reason: "can't close"}));
           }
           connection.query(
-            "UPDATE bill SET isClosed=1 WHERE idBill=?",
+            "UPDATE bill SET closedDate=NOW() WHERE idBill=?",
             [id],
             function(err, rows) {
               callback(
@@ -220,7 +220,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     params: Transaction.ListBill,
     callback: mktransaction.listBillsCallback
   ) {
-    var selectIsClosed = params.show === "open" ? 0 : 1;
+    var selectIsClosed = params.show === "open" ? "" : "NOT";
     this.db.getConnection(function(err, connection, cleanup) {
       if(err) {
         return callback(new DatabaseError(err));
@@ -229,13 +229,20 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       async.waterfall([
         function(callback) {
           connection.query(
-            "SELECT bill.idBill, sum(amount) AS paid, createdDate, total, idUser FROM bill\
-                LEFT JOIN bill_transaction \
-                ON bill.idBill=bill_transaction.idBill \
-                LEFT JOIN transaction \
-                ON bill_transaction.idTransaction=transaction.idTransaction \
-                WHERE isClosed = ? \
-                GROUP BY bill.idBill",
+            "SELECT \
+              bill.idBill,\
+              sum(amount) AS paid,\
+              createdDate,\
+              closedDate,\
+              total,\
+              idUser\
+            FROM bill\
+            LEFT JOIN bill_transaction \
+              ON bill.idBill=bill_transaction.idBill \
+            LEFT JOIN transaction \
+              ON bill_transaction.idTransaction=transaction.idTransaction \
+            WHERE closedDate IS " + selectIsClosed + " NULL \
+            GROUP BY bill.idBill",
             [selectIsClosed],
             function(err, rows) {
               logger.silly("listBills query result", rows);
@@ -244,6 +251,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
                   idBill: row.idBill,
                   idUser: row.idUser,
                   createdDate: row.createdDate,
+                  closedDate: row.closedDate,
                   total: row.total,
                   paid: row.paid
                 };
@@ -312,10 +320,13 @@ class Module extends utils.BaseModule implements mktransaction.Module {
 
       function(callback) {
         logger.debug("Create new bill id");
+        var total = params.total;
+        var closedDate = params.archiveBill ? "NULL" : "NOW()";
         // Create bill
         mysqlHelper.connection().query(
-          "INSERT INTO bill SET createdDate = now(), total = ?, idUser = ?, isClosed = ?",
-          [params.total, idUser, !params.archiveBill],
+          "INSERT INTO bill SET createdDate = NOW(), total = ?, idUser = ?, \
+          closedDate = " + closedDate,
+          [params.total, idUser],
           function(err, res) {
             callback(
               err && new DatabaseError(err),

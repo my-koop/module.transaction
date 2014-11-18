@@ -61,6 +61,7 @@ var ListBillsPage = React.createClass({
           }
           _.forEach(bills, function(bill) {
             bill.createdDate = new Date(bill.createdDate);
+            bill.closedDate = bill.closedDate ? new Date(bill.closedDate) : null;
           });
           self.setState({
             bills: bills
@@ -211,7 +212,7 @@ var ListBillsPage = React.createClass({
 
     // TableSorter Config
     var BillTableConfig = {
-      defaultOrdering: ["idBill", "idUser", "createdDate", "total", "paid", "actions"],
+      defaultOrdering: ["idBill", "idUser", "createdDate", "closedDate", "total", "paid", "actions"],
       columns: {
         idBill: {
           name: __("id"),
@@ -249,7 +250,13 @@ var ListBillsPage = React.createClass({
         createdDate: {
           name: __("transaction::createdDate"),
           cellGenerator: function(bill, i) {
-            return formatDate(bill.createdDate);
+            return formatDate(bill.createdDate, "LLL");
+          }
+        },
+        closedDate: {
+          name: __("transaction::closedDate"),
+          cellGenerator: function(bill, i) {
+            return bill.closedDate ? formatDate(bill.closedDate, "LLL") : null;
           }
         },
         actions: {
