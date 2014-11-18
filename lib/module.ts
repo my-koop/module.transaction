@@ -400,7 +400,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
               idBill: idBill,
               amount: params.total
             },
-            function(err, result) {
+            function(err) {
               callback(err);
             }
           )

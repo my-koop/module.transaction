@@ -2,7 +2,6 @@ import utils = require("mykoop-utils");
 export function addRoutes(metaData: utils.MetaDataBuilder) {
   metaData.addFrontendRoute({
     idPath: ["dashboard", "transaction"],
-    component: null,
     name: null,
     path: "transaction"
   });
@@ -10,7 +9,6 @@ export function addRoutes(metaData: utils.MetaDataBuilder) {
   {
     metaData.addFrontendRoute({
       idPath: ["dashboard", "transaction", "bill"],
-      component: null,
       name: null,
       path: "bill"
     });

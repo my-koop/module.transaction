@@ -1,14 +1,12 @@
 function addRoutes(metaData) {
     metaData.addFrontendRoute({
         idPath: ["dashboard", "transaction"],
-        component: null,
         name: null,
         path: "transaction"
     });
     {
         metaData.addFrontendRoute({
             idPath: ["dashboard", "transaction", "bill"],
-            component: null,
             name: null,
             path: "bill"
         });
