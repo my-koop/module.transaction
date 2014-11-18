@@ -1,16 +1,38 @@
 import utils = require("mykoop-utils");
 export function addRoutes(metaData: utils.MetaDataBuilder) {
   metaData.addFrontendRoute({
-    idPath: ["dashboard", "transaction", "newBill"],
-    component: "NewBillPage",
-    name: "newBill",
-    path: "/transaction/bill/new"
+    idPath: ["dashboard", "transaction"],
+    name: null,
+    path: "transaction"
   });
+  // Transaction
+  {
+    metaData.addFrontendRoute({
+      idPath: ["dashboard", "transaction", "bill"],
+      name: null,
+      path: "bill"
+    });
+    //Bill
+    {
+      metaData.addFrontendRoute({
+        idPath: ["dashboard", "transaction", "bill", "new"],
+        component: "NewBillPage",
+        name: "newBill",
+        path: "new"
+      });
 
-  metaData.addFrontendRoute({
-    idPath: ["dashboard", "transaction", "bills"],
-    component: "ListBillsPage",
-    name: "bills",
-    path: "/transaction/bill/list"
-  });
+      metaData.addFrontendRoute({
+        idPath: ["dashboard", "transaction", "bill", "list"],
+        component: "ListBillsPage",
+        name: "listBills",
+        path: ":state",
+        params: {
+          state: [
+            "open",
+            "closed"
+          ]
+        }
+      });
+    }
+  }
 }
