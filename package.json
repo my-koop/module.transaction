@@ -2,7 +2,10 @@
   "name": "mykoop-transaction",
   "role": "transaction",
   "mykoop": {
-    "dependencies": {}
+    "dependencies": {
+      "database": "^1.0.0-rc",
+      "user" : "^1.0.0-rc"
+    }
   },
   "version": "1.0.0-rc",
   "description": "transaction module for My Koop",
