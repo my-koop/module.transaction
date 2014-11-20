@@ -282,10 +282,10 @@ var ListBillsPage = React.createClass({
             return (
               <div key={i}>
                   <Link
-                    to={getRouteName(["public", "myaccount"])}
+                    to={getRouteName(["dashboard", "adminEdit"])}
                     params={{id: bill.idUser}}
                   >
-                    {bill.idUser} TODO
+                    {bill.idUser}
                   </Link>
               </div>
             );
