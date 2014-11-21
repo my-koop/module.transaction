@@ -406,7 +406,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           )
           return;
         }
-        callback(null, 0);
+        callback(null);
       },
 
       mysqlHelper.commitTransaction
