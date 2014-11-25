@@ -11,15 +11,18 @@ assert.equal(endPoints.transaction.bill.list.method, "get");
 export function attachControllers(
   binder: utils.ModuleControllersBinder<mktransaction.Module>
 ) {
+  var transaction = binder.moduleInstance;
   binder.attach(
     {
       endPoint: endPoints.transaction.bill.new,
       validation: validation.newBill
     },
-    binder.makeSimpleController("saveNewBill", function(req: Express.Request) {
-      // this is true because of validation and assumes the request stays a post
-      return req.body;
-    })
+    binder.makeSimpleController(transaction.saveNewBill,
+      function(req: Express.Request) {
+        // this is true because of validation and assumes the request stays a post
+        return req.body;
+      }
+    )
   );
 
   binder.attach(

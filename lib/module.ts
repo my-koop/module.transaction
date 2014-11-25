@@ -272,6 +272,14 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     params: Transaction.NewBill,
     callback: mktransaction.saveNewBillCallback
   ) {
+    this.callWithConnection(this.__saveNewBill, params, callback);
+  }
+
+  __saveNewBill(
+    connection: mysql.IConnection,
+    params: Transaction.NewBill,
+    callback: mktransaction.saveNewBillCallback
+  ) {
     var self = this;
     var idBill = -1;
     var idUser = null;
@@ -280,12 +288,13 @@ class Module extends utils.BaseModule implements mktransaction.Module {
 
     logger.debug("Save new bill", params);
     var mysqlHelper = new MySqlHelper();
+    mysqlHelper.setConnection(_.noop, connection);
 
     async.waterfall([
       function(callback) {
         logger.debug("checking if email is valid");
         if(params.customerEmail) {
-          return self.user.getIdForEmail({
+          return self.user.__getIdForEmail(connection, {
               email: params.customerEmail
             },
             callback
@@ -305,17 +314,6 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         );
       },
 
-      function(callback) {
-        logger.debug("getting connection");
-        self.db.getConnection(function(err, connection, cleanup) {
-          if(err) {
-            return callback(new DatabaseError(err));
-          }
-          mysqlHelper.setConnection(cleanup, connection);
-          callback(null);
-        });
-      },
-
       mysqlHelper.beginTransaction,
 
       function(callback) {
@@ -323,10 +321,14 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         var total = params.total;
         var closedDate = params.archiveBill ? "NULL" : "NOW()";
         // Create bill
-        mysqlHelper.connection().query(
-          "INSERT INTO bill SET createdDate = NOW(), total = ?, idUser = ?, \
+        connection.query(
+          "INSERT INTO bill SET \
+          createdDate = NOW(), \
+          total = ?, \
+          notes = ?, \
+          idUser = ?, \
           closedDate = " + closedDate,
-          [params.total, idUser],
+          [params.total, params.notes, idUser],
           function(err, res) {
             callback(
               err && new DatabaseError(err),
@@ -351,7 +353,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             ];
           }
         );
-        mysqlHelper.connection().query(
+        connection.query(
           "INSERT INTO bill_item (idBill, idItem, quantity, price) VALUES ?",
           [
             billItems
@@ -380,7 +382,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             ];
           }
         );
-        mysqlHelper.connection().query(
+        connection.query(
           "INSERT INTO bill_discount (idBill, type, amount, isAfterTax) VALUES ?",
           [
             billDiscounts
@@ -395,7 +397,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         // must create a transaction with the full amount
         if(!params.archiveBill) {
           self.__addBillTransaction(
-            mysqlHelper.connection(),
+            connection,
             {
               idBill: idBill,
               amount: params.total

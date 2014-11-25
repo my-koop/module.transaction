@@ -11,6 +11,7 @@
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
   createdDate: "Date created",
+  closedDate: "Date closed",
   recordFullPayment: "Pay Now",
   saveForLater: "Archive",
   paid: "Paid",
@@ -18,7 +19,9 @@
   recordTransaction: "Record payment/Refund",
   transactionAmount: "Amount",
 
-  customerInformations: "Customer informations",
+  customerEmail: "Customer Email",
+  billNotes: "Notes",
+  billNotesPlaceholder: "Enter notes for this bill",
   //Discounts
   discountHeader: "Discount Application",
   addDiscount: "Add a discount",

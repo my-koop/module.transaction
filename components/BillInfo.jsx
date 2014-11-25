@@ -101,7 +101,7 @@ var NewBillPage = React.createClass({
     });
 
     return (
-      <BSTable className="min-size-table">
+      <BSTable>
         <tbody>
           {billInfoRows}
         </tbody>
