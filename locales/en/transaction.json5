@@ -18,7 +18,9 @@
   recordTransaction: "Record payment/Refund",
   transactionAmount: "Amount",
 
-  customerInformations: "Customer informations",
+  customerEmail: "Customer Email",
+  billNotes: "Notes",
+  billNotesPlaceholder: "Enter notes for this bill",
   //Discounts
   discountHeader: "Discount Application",
   addDiscount: "Add a discount",

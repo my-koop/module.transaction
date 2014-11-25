@@ -15,6 +15,7 @@ declare module Transaction {
       price: number;
       quantity: number;
     }[];
+    notes?: string;
     total: number;
   }
 

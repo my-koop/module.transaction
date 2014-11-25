@@ -18,7 +18,9 @@
   recordTransaction: "Enregistrer paiement/remboursement",
   transactionAmount: "Montant",
 
-  customerInformations: "Informations du client",
+  customerEmail: "Courriel du client",
+  billNotes: "Notes",
+  billNotesPlaceholder: "Inscrire une note pour cette facture",
   // Discounts
   discountHeader: "Application de rabais",
   addDiscount: "Ajouter un rabais",
