@@ -18,6 +18,9 @@
   addTransactionTooltip: "Ajouter paiement/remboursement",
   recordTransaction: "Enregistrer paiement/remboursement",
   transactionAmount: "Montant",
+  deleteBillWarning: "Attention, la suppression d'une facture NE supprime PAS les\
+ transaction qui y sont reliées. Veuillez effectuer un remboursement complet au préalable\
+ pour ne pas avoir de transactions orphelines",
 
   customerEmail: "Courriel du client",
   billNotes: "Notes",
@@ -43,4 +46,12 @@
   switchBillState_closed: "Afficher ouvertes",
   closeBillTooltip: "Fermer cette facture",
   openBillTooltip: "Réouvrir la facture",
+
+  errors: {
+    app: {
+      id: {
+        notFound: "Cet identifiant n'a pas été trouvé"
+      }
+    }
+  }
 }

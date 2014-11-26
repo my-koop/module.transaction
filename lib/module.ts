@@ -231,7 +231,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           connection.query(
             "SELECT \
               bill.idBill,\
-              sum(amount) AS paid,\
+              coalesce(sum(amount),0) AS paid,\
               createdDate,\
               closedDate,\
               total,\
@@ -474,6 +474,32 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             )
           }
         )
+      }
+    )
+  }
+
+  deleteBill(
+    params: Transaction.DeleteBill.Params,
+    callback: Transaction.DeleteBill.Callback
+  ) {
+    this.callWithConnection(this.__deleteBill, params, callback);
+  }
+
+  __deleteBill(
+    connection: mysql.IConnection,
+    params: Transaction.DeleteBill.Params,
+    callback: Transaction.DeleteBill.Callback
+  ) {
+    connection.query(
+      "DELETE FROM bill WHERE idbill=?",
+      [params.id],
+      function(err, result) {
+        callback(
+          (err && new DatabaseError(err)) ||
+          result.affectedRows !== 1 && new ApplicationError(null, {
+            id: "notFound"
+          })
+        );
       }
     )
   }

@@ -78,5 +78,17 @@ export function attachControllers(
     binder.makeSimpleController("getTaxInformation")
   );
 
-
+  binder.attach(
+    {
+      endPoint: endPoints.transaction.bill.delete
+    },
+    binder.makeSimpleController<Transaction.DeleteBill.Params>(
+      transaction.deleteBill,
+      function(req) {
+        return {
+          id: parseInt(req.param("id")) || -1
+        };
+      }
+    )
+  )
 }

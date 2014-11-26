@@ -2,7 +2,7 @@ var endpoints = {
     transaction: {
         bill: {
             new: {
-                path: "/transaction/bill",
+                path: "/transaction/bills",
                 method: "post",
                 validation: {
                     resolve: "validation",
@@ -10,7 +10,7 @@ var endpoints = {
                 }
             },
             list: {
-                path: "/transaction/bill/list",
+                path: "/transaction/bills",
                 method: "get",
                 validation: {
                     resolve: "validation",
@@ -18,16 +18,20 @@ var endpoints = {
                 }
             },
             close: {
-                path: "/transaction/bill/close/:id",
+                path: "/transaction/bills/:id/close",
                 method: "put"
             },
             open: {
-                path: "/transaction/bill/open/:id",
+                path: "/transaction/bills/:id/open",
                 method: "put"
             },
             addTransaction: {
-                path: "/transaction/bill/:id/addTransaction",
+                path: "/transaction/bills/:id",
                 method: "post"
+            },
+            delete: {
+                path: "/transaction/bills/:id",
+                method: "delete"
             }
         },
         taxes: {

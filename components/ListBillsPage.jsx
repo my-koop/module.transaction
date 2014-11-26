@@ -165,6 +165,29 @@ var ListBillsPage = React.createClass({
     });
   },
 
+  deleteBill: function(bill) {
+    var self = this;
+    actions.transaction.bill.delete({
+      i18nErrors: {
+        prefix: "transaction::errors",
+        keys: ["app"]
+      },
+      data: {
+        id: bill.idBill
+      }
+    }, function(err) {
+      if(err) {
+        // show only first error
+        var i18n = err.i18n[0];
+        MKAlertTrigger.showAlert(
+          __(i18n.key, i18n)
+        );
+        return
+      }
+      self.removeBillFromState(bill);
+    });
+  },
+
   addTransaction: function(bill, amount, callback) {
     if(!amount) {
       return callback();
@@ -198,6 +221,7 @@ var ListBillsPage = React.createClass({
     var buttons = [];
 
     if(this.getBillState() === BillState.open) {
+      // Add transaction action
       buttons.push({
         icon: "plus",
         tooltip: {
@@ -211,6 +235,7 @@ var ListBillsPage = React.createClass({
           onSave={_.bind(this.addTransaction, this, bill)}
         />
       });
+      // Close bill action
       if(bill.total === bill.paid) {
         buttons.push({
           icon: "close",
@@ -227,6 +252,7 @@ var ListBillsPage = React.createClass({
         });
       }
     } else if(this.getBillState() === BillState.closed) {
+      // Open bill action
       var needToSpecifyCustomerInfo = !_.isNumber(bill.idUser);
       buttons.push({
         icon: "folder-open",
@@ -246,6 +272,19 @@ var ListBillsPage = React.createClass({
         } : null
       });
     }
+    // Delete bill action
+    buttons.push({
+      icon: "trash",
+      warningMessage: __("transaction::deleteBillWarning"),
+      tooltip: {
+        text: __("remove"),
+        overlayProps: {
+          placement: "top"
+        }
+      },
+      callback: _.bind(self.deleteBill, self, bill)
+    });
+
     return buttons;
   },
 
@@ -259,8 +298,7 @@ var ListBillsPage = React.createClass({
       defaultOrdering: this.getTableColumns(),
       columns: {
         idBill: {
-          name: __("id"),
-          isStatic: true
+          name: __("id")
         },
         total: {
           name: __("transaction::total"),
@@ -306,6 +344,9 @@ var ListBillsPage = React.createClass({
         actions: {
           name: __("actions"),
           isStatic: true,
+          headerProps: {
+            className: "list-mod-min-width-3"
+          },
           cellGenerator: function(bill) {
             return (
               <MKListModButtons

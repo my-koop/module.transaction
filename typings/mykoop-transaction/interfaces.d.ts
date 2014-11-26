@@ -1,6 +1,10 @@
 
 
 declare module Transaction {
+  export interface successCallback {
+    (err?: Error): void;
+  }
+
   export interface AddBillTransaction {
     idBill: number;
     amount: number;
@@ -50,5 +54,12 @@ declare module Transaction {
   export interface TaxInfo {
     rate: number;
     localizeKey: string;
+  }
+
+  module DeleteBill {
+    export interface Params {
+      id: number;
+    }
+    export interface Callback extends successCallback {}
   }
 }
