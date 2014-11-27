@@ -20,7 +20,7 @@
 
   customerEmail: "Customer Email",
   billNotes: "Notes",
-  billNotesPlaceholder: "Enter notes for this bill",
+  billNotesPlaceholder: "Enter a note for this bill",
   //Discounts
   discountHeader: "Discount Application",
   addDiscount: "Add a discount",

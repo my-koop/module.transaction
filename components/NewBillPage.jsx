@@ -313,7 +313,7 @@ var NewBillPage = React.createClass({
     );
     this.total = billInfo.total;
 
-    var showArchive = this.state.bill.length > 0 && this.state.customerEmail;
+    var showArchive = this.state.bill.length && this.state.customerEmail;
     var showPayNow = this.state.bill.length > 0;
     var buttonsConfig = [
       {
