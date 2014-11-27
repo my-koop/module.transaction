@@ -43,6 +43,7 @@ declare module Transaction {
     idUser: number; // can be null
     paid: number;
     total: number;
+    countTransactions: number;
   }
 
   export interface Discount {
@@ -54,6 +55,16 @@ declare module Transaction {
   export interface TaxInfo {
     rate: number;
     localizeKey: string;
+  }
+
+  module GetBill {
+    export interface Params {
+      id: number;
+    }
+    export interface CallbackResult extends Bill {}
+    export interface Callback {
+      (err: Error, result?: CallbackResult): void;
+    }
   }
 
   module DeleteBill {

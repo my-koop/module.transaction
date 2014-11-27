@@ -216,10 +216,67 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     });
   }
 
+  makeSelectBillQuery(whereClause: string) {
+    return "SELECT \
+      bill.idBill,\
+      coalesce(sum(amount),0) AS paid,\
+      createdDate,\
+      closedDate,\
+      total,\
+      idUser,\
+      coalesce(count(bill_transaction.idTransaction),0) AS countTransactions\
+    FROM bill\
+    LEFT JOIN bill_transaction\
+      ON bill.idBill=bill_transaction.idBill \
+    LEFT JOIN transaction \
+      ON bill_transaction.idTransaction=transaction.idTransaction " +
+    whereClause +
+    " GROUP BY bill.idBill";
+  }
+
+  getBill(
+    params: Transaction.GetBill.Params,
+    callback: Transaction.GetBill.Callback
+  ) {
+    this.callWithConnection(this.__getBill, params, callback);
+  }
+
+  __getBill(
+    connection: mysql.IConnection,
+    params: Transaction.GetBill.Params,
+    callback: Transaction.GetBill.Callback
+  ) {
+    connection.query(
+      this.makeSelectBillQuery(
+      "WHERE bill.idBill=?"),
+      [params.id],
+      function(err, result) {
+        if(err) {
+          return callback(new DatabaseError(err));
+        }
+        if(result.length === 0) {
+          return callback(new ApplicationError(null, {id: "notFound"}));
+        }
+        var row = result[0];
+        var bill: Transaction.Bill = {
+          closedDate: row.closedDate,
+          createdDate: row.createdDate,
+          idBill: params.id,
+          idUser: row.idUser,
+          paid: row.paid,
+          total: row.total,
+          countTransactions: row.countTransactions
+        }
+        callback(null, bill);
+      }
+    )
+  }
+
   listBills(
     params: Transaction.ListBill,
     callback: mktransaction.listBillsCallback
   ) {
+    var self = this;
     var selectIsClosed = params.show === "open" ? "" : "NOT";
     this.db.getConnection(function(err, connection, cleanup) {
       if(err) {
@@ -229,20 +286,8 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       async.waterfall([
         function(callback) {
           connection.query(
-            "SELECT \
-              bill.idBill,\
-              coalesce(sum(amount),0) AS paid,\
-              createdDate,\
-              closedDate,\
-              total,\
-              idUser\
-            FROM bill\
-            LEFT JOIN bill_transaction \
-              ON bill.idBill=bill_transaction.idBill \
-            LEFT JOIN transaction \
-              ON bill_transaction.idTransaction=transaction.idTransaction \
-            WHERE closedDate IS " + selectIsClosed + " NULL \
-            GROUP BY bill.idBill",
+            self.makeSelectBillQuery(
+            "WHERE closedDate IS " + selectIsClosed + " NULL"),
             [selectIsClosed],
             function(err, rows) {
               logger.silly("listBills query result", rows);
@@ -253,7 +298,8 @@ class Module extends utils.BaseModule implements mktransaction.Module {
                   createdDate: row.createdDate,
                   closedDate: row.closedDate,
                   total: row.total,
-                  paid: row.paid
+                  paid: row.paid,
+                  countTransactions: row.countTransactions
                 };
               });
               callback(err && new DatabaseError(err), result);
@@ -490,18 +536,29 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     params: Transaction.DeleteBill.Params,
     callback: Transaction.DeleteBill.Callback
   ) {
-    connection.query(
-      "DELETE FROM bill WHERE idbill=?",
-      [params.id],
-      function(err, result) {
-        callback(
-          (err && new DatabaseError(err)) ||
-          result.affectedRows !== 1 && new ApplicationError(null, {
-            id: "notFound"
-          })
-        );
+    var self = this;
+    async.waterfall([
+      function(next) {
+        self.__getBill(connection, params, next);
+      },
+      function(result: Transaction.GetBill.CallbackResult, next) {
+        if(result.countTransactions) {
+          return next(new ApplicationError(null, {countTransactions: "notEmpty"}));
+        }
+        connection.query(
+          "DELETE FROM bill WHERE idbill=?",
+          [params.id],
+          function(err, result) {
+            next(
+              (err && new DatabaseError(err)) ||
+              result.affectedRows !== 1 && new ApplicationError(null, {
+                id: "notFound"
+              })
+            );
+          }
+        )
       }
-    )
+    ], callback);
   }
 }
 

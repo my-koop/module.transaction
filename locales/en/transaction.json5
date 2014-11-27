@@ -11,6 +11,7 @@
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
   createdDate: "Date created",
+  countTransactionsHeader: "#Transactions",
   recordFullPayment: "Pay Now",
   saveForLater: "Archive",
   paid: "Paid",
@@ -49,6 +50,9 @@
     app: {
       id: {
         notFound: "This ID was not found"
+      },
+      countTransactions: {
+        notEmpty: "This bill has transactions and cannot be deleted"
       }
     }
   }

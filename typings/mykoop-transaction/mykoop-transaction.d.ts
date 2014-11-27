@@ -39,6 +39,16 @@ declare module mktransaction {
       callback: listBillsCallback
     );
 
+    getBill(
+      params: Transaction.GetBill.Params,
+      callback: Transaction.GetBill.Callback
+    );
+    __getBill(
+      connection: mysql.IConnection,
+      params: Transaction.GetBill.Params,
+      callback: Transaction.GetBill.Callback
+    );
+
     deleteBill(
       params: Transaction.DeleteBill.Params,
       callback: Transaction.DeleteBill.Callback

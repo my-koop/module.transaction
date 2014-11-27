@@ -38,6 +38,19 @@ export function attachControllers(
 
   binder.attach(
     {
+      endPoint: endPoints.transaction.bill.get
+    },
+    binder.makeSimpleController<Transaction.GetBill.Params>(transaction.getBill,
+      function(req: Express.Request) {
+        return {
+          id: parseInt(req.param("id")) || 0
+        };
+      }
+    )
+  );
+
+  binder.attach(
+    {
       endPoint: endPoints.transaction.bill.close
     },
     binder.makeSimpleController("closeBill", function(req: Express.Request) {

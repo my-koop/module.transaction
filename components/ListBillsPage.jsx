@@ -28,6 +28,7 @@ var openBillsColumns = [
   "idBill",
   "idUser",
   "createdDate",
+  "countTransactions",
   "total",
   "paid",
   "actions"
@@ -37,6 +38,7 @@ var closedBillsColumns = [
   "idUser",
   "createdDate",
   "closedDate",
+  "countTransactions",
   "total",
   "actions"
 ];
@@ -273,18 +275,19 @@ var ListBillsPage = React.createClass({
       });
     }
     // Delete bill action
-    buttons.push({
-      icon: "trash",
-      warningMessage: __("transaction::deleteBillWarning"),
-      tooltip: {
-        text: __("remove"),
-        overlayProps: {
-          placement: "top"
-        }
-      },
-      callback: _.bind(self.deleteBill, self, bill)
-    });
-
+    if(!bill.countTransactions) {
+      buttons.push({
+        icon: "trash",
+        warningMessage: __("transaction::deleteBillWarning"),
+        tooltip: {
+          text: __("remove"),
+          overlayProps: {
+            placement: "top"
+          }
+        },
+        callback: _.bind(self.deleteBill, self, bill)
+      });
+    }
     return buttons;
   },
 
@@ -340,6 +343,9 @@ var ListBillsPage = React.createClass({
           cellGenerator: function(bill, i) {
             return bill.closedDate ? formatDate(bill.closedDate, "LLL") : null;
           }
+        },
+        countTransactions: {
+          name: __("transaction::countTransactionsHeader")
         },
         actions: {
           name: __("actions"),

@@ -12,6 +12,7 @@
   billEnterCodeOrName: "Entrer le code, nom de l'article ou \"Personnalisé\"",
   createdDate: "Date de création",
   closedDate: "Date de fermeture",
+  countTransactionsHeader: "#Transactions",
   recordFullPayment: "Payer maintenant",
   saveForLater: "Archiver",
   paid: "Payé",
@@ -51,6 +52,9 @@
     app: {
       id: {
         notFound: "Cet identifiant n'a pas été trouvé"
+      },
+      countTransactions: {
+        notEmpty: "Cette facture a des transactions et ne peut être supprimée"
       }
     }
   }

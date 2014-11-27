@@ -99,7 +99,7 @@ var CustomerInformation = React.createClass({
           });
 
           return newEmailInfo;
-        }, 3000, newEmailInfo);
+        }, 1000, newEmailInfo);
       }
     };
 
