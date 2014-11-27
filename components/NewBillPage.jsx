@@ -330,7 +330,7 @@ var NewBillPage = React.createClass({
         warningMessage: __("areYouSure"),
         callback: _.bind(this.saveBill, this, false),
         props: {
-          bsStyle: "danger",
+          bsStyle: "success",
           disabled: !showPayNow
         }
       }

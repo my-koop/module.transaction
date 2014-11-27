@@ -41,7 +41,7 @@ var CustomerInformation = React.createClass({
     return {
       email: {
         value: "",
-        validationState: EmailValidationState.Invalid,
+        validationState: EmailValidationState.Initial,
         // used to know if the response is still relevant
         reqId: 0
       }
@@ -67,6 +67,10 @@ var CustomerInformation = React.createClass({
           reqId: self.state.email.reqId
         };
         self.debounce([], "email", function(newEmailInfo) {
+          if(newEmail === "") {
+            newEmailInfo.validationState = EmailValidationState.Initial;
+            return self.setState({email: newEmailInfo});
+          }
           var curReqId = newEmailInfo.reqId + 1;
           newEmailInfo.reqId = curReqId;
           self.setState({
@@ -103,9 +107,11 @@ var CustomerInformation = React.createClass({
       }
     };
 
-    var emailAddon = "X";
-    var inputStyle = "";
+    var emailAddon = undefined;
+    var inputStyle = undefined;
     switch(self.state.email.validationState) {
+      case EmailValidationState.Initial:
+        break;
       case EmailValidationState.Invalid:
         inputStyle = "error";
         emailAddon = <MKIcon glyph="close" />;
