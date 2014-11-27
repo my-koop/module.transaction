@@ -46,7 +46,8 @@ var NewBillPage = React.createClass({
       discounts: [],
       customerEmail: null,
       // Transaction.TaxInfo[]
-      taxInfos: []
+      taxInfos: [],
+      notes: null
     }
   },
 
@@ -105,7 +106,8 @@ var NewBillPage = React.createClass({
               value: discount.info.value,
               isAfterTax: discount.info.isAfterTax
             };
-          })
+          }),
+          notes: this.state.notes
         }
       }, function (err, res) {
         if (err) {
@@ -295,6 +297,15 @@ var NewBillPage = React.createClass({
       }
     });
 
+    var noteLink = {
+      value: this.state.notes,
+      requestChange: function(newNotes) {
+        self.setState({
+          notes: newNotes
+        });
+      }
+    }
+
     var billInfo = billUtils.calculateBillTotal(
       this.state.bill,
       this.state.taxInfos,
@@ -302,6 +313,28 @@ var NewBillPage = React.createClass({
     );
     this.total = billInfo.total;
 
+    var showArchive = this.state.bill.length && this.state.customerEmail;
+    var showPayNow = this.state.bill.length > 0;
+    var buttonsConfig = [
+      {
+        content: __("transaction::saveForLater"),
+        warningMessage: __("areYouSure"),
+        callback: _.bind(this.saveBill, this, true),
+        props: {
+          bsStyle: "primary",
+          disabled: !showArchive
+        }
+      },
+      {
+        content: __("transaction::recordFullPayment"),
+        warningMessage: __("areYouSure"),
+        callback: _.bind(this.saveBill, this, false),
+        props: {
+          bsStyle: "danger",
+          disabled: !showPayNow
+        }
+      }
+    ];
     return (
       <BSCol md={12}>
         <h1>
@@ -349,36 +382,19 @@ var NewBillPage = React.createClass({
         </MKCollapsablePanel>
 
         <BSPanel header={__("transaction::billInfo")}>
-          <BSCol md={3}>
+          <BSCol lg={4} md={6}>
             <MKBillInfo billInfo={billInfo} taxInfos={this.state.taxInfos} />
-            { this.state.bill.length > 0 ?
-            <BSButtonGroup>
-              { this.state.customerEmail ?
-                <MKConfirmationTrigger
-                  message={__("areYouSure")}
-                  onYes={_.bind(this.saveBill, this, true)}
-                >
-                  <BSButton bsStyle="success">
-                    {__("transaction::saveForLater")}
-                  </BSButton>
-                </MKConfirmationTrigger>
-              : null }
-              <MKConfirmationTrigger
-                message={__("areYouSure")}
-                onYes={_.bind(this.saveBill, this, false)}
-              >
-                <BSButton  bsStyle="danger">
-                  {__("transaction::recordFullPayment")}
-                </BSButton>
-              </MKConfirmationTrigger>
-            </BSButtonGroup>
-          : null }
+            <MKListModButtons buttons={buttonsConfig} />
           </BSCol>
-          <BSCol md={3}>
-            <h3>
-              {__("transaction::customerInformations")}
-            </h3>
+          <BSCol lg={4} md={6}>
             <MKCustomerInformation onEmailChanged={this.onCustomerEmailChanged} />
+            <BSInput
+              type="textarea"
+              className="textarea-resize-vertical"
+              label={__("transaction::billNotes")}
+              placeholder={__("transaction::billNotesPlaceholder")}
+              valueLink={noteLink}
+            />
           </BSCol>
         </BSPanel>
       </BSCol>

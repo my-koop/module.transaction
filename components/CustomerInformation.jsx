@@ -124,7 +124,7 @@ var CustomerInformation = React.createClass({
     return (
       <div>
         <label>
-          {__("email")}
+          {__("transaction::customerEmail")}
           <BSInput
             type="email"
             valueLink={emailLink}
