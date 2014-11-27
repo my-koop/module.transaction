@@ -11,6 +11,7 @@
   customItem: "Personnalisé",
   billEnterCodeOrName: "Entrer le code, nom de l'article ou \"Personnalisé\"",
   createdDate: "Date de création",
+  closedDate: "Date de fermeture",
   recordFullPayment: "Payer maintenant",
   saveForLater: "Archiver",
   paid: "Payé",
