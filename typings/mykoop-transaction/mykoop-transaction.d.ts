@@ -38,6 +38,26 @@ declare module mktransaction {
       params: Transaction.ListBill,
       callback: listBillsCallback
     );
+
+    getBill(
+      params: Transaction.GetBill.Params,
+      callback: Transaction.GetBill.Callback
+    );
+    __getBill(
+      connection: mysql.IConnection,
+      params: Transaction.GetBill.Params,
+      callback: Transaction.GetBill.Callback
+    );
+
+    deleteBill(
+      params: Transaction.DeleteBill.Params,
+      callback: Transaction.DeleteBill.Callback
+    );
+    __deleteBill(
+      connection: mysql.IConnection,
+      params: Transaction.DeleteBill.Params,
+      callback: Transaction.DeleteBill.Callback
+    );
   }
 
 }

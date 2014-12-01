@@ -11,12 +11,15 @@
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
   createdDate: "Date created",
+  transactionCountHeader: "#Transactions",
   recordFullPayment: "Pay Now",
   saveForLater: "Archive",
   paid: "Paid",
   addTransactionTooltip: "Add payment/Refund",
   recordTransaction: "Record payment/Refund",
   transactionAmount: "Amount",
+ deleteBillWarning: "Warning, deleting a bill DOES NOT delete transactions linked\
+ to it. Do a full refund beforehand to avoid orphaned transactions.",
 
   customerEmail: "Customer Email",
   billNotes: "Notes",
@@ -42,4 +45,15 @@
   switchBillState_closed: "Show open",
   closeBillTooltip: "Close this bill",
   openBillTooltip: "Reopen this bill",
+
+  errors: {
+    app: {
+      id: {
+        notFound: "This ID was not found"
+      },
+      transactionCount: {
+        notEmpty: "This bill contains transactions and cannot be deleted"
+      }
+    }
+  }
 }

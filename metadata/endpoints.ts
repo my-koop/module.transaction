@@ -1,8 +1,9 @@
+
 var endpoints = {
   transaction: {
     bill: {
       new: {
-        path: "/transaction/bill",
+        path: "/bills",
         method: "post",
         validation: {
           resolve: "validation",
@@ -10,7 +11,7 @@ var endpoints = {
         }
       },
       list: {
-        path: "/transaction/bill/list",
+        path: "/bills",
         method: "get",
         validation: {
           resolve: "validation",
@@ -18,21 +19,29 @@ var endpoints = {
         }
       },
       close: {
-        path: "/transaction/bill/close/:id",
+        path: "/bills/:id/close",
         method: "put"
       },
       open: {
-        path: "/transaction/bill/open/:id",
+        path: "/bills/:id/open",
         method: "put"
       },
+      get: {
+        path: "/bills/:id",
+        method: "get"
+      },
       addTransaction : {
-        path: "/transaction/bill/:id/addTransaction",
+        path: "/bills/:id/transactions",
         method: "post"
+      },
+      delete: {
+        path: "/bills/:id",
+        method: "delete"
       }
     },
     taxes: {
       get: {
-        path: "/transaction/taxes",
+        path: "/configs/taxes",
         method: "get"
       }
     }
