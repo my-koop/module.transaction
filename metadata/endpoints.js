@@ -40,7 +40,7 @@ var endpoints = {
         },
         taxes: {
             get: {
-                path: "/taxes",
+                path: "/configs/taxes",
                 method: "get"
             }
         }
