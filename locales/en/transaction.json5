@@ -11,7 +11,7 @@
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
   createdDate: "Date created",
-  countTransactionsHeader: "#Transactions",
+  transactionCountHeader: "#Transactions",
   recordFullPayment: "Pay Now",
   saveForLater: "Archive",
   paid: "Paid",
@@ -19,7 +19,7 @@
   recordTransaction: "Record payment/Refund",
   transactionAmount: "Amount",
  deleteBillWarning: "Warning, deleting a bill DOES NOT delete transactions linked\
- to it. Do a full refund before hand to avoid orphaned transactions",
+ to it. Do a full refund beforehand to avoid orphaned transactions.",
 
   customerEmail: "Customer Email",
   billNotes: "Notes",
@@ -51,8 +51,8 @@
       id: {
         notFound: "This ID was not found"
       },
-      countTransactions: {
-        notEmpty: "This bill has transactions and cannot be deleted"
+      transactionCount: {
+        notEmpty: "This bill contains transactions and cannot be deleted"
       }
     }
   }

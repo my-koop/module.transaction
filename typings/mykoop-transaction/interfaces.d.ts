@@ -43,7 +43,7 @@ declare module Transaction {
     idUser: number; // can be null
     paid: number;
     total: number;
-    countTransactions: number;
+    transactionCount: number;
   }
 
   export interface Discount {

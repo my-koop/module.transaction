@@ -12,7 +12,7 @@
   billEnterCodeOrName: "Entrer le code, nom de l'article ou \"Personnalisé\"",
   createdDate: "Date de création",
   closedDate: "Date de fermeture",
-  countTransactionsHeader: "#Transactions",
+  transactionCountHeader: "#Transactions",
   recordFullPayment: "Payer maintenant",
   saveForLater: "Archiver",
   paid: "Payé",
@@ -20,7 +20,7 @@
   recordTransaction: "Enregistrer paiement/remboursement",
   transactionAmount: "Montant",
   deleteBillWarning: "Attention, la suppression d'une facture NE supprime PAS les\
- transaction qui y sont reliées. Veuillez effectuer un remboursement complet au préalable\
+ transactions qui y sont reliées. Veuillez effectuer un remboursement complet au préalable\
  pour ne pas avoir de transactions orphelines",
 
   customerEmail: "Courriel du client",
@@ -53,8 +53,8 @@
       id: {
         notFound: "Cet identifiant n'a pas été trouvé"
       },
-      countTransactions: {
-        notEmpty: "Cette facture a des transactions et ne peut être supprimée"
+      transactionCount: {
+        notEmpty: "Cette facture possède des transactions et ne peut être supprimée"
       }
     }
   }

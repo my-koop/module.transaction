@@ -7,6 +7,7 @@ import billUtils = require("./common_modules/billUtils");
 var MySqlHelper = utils.MySqlHelper;
 var DatabaseError = utils.errors.DatabaseError;
 var ApplicationError = utils.errors.ApplicationError;
+var ResourceNotFoundError = ApplicationError.ResourceNotFoundError;
 
 import assert = require("assert");
 var logger = utils.getLogger(module);
@@ -224,7 +225,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       closedDate,\
       total,\
       idUser,\
-      coalesce(count(bill_transaction.idTransaction),0) AS countTransactions\
+      coalesce(count(bill_transaction.idTransaction),0) AS transactionCount\
     FROM bill\
     LEFT JOIN bill_transaction\
       ON bill.idBill=bill_transaction.idBill \
@@ -265,7 +266,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           idUser: row.idUser,
           paid: row.paid,
           total: row.total,
-          countTransactions: row.countTransactions
+          transactionCount: row.transactionCount
         }
         callback(null, bill);
       }
@@ -299,7 +300,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
                   closedDate: row.closedDate,
                   total: row.total,
                   paid: row.paid,
-                  countTransactions: row.countTransactions
+                  transactionCount: row.transactionCount
                 };
               });
               callback(err && new DatabaseError(err), result);
@@ -542,8 +543,8 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         self.__getBill(connection, params, next);
       },
       function(result: Transaction.GetBill.CallbackResult, next) {
-        if(result.countTransactions) {
-          return next(new ApplicationError(null, {countTransactions: "notEmpty"}));
+        if(result.transactionCount) {
+          return next(new ApplicationError(null, {transactionCount: "notEmpty"}));
         }
         connection.query(
           "DELETE FROM bill WHERE idbill=?",
@@ -551,7 +552,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           function(err, result) {
             next(
               (err && new DatabaseError(err)) ||
-              result.affectedRows !== 1 && new ApplicationError(null, {
+              result.affectedRows !== 1 && new ResourceNotFoundError(null, {
                 id: "notFound"
               })
             );

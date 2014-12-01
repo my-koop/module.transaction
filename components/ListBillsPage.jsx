@@ -28,7 +28,7 @@ var openBillsColumns = [
   "idBill",
   "idUser",
   "createdDate",
-  "countTransactions",
+  "transactionCount",
   "total",
   "paid",
   "actions"
@@ -38,7 +38,7 @@ var closedBillsColumns = [
   "idUser",
   "createdDate",
   "closedDate",
-  "countTransactions",
+  "transactionCount",
   "total",
   "actions"
 ];
@@ -275,7 +275,7 @@ var ListBillsPage = React.createClass({
       });
     }
     // Delete bill action
-    if(!bill.countTransactions) {
+    if(!bill.transactionCount) {
       buttons.push({
         icon: "trash",
         warningMessage: __("transaction::deleteBillWarning"),
@@ -285,7 +285,7 @@ var ListBillsPage = React.createClass({
             placement: "top"
           }
         },
-        callback: _.bind(self.deleteBill, self, bill)
+        callback: _.bind(self.deleteBill, null, bill)
       });
     }
     return buttons;
@@ -344,8 +344,8 @@ var ListBillsPage = React.createClass({
             return bill.closedDate ? formatDate(bill.closedDate, "LLL") : null;
           }
         },
-        countTransactions: {
-          name: __("transaction::countTransactionsHeader")
+        transactionCount: {
+          name: __("transaction::transactionCountHeader")
         },
         actions: {
           name: __("actions"),

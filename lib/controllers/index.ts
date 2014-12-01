@@ -43,7 +43,7 @@ export function attachControllers(
     binder.makeSimpleController<Transaction.GetBill.Params>(transaction.getBill,
       function(req: Express.Request) {
         return {
-          id: parseInt(req.param("id")) || 0
+          id: parseInt(req.param("id", 0))
         };
       }
     )
@@ -99,7 +99,7 @@ export function attachControllers(
       transaction.deleteBill,
       function(req) {
         return {
-          id: parseInt(req.param("id")) || -1
+          id: parseInt(req.param("id", -1))
         };
       }
     )
