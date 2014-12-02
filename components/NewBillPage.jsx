@@ -336,7 +336,7 @@ var NewBillPage = React.createClass({
       }
     ];
     return (
-      <BSCol md={12}>
+      <div>
         <h1>
           {__("transaction::newBillWelcome")}
         </h1>
@@ -397,7 +397,7 @@ var NewBillPage = React.createClass({
             />
           </BSCol>
         </BSPanel>
-      </BSCol>
+      </div>
     );
   }
 
