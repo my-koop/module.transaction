@@ -367,6 +367,9 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         logger.debug("Create new bill id");
         var total = params.total;
         var closedDate = params.archiveBill ? "NULL" : "NOW()";
+        var idEvent = _.isNumber(params.idEvent) && params.idEvent >= 0 ?
+          params.idEvent
+        : null;
         // Create bill
         connection.query(
           "INSERT INTO bill SET \
@@ -374,8 +377,9 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           total = ?, \
           notes = ?, \
           idUser = ?, \
+          idEvent = ?, \
           closedDate = " + closedDate,
-          [params.total, params.notes, idUser],
+          [params.total, params.notes, idUser, idEvent],
           function(err, res) {
             callback(
               err && new DatabaseError(err),

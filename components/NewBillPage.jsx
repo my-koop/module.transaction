@@ -48,7 +48,7 @@ var NewBillPage = React.createClass({
       // Transaction.TaxInfo[]
       taxInfos: [],
       notes: null,
-      eventId: -1
+      idEvent: -1
     }
   },
 
@@ -116,7 +116,7 @@ var NewBillPage = React.createClass({
           total: this.total,
           archiveBill: archiveBill,
           customerEmail: this.state.customerEmail,
-          eventId: this.state.eventId,
+          idEvent: this.state.idEvent,
           items: _.map(this.state.bill, function(item) {
             return {
               id: item.id,
@@ -333,10 +333,10 @@ var NewBillPage = React.createClass({
       }
     };
     var eventLink = {
-      value: this.state.eventId,
+      value: this.state.idEvent,
       requestChange: function(newId) {
         self.setState({
-          eventId: parseInt(newId)
+          idEvent: parseInt(newId)
         });
       }
     };

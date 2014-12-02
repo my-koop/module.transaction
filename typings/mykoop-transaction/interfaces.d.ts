@@ -14,6 +14,7 @@ declare module Transaction {
     archiveBill: boolean;
     customerEmail?: string;
     discounts?: Discount[];
+    idEvent: number;
     items: {
       id: number;
       price: number;
