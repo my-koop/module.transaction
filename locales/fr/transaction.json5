@@ -3,6 +3,7 @@
   itemList: "Liste d'articles",
   addItemToBill: "Ajouter un article à la facture",
   billInfo : "Information sur la facture",
+  linkToEvent: "Associer un événement à cette facture",
   subtotal : "Sous-total",
   total : "Total",
   tax: "Taxes",

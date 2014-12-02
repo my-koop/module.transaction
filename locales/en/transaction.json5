@@ -3,6 +3,7 @@
   itemList: "Item list",
   addItemToBill: "Add item to bill",
   billInfo : "Bill information",
+  linkToEvent: "Link bill to event",
   subtotal : "Subtotal",
   total : "Total",
   tax: "Taxes",
