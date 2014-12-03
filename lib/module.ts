@@ -576,6 +576,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         cleanup();
         return callback(new DatabaseError(err), null);
       }
+      logger.verbose("Getting report from", params.fromDate ,"to", params.toDate);
       //This query will always return 3 rows, one for each category
       //If no transaction is found within a date range, values are set to 0
       connection.query(" \

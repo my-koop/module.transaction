@@ -46,7 +46,6 @@
   switchBillState_closed: "Show open",
   closeBillTooltip: "Close this bill",
   openBillTooltip: "Reopen this bill",
-
   errors: {
     app: {
       id: {
@@ -57,4 +56,19 @@
       }
     }
   }
+
+  //Report
+  financialReportWelcome : "Financial Report",
+  financialReportExplanation : "",
+  financialReportPanelHeader :  "Reports",
+  financialReportCategory_product : "Products",
+  financialReportCategory_membership : "Memberships",
+  financialReportCategory_subscription : "Subscriptions",
+  financialReportFieldTotal : "Total",
+  financialReportFieldTotalSales : "Total sales",
+  financialReportFieldTotalRefunds : "Total refunds",
+  financialReportFieldTransactions : "Number of transactions",
+  financialReportFieldSales : "Number of sales",
+  financialReportFieldRefunds : "Number of refunds",
+  financialReportSubmit : "Submit",
 }

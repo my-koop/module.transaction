@@ -5,6 +5,8 @@ var BSInput  = require("react-bootstrap/Input");
 var MKDateTimePicker = require("mykoop-core/components/DateTimePicker");
 
 var __ = require("language").__;
+var formatDate = require("language").formatDate;
+var formatMoney = require("language").formatMoney;
 var _  = require("lodash");
 var actions = require("actions");
 
@@ -17,7 +19,7 @@ var FinancialReport = React.createClass({
     return {
       fromDate: null,
       toDate: null,
-      report: null
+      reports: null
     }
   },
 
@@ -28,24 +30,25 @@ var FinancialReport = React.createClass({
     }
     var self = this;
     actions.transaction.report({
-      date: {
+      data: {
         fromDate: self.state.fromDate,
         toDate: self.state.toDate
-      }, function(err, res){
+      }
+    }, function(err, res){
         if(err) {
-          console.error(err);
+          console.log(err);
         } else {
-          self.setState{
+          self.setState({
             reports: res.reports
-          }
+          });
         }
       }
-    })
+    );
   },
 
   onDateChange: function(whatDatePicker, date, dateStr){
     var state = this.state;
-    state[whatDatePicker] = date;
+    state[whatDatePicker] = dateStr;
     this.setState(state);
   },
 
@@ -53,12 +56,12 @@ var FinancialReport = React.createClass({
     var categories = _.map(this.state.reports, function(report){
       return (
         <BSPanel header={__("transaction::financialReportCategory", { context: report.category})}>
-          <p> {__("transaction::financialReportFieldTotal") + ": " + report.total } </p>
-          <p> {__("transaction::financialReportFieldTotalSales") + ": " + report.totalSales } </p>
-          <p> {__("transaction::financialReportFieldTotalRefunds") + ": " + report.totalRefunds } </p>
+          <p> {__("transaction::financialReportFieldTotal")        + ": " + formatMoney(report.total) } </p>
+          <p> {__("transaction::financialReportFieldTotalSales")   + ": " + formatMoney(report.totalSales) } </p>
+          <p> {__("transaction::financialReportFieldTotalRefunds") + ": " + formatMoney(report.totalRefunds) } </p>
           <p> {__("transaction::financialReportFieldTransactions") + ": " + report.transactions } </p>
-          <p> {__("transaction::financialReportFieldSales") + ": " + report.sales } </p>
-          <p> {__("transaction::financialReportFieldRefunds") + ": " + report.refunds } </p>
+          <p> {__("transaction::financialReportFieldSales")        + ": " + report.sales } </p>
+          <p> {__("transaction::financialReportFieldRefunds")      + ": " + report.refunds } </p>
         </BSPanel>
       );
     })
@@ -69,16 +72,16 @@ var FinancialReport = React.createClass({
         <form onSubmit={this.onSubmit}>
           <MKDateTimePicker
             time={false}
+            format="yyyy-MM-dd"
             min={new Date("2014-01-01")}
             max={new Date()}
-            format="MMM dd, yyy"
             onChange={this.onDateChange.bind(null,"fromDate")}
           />
           <MKDateTimePicker
             time={false}
-            min={new Date("2014-01-01")}
-            max={new Date()}
-            format="MMM dd, yyy"
+            format="yyyy-MM-dd"
+            min={ new Date("2014-01-01")}
+            max={ new Date()}
             onChange={this.onDateChange.bind(null,"toDate")}
           />
           <BSInput

@@ -48,7 +48,6 @@
   switchBillState_closed: "Afficher ouvertes",
   closeBillTooltip: "Fermer cette facture",
   openBillTooltip: "Réouvrir la facture",
-
   errors: {
     app: {
       id: {
@@ -59,4 +58,19 @@
       }
     }
   }
+
+  //Report
+  financialReportWelcome : "Rapports financiers",
+  financialReportExplanation : "",
+  financialReportPanelHeader :  "Rapports",
+  financialReportCategory_product : "Articles",
+  financialReportCategory_membership : "Adhésion",
+  financialReportCategory_subscription : "Cotisation",
+  financialReportFieldTotal : "Total",
+  financialReportFieldTotalSales : "Total des ventes",
+  financialReportFieldTotalRefunds : "Total des remboursements",
+  financialReportFieldTransactions : "Nombre de transactions",
+  financialReportFieldSales : "Nombre de ventes",
+  financialReportFieldRefunds : "Nombre de remboursements",
+  financialReportSubmit : "Envoyer",
 }

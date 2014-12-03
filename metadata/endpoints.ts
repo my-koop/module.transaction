@@ -47,7 +47,7 @@ var endpoints = {
     },
     report: {
       path: "/transaction/report",
-      method: "get"
+      method: "put"
     }
   }
 }
