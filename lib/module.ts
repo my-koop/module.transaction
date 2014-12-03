@@ -378,8 +378,9 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           notes = ?, \
           idUser = ?, \
           idEvent = ?, \
+          category = ?, \
           closedDate = " + closedDate,
-          [params.total, params.notes, idUser, idEvent],
+          [params.total, params.notes, idUser, idEvent, params.category],
           function(err, res) {
             callback(
               err && new DatabaseError(err),

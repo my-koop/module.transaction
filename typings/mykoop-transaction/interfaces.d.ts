@@ -22,6 +22,7 @@ declare module Transaction {
     }[];
     notes?: string;
     total: number;
+    category: string;
   }
 
   export interface BillId {
