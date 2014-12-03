@@ -2,4 +2,5 @@
   success: "Success",
   id: "ID",
   email: "Email",
+  none: "None",
 }

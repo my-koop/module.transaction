@@ -29,7 +29,7 @@ var _ = require("lodash");
 var formatMoney = require("language").formatMoney;
 var actions = require("actions");
 var util = require("util");
-var getRouteName = require("mykoop-utils/frontend/getRouteName");
+var async = require("async");
 
 var NewBillPage = React.createClass({
   mixins: [MKDebouncerMixin],
@@ -47,34 +47,57 @@ var NewBillPage = React.createClass({
       customerEmail: null,
       // Transaction.TaxInfo[]
       taxInfos: [],
-      notes: null
+      notes: null,
+      idEvent: -1
     }
   },
 
   componentDidMount: function () {
     var self = this;
-    // Fetch inventory from database
-    actions.inventory.list(function (err, res) {
-      if (err) {
-        console.error(err);
-        MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
-        return;
-      }
-
-      self.setState({
-        items: res.items
+    var items;
+    var taxes;
+    var events;
+    var queries = [
+      {
+        action: actions.inventory.list,
+        processResult: function(res) {
+          items = res.items;
+        }
+      },
+      {
+        action: actions.transaction.taxes.get,
+        processResult: function(res) {
+          taxes = res;
+        }
+      },
+      {
+        action: actions.event.list,
+        data: {isClosed: false, startedOnly: true},
+        processResult: function(res) {
+          events = res.events;
+        }
+      },
+    ];
+    async.each(queries, function(query, next) {
+      query.action({
+        i18nErrors: {},
+        data: query.data
+      }, function(err, res) {
+        if(!err) {
+          query.processResult(res);
+        }
+        next(err);
       });
-    });
-
-    actions.transaction.taxes.get(function(err, taxInfos) {
-      if (err) {
-        console.error(err);
-        MKAlertTrigger.showAlert(__("errors::error", {context: err.context}));
-        return;
+    }, function(err) {
+      if(err) {
+        var firstError = err.i18n[0];
+        return MKAlertTrigger.showAlert(__(firstError.key, firstError));
       }
-
       self.setState({
-        taxInfos: taxInfos
+        events: events,
+        items: items,
+        taxes: taxes,
+        finishedLoading: true
       });
     });
   },
@@ -93,6 +116,7 @@ var NewBillPage = React.createClass({
           total: this.total,
           archiveBill: archiveBill,
           customerEmail: this.state.customerEmail,
+          idEvent: this.state.idEvent,
           items: _.map(this.state.bill, function(item) {
             return {
               id: item.id,
@@ -116,7 +140,7 @@ var NewBillPage = React.createClass({
           return;
         }
         Router.transitionTo(
-          getRouteName(["dashboard", "transaction", "bill", "list"]),
+          "listBills",
           {
             state: archiveBill ? "open" : "closed"
           }
@@ -218,6 +242,9 @@ var NewBillPage = React.createClass({
   /// Render method
   render: function() {
     var self = this;
+    if(!self.state.finishedLoading) {
+      return null;
+    }
 
     // TableSorter Config
     var BillTableConfig = {
@@ -304,7 +331,15 @@ var NewBillPage = React.createClass({
           notes: newNotes
         });
       }
-    }
+    };
+    var eventLink = {
+      value: this.state.idEvent,
+      requestChange: function(newId) {
+        self.setState({
+          idEvent: parseInt(newId)
+        });
+      }
+    };
 
     var billInfo = billUtils.calculateBillTotal(
       this.state.bill,
@@ -387,6 +422,16 @@ var NewBillPage = React.createClass({
             <MKListModButtons buttons={buttonsConfig} />
           </BSCol>
           <BSCol lg={4} md={6}>
+            <BSInput
+              type="select"
+              label={__("transaction::linkToEvent")}
+              valueLink={eventLink}
+            >
+              <option value={-1} key={-1}>{__("none")}</option>
+              {_.map(this.state.events, function(event) {
+                return <option value={event.id} key={event.id}>{event.name}</option>
+              })}
+            </BSInput>
             <MKCustomerInformation onEmailChanged={this.onCustomerEmailChanged} />
             <BSInput
               type="textarea"

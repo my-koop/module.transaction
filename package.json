@@ -4,7 +4,8 @@
   "mykoop": {
     "dependencies": {
       "database": "^1.0.0",
-      "user" : "^1.0.0"
+      "user" : "^1.0.0",
+      "event": "^1.0.0"
     }
   },
   "version": "1.0.0",
