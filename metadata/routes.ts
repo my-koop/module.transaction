@@ -5,6 +5,12 @@ export function addRoutes(metaData: utils.MetaDataBuilder) {
     name: null,
     path: "transaction"
   });
+  metaData.addFrontendRoute({
+    idPath: ["dashboard", "financialreport"],
+    component: "FinancialReport",
+    name: "FinancialReport",
+    path: "financialreport"
+  });
   // Transaction
   {
     metaData.addFrontendRoute({
