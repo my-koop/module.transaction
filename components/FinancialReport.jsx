@@ -16,12 +16,31 @@ var FinancialReport = React.createClass({
   getInitialState: function() {
     return {
       fromDate: null,
-      toDate: null
+      toDate: null,
+      report: null
     }
   },
 
   onSubmit: function(e) {
     e.preventDefault();
+    if(!this.state.toDate || !this.state.fromDate){
+      return;
+    }
+    var self = this;
+    actions.transaction.report({
+      date: {
+        fromDate: self.state.fromDate,
+        toDate: self.state.toDate
+      }, function(err, res){
+        if(err) {
+          console.error(err);
+        } else {
+          self.setState{
+            reports: res.reports
+          }
+        }
+      }
+    })
   },
 
   onDateChange: function(whatDatePicker, date, dateStr){
@@ -31,7 +50,18 @@ var FinancialReport = React.createClass({
   },
 
   render: function(){
-
+    var categories = _.map(this.state.reports, function(report){
+      return (
+        <BSPanel header={__("transaction::financialReportCategory", { context: report.category})}>
+          <p> {__("transaction::financialReportFieldTotal") + ": " + report.total } </p>
+          <p> {__("transaction::financialReportFieldTotalSales") + ": " + report.totalSales } </p>
+          <p> {__("transaction::financialReportFieldTotalRefunds") + ": " + report.totalRefunds } </p>
+          <p> {__("transaction::financialReportFieldTransactions") + ": " + report.transactions } </p>
+          <p> {__("transaction::financialReportFieldSales") + ": " + report.sales } </p>
+          <p> {__("transaction::financialReportFieldRefunds") + ": " + report.refunds } </p>
+        </BSPanel>
+      );
+    })
     return (
       <div>
         <h1> {__("transaction::financialReportWelcome")} </h1>
@@ -56,9 +86,12 @@ var FinancialReport = React.createClass({
             value={__("transaction::financialReportSubmit")}
           />
         </form>
-        <BSPanel header={__("transaction::financialReportPanelHeader")}>
-
-        </BSPanel>
+        { this.state.reports ?
+          <BSPanel header={__("transaction::financialReportPanelHeader")}>
+            {categories}
+          </BSPanel>
+          : null
+        }
       </div>
     );
   },

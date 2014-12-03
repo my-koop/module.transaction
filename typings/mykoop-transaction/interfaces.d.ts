@@ -59,6 +59,16 @@ declare module Transaction {
     localizeKey: string;
   }
 
+  export interface FinancialReport {
+    category: string;
+    total: number;
+    totalSales: number;
+    totalRefunds: number;
+    transactions: number;
+    sales: number;
+    refunds: number;
+  }
+
   module GetBill {
     export interface Params {
       id: number;

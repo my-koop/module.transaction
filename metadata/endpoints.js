@@ -43,6 +43,10 @@ var endpoints = {
                 path: "/configs/taxes",
                 method: "get"
             }
+        },
+        report: {
+            path: "/transaction/report",
+            method: "get"
         }
     }
 };
