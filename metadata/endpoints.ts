@@ -30,6 +30,10 @@ var endpoints = {
         path: "/bills/:id",
         method: "get"
       },
+      details: {
+        path: "/bills/:id/details",
+        method: "get"
+      },
       addTransaction : {
         path: "/bills/:id/transactions",
         method: "post"

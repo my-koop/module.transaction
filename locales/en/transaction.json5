@@ -1,5 +1,6 @@
 {
   newBillWelcome: "Create bill",
+  billDetailsWelcome: "Details of bill",
   itemList: "Item list",
   addItemToBill: "Add item to bill",
   billInfo : "Bill information",

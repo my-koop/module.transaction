@@ -31,16 +31,19 @@ var CustomerInformation = React.createClass({
   mixins: [MKDebouncerMixin],
 
   propTypes: {
+    email: React.PropTypes.string,
     // (email: string) => void; Only if email is valid
     onEmailChanged: React.PropTypes.func.isRequired
   },
 
   ////////////////////////////
   /// Life Cycle methods
-  getInitialState: function() {
+  getInitialState: function(props) {
+    props = props || this.props;
     return {
+
       email: {
-        value: "",
+        value: this.props.email || "",
         validationState: EmailValidationState.Initial,
         // used to know if the response is still relevant
         reqId: 0
@@ -57,7 +60,7 @@ var CustomerInformation = React.createClass({
     var self = this;
 
     var emailLink = {
-      value: this.state.customerEmail,
+      value: this.state.email.value,
       requestChange: function(newEmail) {
         // Assume email is invalid until we get a response from the server
         self.props.onEmailChanged(null);

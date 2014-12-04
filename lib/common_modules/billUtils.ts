@@ -3,7 +3,7 @@ import discountTypes = require("./discountTypes");
 
 export interface DiscountInfo {
   apply: (value: number) => number;
-  info: Transaction.Discount
+  info: mktransaction.Discount
 }
 
 // amount: total amount to apply discounts
@@ -35,7 +35,7 @@ function applyDiscounts(
 
 export function calculateBillTotal(
   items: {price: number; quantity: number}[],
-  taxInfo: Transaction.TaxInfo[],
+  taxInfo: mktransaction.TaxInfo[],
   discounts: DiscountInfo[]
 ) {
   var subtotal = _.reduce(items, function(subtotal: number, item) {

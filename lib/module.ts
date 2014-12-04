@@ -4,6 +4,7 @@ import async = require("async");
 import _ = require("lodash");
 import DiscountTypes = require("./common_modules/discountTypes");
 import billUtils = require("./common_modules/billUtils");
+import BillInformation = require("./classes/BillInformation");
 var MySqlHelper = utils.MySqlHelper;
 var DatabaseError = utils.errors.DatabaseError;
 var ApplicationError = utils.errors.ApplicationError;
@@ -23,7 +24,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   addBillTransaction(
-    params: Transaction.AddBillTransaction,
+    params: mktransaction.AddBillTransaction,
     callback: mktransaction.successCallback
   ) {
     var self = this;
@@ -59,7 +60,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
 
   getTaxInformation(
     params: any,
-    callback: (err, taxes?: Transaction.TaxInfo[]) => void
+    callback: (err, taxes?: mktransaction.TaxInfo[]) => void
   ) {
     this.db.getConnection(function(err, connection, cleanup) {
       if(err) {
@@ -91,7 +92,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   openBill(
-    params: Transaction.OpenBill,
+    params: mktransaction.OpenBill,
     callback: mktransaction.successCallback
   ) {
     var id = params.idBill;
@@ -165,7 +166,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   closeBill(
-    params: Transaction.BillId,
+    params: mktransaction.BillId,
     callback: mktransaction.successCallback
   ) {
     var id = params.idBill;
@@ -217,39 +218,60 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     });
   }
 
-  makeSelectBillQuery(whereClause: string) {
-    return "SELECT \
-      bill.idBill,\
-      coalesce(sum(amount),0) AS paid,\
-      createdDate,\
-      closedDate,\
-      total,\
-      idUser,\
-      coalesce(count(bill_transaction.idTransaction),0) AS transactionCount\
-    FROM bill\
-    LEFT JOIN bill_transaction\
-      ON bill.idBill=bill_transaction.idBill \
-    LEFT JOIN transaction \
-      ON bill_transaction.idTransaction=transaction.idTransaction " +
-    whereClause +
-    " GROUP BY bill.idBill";
+  getBillDetails(
+    params: mktransaction.GetBillDetails.Params,
+    callback: mktransaction.GetBillDetails.Callback
+  ) {
+    this.callWithConnection(this.__getBillDetails, params, callback);
+  }
+  __getBillDetails(
+    connection: mysql.IConnection,
+    params: mktransaction.GetBillDetails.Params,
+    callback: mktransaction.GetBillDetails.Callback
+  ) {
+    var self = this;
+    async.waterfall([
+      function(next) {
+        self.__getBill(connection, {id: params.id}, next);
+      },
+      function(result: mktransaction.GetBill.CallbackResult, next) {
+        connection.query(
+          "SELECT\
+            i.id,\
+            b.quantity,\
+            b.price,\
+            i.name,\
+            i.code\
+          FROM bill_item b\
+          LEFT JOIN item i on b.idItem=i.id\
+          WHERE idBill = ?",
+          [params.id],
+          function(err, rows) {
+            if(err) {
+              return next(new DatabaseError(err));
+            }
+            var items = _.map(rows, _.identity);
+            next(null, _.merge(result, {items: items}));
+          }
+        );
+      }
+    ], <any>callback);
   }
 
   getBill(
-    params: Transaction.GetBill.Params,
-    callback: Transaction.GetBill.Callback
+    params: mktransaction.GetBill.Params,
+    callback: mktransaction.GetBill.Callback
   ) {
     this.callWithConnection(this.__getBill, params, callback);
   }
 
   __getBill(
     connection: mysql.IConnection,
-    params: Transaction.GetBill.Params,
-    callback: Transaction.GetBill.Callback
+    params: mktransaction.GetBill.Params,
+    callback: mktransaction.GetBill.Callback
   ) {
     connection.query(
-      this.makeSelectBillQuery(
-      "WHERE bill.idBill=?"),
+      BillInformation.Get1BillQuery,
       [params.id],
       function(err, result) {
         if(err) {
@@ -258,27 +280,20 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         if(result.length === 0) {
           return callback(new ApplicationError(null, {id: "notFound"}));
         }
-        var row = result[0];
-        var bill: Transaction.Bill = {
-          closedDate: row.closedDate,
-          createdDate: row.createdDate,
-          idBill: params.id,
-          idUser: row.idUser,
-          paid: row.paid,
-          total: row.total,
-          transactionCount: row.transactionCount
-        }
-        callback(null, bill);
+        callback(null, new BillInformation(result[0]));
       }
     )
   }
 
   listBills(
-    params: Transaction.ListBill,
+    params: mktransaction.ListBill,
     callback: mktransaction.listBillsCallback
   ) {
     var self = this;
-    var selectIsClosed = params.show === "open" ? "" : "NOT";
+    var selectIsClosed = params.show === "open" ?
+      BillInformation.GetOpenBillsQuery
+    : BillInformation.GetCloseBillsQuery;
+
     this.db.getConnection(function(err, connection, cleanup) {
       if(err) {
         return callback(new DatabaseError(err));
@@ -287,21 +302,11 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       async.waterfall([
         function(callback) {
           connection.query(
-            self.makeSelectBillQuery(
-            "WHERE closedDate IS " + selectIsClosed + " NULL"),
-            [selectIsClosed],
+            selectIsClosed,
             function(err, rows) {
               logger.silly("listBills query result", rows);
-              var result: Transaction.Bill[] = _.map(rows, function(row: any) {
-                return {
-                  idBill: row.idBill,
-                  idUser: row.idUser,
-                  createdDate: row.createdDate,
-                  closedDate: row.closedDate,
-                  total: row.total,
-                  paid: row.paid,
-                  transactionCount: row.transactionCount
-                };
+              var result: mktransaction.Bill[] = _.map(rows, function(row: any) {
+                return new BillInformation(row);
               });
               callback(err && new DatabaseError(err), result);
             }
@@ -316,7 +321,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   saveNewBill(
-    params: Transaction.NewBill,
+    params: mktransaction.NewBill,
     callback: mktransaction.saveNewBillCallback
   ) {
     this.callWithConnection(this.__saveNewBill, params, callback);
@@ -324,7 +329,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
 
   __saveNewBill(
     connection: mysql.IConnection,
-    params: Transaction.NewBill,
+    params: mktransaction.NewBill,
     callback: mktransaction.saveNewBillCallback
   ) {
     var self = this;
@@ -370,6 +375,15 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         var idEvent = _.isNumber(params.idEvent) && params.idEvent >= 0 ?
           params.idEvent
         : null;
+        var billDiscounts =
+          _.map(params.discounts, function(discount) {
+            return {
+              type: discount.type,
+              value: discount.value,
+              isAfterTax: discount.isAfterTax
+            };
+          }
+        );
         // Create bill
         connection.query(
           "INSERT INTO bill SET \
@@ -379,8 +393,16 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           idUser = ?, \
           idEvent = ?, \
           category = ?, \
+          discounts = ?, \
           closedDate = " + closedDate,
-          [params.total, params.notes, idUser, idEvent, params.category],
+          [
+            params.total,
+            params.notes,
+            idUser,
+            idEvent,
+            params.category,
+            JSON.stringify(billDiscounts)
+          ],
           function(err, res) {
             callback(
               err && new DatabaseError(err),
@@ -393,6 +415,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       function(id, callback) {
         idBill = id;
         logger.debug("Link items to idBill: %d", idBill);
+
         // Add list of item in the bill
         var billItems =
           _.map(params.items, function(item) {
@@ -406,7 +429,12 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           }
         );
         connection.query(
-          "INSERT INTO bill_item (idBill, idItem, quantity, price) VALUES ?",
+          "INSERT INTO bill_item (\
+            idBill, \
+            idItem, \
+            quantity, \
+            price, \
+          ) VALUES ?",
           [
             billItems
           ],
@@ -415,36 +443,6 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           }
         );
       },
-
-      function(callback) {
-        if(_.isEmpty(params.discounts)) {
-          // no discounts to add
-          return callback(null);
-        }
-        logger.debug("Link discounts to idBill: %d", idBill);
-
-        // Add list of discount in the bill
-        var billDiscounts =
-          _.map(params.discounts, function(discount) {
-            return [
-              idBill,
-              DiscountTypes.Types[discount.type],
-              discount.value,
-              discount.isAfterTax
-            ];
-          }
-        );
-        connection.query(
-          "INSERT INTO bill_discount (idBill, type, amount, isAfterTax) VALUES ?",
-          [
-            billDiscounts
-          ],
-          function(err, res) {
-            callback(err && new DatabaseError(err));
-          }
-        );
-      },
-
       function(callback) {
         // must create a transaction with the full amount
         if(!params.archiveBill) {
@@ -531,23 +529,23 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   deleteBill(
-    params: Transaction.DeleteBill.Params,
-    callback: Transaction.DeleteBill.Callback
+    params: mktransaction.DeleteBill.Params,
+    callback: mktransaction.DeleteBill.Callback
   ) {
     this.callWithConnection(this.__deleteBill, params, callback);
   }
 
   __deleteBill(
     connection: mysql.IConnection,
-    params: Transaction.DeleteBill.Params,
-    callback: Transaction.DeleteBill.Callback
+    params: mktransaction.DeleteBill.Params,
+    callback: mktransaction.DeleteBill.Callback
   ) {
     var self = this;
     async.waterfall([
       function(next) {
         self.__getBill(connection, params, next);
       },
-      function(result: Transaction.GetBill.CallbackResult, next) {
+      function(result: mktransaction.GetBill.CallbackResult, next) {
         if(result.transactionCount) {
           return next(new ApplicationError(null, {transactionCount: "notEmpty"}));
         }

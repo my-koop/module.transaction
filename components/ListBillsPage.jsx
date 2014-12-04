@@ -20,10 +20,9 @@ var async        = require("async");
 var actions      = require("actions");
 var formatDate   = require("language").formatDate;
 var formatMoney  = require("language").formatMoney;
-var getRouteName = require("mykoop-utils/frontend/getRouteName");
 var BillState    = require("../lib/common_modules/BillState");
 
-var thisRouteName = getRouteName(["dashboard", "transaction", "bill", "list"]);
+var thisRouteName = "listBills";
 var openBillsColumns = [
   "idBill",
   "idUser",
@@ -60,7 +59,7 @@ var ListBillsPage = React.createClass({
 
   getInitialState: function() {
     return {
-      // Transaction.Bill[]
+      // mktransaction.Bill[]
       bills: [],
       billState: BillState[this.props.params.state]
     }
@@ -323,7 +322,7 @@ var ListBillsPage = React.createClass({
             return (
               <div key={i}>
                   <Link
-                    to={getRouteName(["dashboard", "adminEdit"])}
+                    to={"adminEdit"}
                     params={{id: bill.idUser}}
                   >
                     {bill.idUser}

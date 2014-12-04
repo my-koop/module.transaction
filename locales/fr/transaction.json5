@@ -1,5 +1,6 @@
 {
   newBillWelcome: "Créer une facture",
+  billDetailsWelcome: "Détails de la facture",
   itemList: "Liste d'articles",
   addItemToBill: "Ajouter un article à la facture",
   billInfo : "Information sur la facture",
