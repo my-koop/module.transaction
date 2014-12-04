@@ -68,6 +68,16 @@ declare module mktransaction {
       params: mktransaction.DeleteBill.Params,
       callback: mktransaction.DeleteBill.Callback
     );
+
+    updateBill(
+      params: mktransaction.UpdateBill.Params,
+      callback: mktransaction.UpdateBill.Callback
+    );
+    __updateBill(
+      connection: mysql.IConnection,
+      params: mktransaction.UpdateBill.Params,
+      callback: mktransaction.UpdateBill.Callback
+    );
   }
 
 }

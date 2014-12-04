@@ -1,7 +1,8 @@
-var React = require("react");
-var BSCol = require("react-bootstrap/Col");
-var Link  = require("react-router").Link;
+var React  = require("react");
+var Router = require("react-router");
+var Link   = Router.Link;
 
+var BSCol = require("react-bootstrap/Col");
 var BSButton = require("react-bootstrap/Button");
 
 // My Koop components
@@ -219,7 +220,18 @@ var ListBillsPage = React.createClass({
 
   actionsGenerator: function(bill) {
     var self = this;
-    var buttons = [];
+    var buttons = [{
+      icon: "search-plus",
+      tooltip: {
+        text: __("transaction::details"),
+        overlayProps: {
+          placement: "top"
+        }
+      },
+      callback: function() {
+        Router.transitionTo("billDetails", {id: bill.idBill});
+      }
+    }];
 
     if(this.getBillState() === BillState.open) {
       // Add transaction action

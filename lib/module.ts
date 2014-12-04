@@ -320,6 +320,36 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     });
   }
 
+  updateBill(
+    params: mktransaction.UpdateBill.Params,
+    callback: mktransaction.UpdateBill.Callback
+  ) {
+    this.callWithConnection(this.__updateBill, params, callback);
+  }
+
+  __updateBill(
+    connection: mysql.IConnection,
+    params: mktransaction.UpdateBill.Params,
+    callback: mktransaction.UpdateBill.Callback
+  ) {
+    var newValue = {
+      notes: params.notes
+    };
+    connection.query(
+      "UPDATE bill SET ? WHERE idBill = ?",
+      [newValue, params.id],
+      function(err, res) {
+        if(err) {
+          return callback(new DatabaseError(err));
+        }
+        if(res.affectedRows !== 1) {
+          return callback(new ResourceNotFoundError(null, {id: "notFound"}));
+        }
+        callback();
+      }
+    );
+  }
+
   saveNewBill(
     params: mktransaction.NewBill,
     callback: mktransaction.saveNewBillCallback

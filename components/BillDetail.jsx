@@ -175,6 +175,21 @@ var BillDetail = React.createClass({
     );
   },
 
+  updateBill: function() {
+    actions.transaction.bill.update({
+      i18nErrors: {
+        prefix: "transaction::errors",
+        keys: ["app"]
+      },
+      alertErrors: true,
+      alertSuccess: true,
+      data: {
+        id: this.props.idBill,
+        notes: this.state.notes
+      }
+    });
+  },
+
   actionsGenerator: function(item) {
     var self = this;
     if(!this.props.readOnly) {

@@ -71,9 +71,9 @@ var DiscountTable = React.createClass({
     if(this.props.readOnly) {
       return (
         <div>
-          {_.map(this.state.discounts, function(discount) {
+          {_.map(this.state.discounts, function(discount, i) {
             return (
-              <p>
+              <p key={i}>
                 {discount.value}{discountInfo[discount.type].symbol}
               </p>
             );

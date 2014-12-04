@@ -27,6 +27,21 @@ export function attachControllers(
 
   binder.attach(
     {
+      endPoint: endPoints.transaction.bill.update,
+    },
+    binder.makeSimpleController<mktransaction.UpdateBill.Params>(
+      transaction.updateBill,
+      function(req: Express.Request) {
+        return {
+          id: parseInt(req.param("id")),
+          notes: req.param("notes")
+        }
+      }
+    )
+  );
+
+  binder.attach(
+    {
       endPoint: endPoints.transaction.bill.list,
       validation: validation.listBill
     },

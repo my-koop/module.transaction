@@ -62,6 +62,7 @@ var BillDetailPage = React.createClass({
         {this.state.billDetails ?
           <MKBillDetail
             readOnly
+            idBill={this.props.params.id}
             billDetails={this.state.billDetails}
           />
         : null}

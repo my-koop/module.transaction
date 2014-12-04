@@ -114,4 +114,14 @@ declare module mktransaction {
       (err: Error, res?: Result): void;
     }
   }
+
+  module UpdateBill {
+    export interface Params {
+      id: number;
+      notes: string;
+    }
+    export interface Callback {
+      (err?: Error): void;
+    }
+  }
 }

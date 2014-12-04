@@ -30,6 +30,10 @@ var endpoints = {
         path: "/bills/:id",
         method: "get"
       },
+      update: {
+        path: "/bills/:id",
+        method: "put"
+      },
       details: {
         path: "/bills/:id/details",
         method: "get"
