@@ -14,6 +14,7 @@ declare module mktransaction {
     id: number;
     price: number;
     quantity: number;
+    name: string;
   }
 
   export interface NewBill {

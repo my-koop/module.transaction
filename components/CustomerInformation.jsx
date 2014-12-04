@@ -143,8 +143,8 @@ var CustomerInformation = React.createClass({
           addonAfter={emailAddon}
         />
         : [
-          <label>{__("transaction::customerEmail")}</label>,
-          <p>{this.state.email.value}</p>
+          <label key={1}>{__("transaction::customerEmail")}</label>,
+          <p key={2}>{this.state.email.value}</p>
         ]}
       </div>
     );

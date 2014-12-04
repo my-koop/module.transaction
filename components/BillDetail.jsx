@@ -39,12 +39,12 @@ var BillDetail = React.createClass({
     readOnly: React.PropTypes.bool,
     idBill: React.PropTypes.number,
     billDetails: React.PropTypes.shape({
-      items: React.PropTypes.array.isRequired,
-      discounts: React.PropTypes.array.isRequired,
-      customerEmail: React.PropTypes.string.isRequired,
-      taxes: React.PropTypes.array.isRequired,
-      notes: React.PropTypes.string.isRequired,
-      idEvent: React.PropTypes.number.isRequired
+      items: React.PropTypes.array,
+      discounts: React.PropTypes.array,
+      customerEmail: React.PropTypes.string,
+      taxes: React.PropTypes.array,
+      notes: React.PropTypes.string,
+      idEvent: React.PropTypes.number
     })
   },
 
@@ -70,10 +70,6 @@ var BillDetail = React.createClass({
       idEvent: billDetails.idEvent || -1,
       finishedLoading: props.readOnly
     }
-  },
-
-  componentWillReceiveProps: function (nextProps) {
-    this.setState(this.getInitialState(nextProps));
   },
 
   componentDidMount: function () {
@@ -149,7 +145,8 @@ var BillDetail = React.createClass({
             return {
               id: item.id,
               price: item.price,
-              quantity: item.quantity
+              quantity: item.quantity,
+              name: item.name
             };
           }),
           discounts: _.map(this.state.discounts, function(discount) {
@@ -245,8 +242,7 @@ var BillDetail = React.createClass({
     this.setState({bill: billItems});
   },
 
-  onDiscountChange: function() {
-    var discounts = this.refs.discountTable.getDiscounts();
+  onDiscountChange: function(discounts) {
     this.setState({discounts: discounts});
   },
 
@@ -285,10 +281,20 @@ var BillDetail = React.createClass({
         name: {
           name: __("name"),
           cellGenerator: function(item, i) {
-            if(item.name) {
-              return item.name.toString();
+            if(item.id < 0 && !readOnly) {
+              var link = {
+                value: item.name,
+                requestChange: function(newName) {
+                  var items = self.state.bill;
+                  items[i].name = newName;
+                  self.setState({
+                    bill: items
+                  });
+                }
+              }
+              return <BSInput type="text" valueLink={link} />
             }
-            return "";
+            return item.name;
           }
         },
         price: {
@@ -423,7 +429,7 @@ var BillDetail = React.createClass({
         }
       ];
     }
-    var initialDiscounts = this.props.billDetails.discounts || [];
+    var initialDiscounts = this.state.discounts || [];
     return (
       <div>
         <BSPanel header={__("transaction::itemList")}>
@@ -464,10 +470,9 @@ var BillDetail = React.createClass({
         <MKCollapsablePanel header={__("transaction::discountHeader")} >
           <MKDiscountTable
             readOnly={readOnly}
-            ref="discountTable"
             onChange={this.onDiscountChange}
             hasTaxes={!_.isEmpty(this.state.taxInfos)}
-            discounts={this.props.billDetails.discounts}
+            discounts={this.state.discounts}
           />
         </MKCollapsablePanel>
         : null}
@@ -488,10 +493,10 @@ var BillDetail = React.createClass({
                 return <option value={event.id} key={event.id}>{event.name}</option>
               })}
             </BSInput>
-            : [<label>
+            : [<label key={1}>
                 {__("transaction::linkToEvent")}
               </label>,
-              <p>{this.props.billDetails.idEvent?
+              <p key={2}>{this.props.billDetails.idEvent?
                 "#" + this.props.billDetails.idEvent + ": " +
                  this.props.billDetails.eventName
                 : __("none")

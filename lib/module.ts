@@ -240,7 +240,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             i.id,\
             b.quantity,\
             b.price,\
-            i.name,\
+            coalesce(i.name, b.name) AS name,\
             i.code\
           FROM bill_item b\
           LEFT JOIN item i on b.idItem=i.id\
@@ -425,6 +425,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
               idItem,
               item.quantity,
               item.price,
+              item.name
             ];
           }
         );
@@ -434,6 +435,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             idItem, \
             quantity, \
             price, \
+            name\
           ) VALUES ?",
           [
             billItems

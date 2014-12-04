@@ -15,16 +15,21 @@ var util = require("util");
 
 // Possible type of discount
 var discountInfo = require("../lib/common_modules/discountTypes").DiscountInfo;
+var billUtils = require("../lib/common_modules/billUtils");
 
 var DiscountTable = React.createClass({
   mixins: [MKDebouncerMixin],
 
   propTypes: {
-    discounts: React.PropTypes.arrayOf({
-      isAfterTax: React.PropTypes.bool,
-      value: React.PropTypes.number,
-      type: React.PropTypes.number
-    }),
+    discounts: React.PropTypes.arrayOf(
+      React.PropTypes.shape({
+        info: React.PropTypes.shape({
+          isAfterTax: React.PropTypes.bool,
+          value: React.PropTypes.number,
+          type: React.PropTypes.number
+        })
+      })
+    ),
     readOnly: React.PropTypes.bool,
     onChange: React.PropTypes.func.isRequired,
     hasTaxes: React.PropTypes.bool
@@ -39,24 +44,8 @@ var DiscountTable = React.createClass({
     }
   },
 
-  componentWillReceiveProps: function (nextProps) {
-    this.setState(this.getInitialState(nextProps));
-  },
-
   ////////////////////////////
   /// Component methods
-  getDiscounts: function() {
-    var discounts = _.map(this.state.discounts, function(discount) {
-      var func = discountInfo[discount.type]
-        .applyDiscount.bind(null, discount.value);
-      return {
-        info: discount,
-        apply: func
-      };
-    });
-    return discounts;
-  },
-
   addDiscount: function() {
     var discount = {
       isAfterTax: false,
@@ -70,7 +59,8 @@ var DiscountTable = React.createClass({
   setDiscounts: function(discounts) {
     this.setState({
       discounts: discounts
-    }, this.props.onChange);
+    });
+    this.props.onChange(discounts);
   },
 
   ////////////////////////////
@@ -84,7 +74,7 @@ var DiscountTable = React.createClass({
           {_.map(this.state.discounts, function(discount) {
             return (
               <p>
-                {discount.value}{discountInfo[discount.type]}
+                {discount.value}{discountInfo[discount.type].symbol}
               </p>
             );
           })}
@@ -99,7 +89,7 @@ var DiscountTable = React.createClass({
         value: discount.value,
         requestChange: _.bind(self.debounce, self, ["discounts", iDiscount], "value",
           function(newValue) {
-            self.props.onChange();
+            self.props.onChange(self.state.discounts);
             return parseFloat(newValue) || 0;
           }
         )

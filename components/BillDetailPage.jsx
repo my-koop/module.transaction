@@ -59,7 +59,6 @@ var BillDetailPage = React.createClass({
         <h1>
           {__("transaction::billDetailsWelcome")} #{this.props.params.id}
         </h1>
-        {JSON.stringify(this.state.billDetails)}
         {this.state.billDetails ?
           <MKBillDetail
             readOnly
