@@ -58,11 +58,11 @@ var FinancialReport = React.createClass({
   formatReport: function(report){
     return (
       <div>
-        <p> {
-          __("transaction::financialReportFieldTotal")  + ": " + formatMoney(report.total)
+        <p>
+          { __("transaction::financialReportFieldTotal")  + ": " + formatMoney(report.total)
           + __("transaction::financialReportIN") + report.transactions + " "
-          + __("transaction::financialReportFieldTransactions")
-        } </p>
+          + __("transaction::financialReportFieldTransactions")}
+        </p>
         <p>
           {__("transaction::financialReportFieldTotalSales")   + ": " }
           <span className="text-success">  { formatMoney(report.totalSales) } </span>
