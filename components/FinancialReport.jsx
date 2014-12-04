@@ -6,6 +6,7 @@ var BSGrid  = require("react-bootstrap/Grid");
 var BSRow  = require("react-bootstrap/Row");
 
 var MKDateTimePicker = require("mykoop-core/components/DateTimePicker");
+var MKAlert = require("mykoop-core/components/Alert");
 
 var __ = require("language").__;
 var formatDate = require("language").formatDate;
@@ -86,6 +87,29 @@ var FinancialReport = React.createClass({
     );
   },
 
+  displayReport: function(categories){
+    if(this.state.reports){
+      if(this.state.reports.length > 0){
+        return (
+          <div block className="col-md-8">
+            <BSPanel header={this.getReportHeader()}>
+              {categories}
+            </BSPanel>
+          </div>
+        );
+      } else {
+        return (
+          <div block className="col-md-8">
+            <MKAlert bsStyle="danger">
+              {__("transaction::financialReportNoResult")}
+            </MKAlert>
+          </div>
+        );
+      }
+    }
+    return null;
+  },
+
   render: function(){
     var self = this;
     var categories = _.map(this.state.reports, function(report, key){
@@ -128,14 +152,7 @@ var FinancialReport = React.createClass({
             />
           </div>
         </form>
-        { this.state.reports ?
-          <div block className="col-md-8">
-            <BSPanel header={this.getReportHeader()}>
-              {categories}
-            </BSPanel>
-          </div>
-          : null
-        }
+        { this.displayReport(categories)}
       </div>
     );
   },

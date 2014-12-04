@@ -74,5 +74,6 @@
   financialReportSubmit : "Submit",
   financialReportIN : " in ",
   financialReportLabelFromDate : "Report start date",
-  financialReportLabelToDate : "Report end date"
+  financialReportLabelToDate : "Report end date",
+  financialReportNoResult: "No transaction occured in this time span"
 }
