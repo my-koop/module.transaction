@@ -1,6 +1,9 @@
 var React    = require("react/addons");
 var BSPanel  = require("react-bootstrap/Panel");
 var BSInput  = require("react-bootstrap/Input");
+var BSCol  = require("react-bootstrap/Col");
+var BSGrid  = require("react-bootstrap/Grid");
+var BSRow  = require("react-bootstrap/Row");
 
 var MKDateTimePicker = require("mykoop-core/components/DateTimePicker");
 
@@ -52,47 +55,85 @@ var FinancialReport = React.createClass({
     this.setState(state);
   },
 
+  formatReport: function(report){
+    return (
+      <div>
+        <p> {
+          __("transaction::financialReportFieldTotal")  + ": " + formatMoney(report.total)
+          + __("transaction::financialReportIN") + report.transactions + " "
+          + __("transaction::financialReportFieldTransactions")
+        } </p>
+        <p>
+          {__("transaction::financialReportFieldTotalSales")   + ": " }
+          <span className="text-success">  { formatMoney(report.totalSales) } </span>
+          {__("transaction::financialReportIN") + report.sales + " "
+          + __("transaction::financialReportFieldSales")}
+        </p>
+        <p>
+          {__("transaction::financialReportFieldTotalRefunds")   + ": "}
+          <span className="text-danger">{formatMoney(report.totalRefunds)} </span>
+          {__("transaction::financialReportIN") + report.refunds + " "
+          + __("transaction::financialReportFieldRefunds")}
+         </p>
+      </div>
+    );
+  },
+
+  getReportHeader: function(){
+    return (
+      __("transaction::financialReportPanelHeaderStart") + formatDate(new Date(this.state.fromDate),"LLL") +
+      __("transaction::financialReportPanelHeaderMid") + formatDate(new Date(this.state.toDate),"LLL")
+    );
+  },
+
   render: function(){
-    var categories = _.map(this.state.reports, function(report){
+    var self = this;
+    var categories = _.map(this.state.reports, function(report, key){
       return (
-        <BSPanel header={__("transaction::financialReportCategory", { context: report.category})}>
-          <p> {__("transaction::financialReportFieldTotal")        + ": " + formatMoney(report.total) } </p>
-          <p> {__("transaction::financialReportFieldTotalSales")   + ": " + formatMoney(report.totalSales) } </p>
-          <p> {__("transaction::financialReportFieldTotalRefunds") + ": " + formatMoney(report.totalRefunds) } </p>
-          <p> {__("transaction::financialReportFieldTransactions") + ": " + report.transactions } </p>
-          <p> {__("transaction::financialReportFieldSales")        + ": " + report.sales } </p>
-          <p> {__("transaction::financialReportFieldRefunds")      + ": " + report.refunds } </p>
+        <BSPanel key={key} header={__("transaction::financialReportCategory", { context: report.category})}>
+          {self.formatReport(report)}
         </BSPanel>
       );
     })
     return (
       <div>
-        <h1> {__("transaction::financialReportWelcome")} </h1>
-        <p> {__("transaction::financialReportExplanation")} </p>
+        <div block className="col-md-12">
+          <h1> {__("transaction::financialReportWelcome")} </h1>
+          <p> {__("transaction::financialReportExplanation")} </p>
+        </div>
         <form onSubmit={this.onSubmit}>
-          <MKDateTimePicker
-            time={false}
-            format="yyyy-MM-dd"
-            min={new Date("2014-01-01")}
-            max={new Date()}
-            onChange={this.onDateChange.bind(null,"fromDate")}
-          />
-          <MKDateTimePicker
-            time={false}
-            format="yyyy-MM-dd"
-            min={ new Date("2014-01-01")}
-            max={ new Date()}
-            onChange={this.onDateChange.bind(null,"toDate")}
-          />
-          <BSInput
-            type="submit"
-            value={__("transaction::financialReportSubmit")}
-          />
+          <div block className="col-md-4">
+            {__("transaction::financialReportLabelFromDate")}
+            <MKDateTimePicker
+              format="yyyy-MM-dd"
+              min={new Date("2014-01-01")}
+              max={new Date()}
+              onChange={this.onDateChange.bind(null,"fromDate")}
+            />
+          </div>
+          <div block className="col-md-4">
+            {__("transaction::financialReportLabelToDate")}
+            <MKDateTimePicker
+              format="yyyy-MM-dd"
+              min={ new Date("2014-01-01")}
+              max={ new Date()}
+              onChange={this.onDateChange.bind(null,"toDate")}
+            />
+          </div>
+          <div block className="col-md-12">
+            <BSInput
+              type="submit"
+              value={__("transaction::financialReportSubmit")}
+              bsStyle="primary"
+            />
+          </div>
         </form>
         { this.state.reports ?
-          <BSPanel header={__("transaction::financialReportPanelHeader")}>
-            {categories}
-          </BSPanel>
+          <div block className="col-md-8">
+            <BSPanel header={this.getReportHeader()}>
+              {categories}
+            </BSPanel>
+          </div>
           : null
         }
       </div>

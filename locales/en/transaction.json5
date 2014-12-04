@@ -60,15 +60,19 @@
   //Report
   financialReportWelcome : "Financial Report",
   financialReportExplanation : "",
-  financialReportPanelHeader :  "Reports",
+  financialReportPanelHeaderStart :  "Report for transactions that occured between ",
+  financialReportPanelHeaderMid :  " and ",
   financialReportCategory_product : "Products",
   financialReportCategory_membership : "Memberships",
   financialReportCategory_subscription : "Subscriptions",
   financialReportFieldTotal : "Total",
   financialReportFieldTotalSales : "Total sales",
   financialReportFieldTotalRefunds : "Total refunds",
-  financialReportFieldTransactions : "Number of transactions",
-  financialReportFieldSales : "Number of sales",
-  financialReportFieldRefunds : "Number of refunds",
+  financialReportFieldTransactions : "transactions",
+  financialReportFieldSales : "sales",
+  financialReportFieldRefunds : "refunds",
   financialReportSubmit : "Submit",
+  financialReportIN : " in ",
+  financialReportLabelFromDate : "Report start date",
+  financialReportLabelToDate : "Report end date"
 }
