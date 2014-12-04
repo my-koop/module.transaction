@@ -48,6 +48,12 @@ var BillDetail = React.createClass({
     })
   },
 
+  getDefaultProps: function() {
+    return {
+      billDetails: {}
+    }
+  },
+
   getInitialState: function(props) {
     props = props || this.props;
     var billDetails = props.billDetails || {};
@@ -174,24 +180,27 @@ var BillDetail = React.createClass({
 
   actionsGenerator: function(item) {
     var self = this;
-    return [
-      {
-        icon: "remove",
-        warningMessage: __("areYouSure"),
-        tooltip: {
-          text: __("remove"),
-          overlayProps: {
-            placement: "top"
+    if(!this.props.readOnly) {
+      return [
+        {
+          icon: "remove",
+          warningMessage: __("areYouSure"),
+          tooltip: {
+            text: __("remove"),
+            overlayProps: {
+              placement: "top"
+            }
+          },
+          callback: function() {
+            var bill = _.reject(self.state.bill, { id: item.id });
+            self.setState({
+              bill: bill
+            });
           }
-        },
-        callback: function() {
-          var bill = _.reject(self.state.bill, { id: item.id });
-          self.setState({
-            bill: bill
-          });
         }
-      }
-    ];
+      ];
+    }
+    return [];
   },
 
   // Need a unique id event for custom item, otherwise it deletes them all onDelete
@@ -200,8 +209,8 @@ var BillDetail = React.createClass({
     var billItems = this.state.bill;
     billItems.push({
       id: this.customItemId--,
-      name: {toString: function() {return __("transaction::customItem");} },
-      code: 0,
+      name: "",
+      code: null,
       price: 0,
       quantity: 1
     });
@@ -267,6 +276,7 @@ var BillDetail = React.createClass({
     if(!self.state.finishedLoading) {
       return null;
     }
+    var readOnly = this.props.readOnly;
 
     // TableSorter Config
     var BillTableConfig = {
@@ -275,13 +285,16 @@ var BillDetail = React.createClass({
         name: {
           name: __("name"),
           cellGenerator: function(item, i) {
-            return item.name.toString();
+            if(item.name) {
+              return item.name.toString();
+            }
+            return "";
           }
         },
         price: {
           name: __("price"),
           cellGenerator: function(item, i) {
-            if(item.id < 0) {
+            if(item.id < 0 && !readOnly) {
               var link = {
                 value: item.price,
                 requestChange: function(newValue) {
@@ -299,17 +312,20 @@ var BillDetail = React.createClass({
         quantity: {
           name: __("quantity"),
           cellGenerator: function(item, i) {
-            var link = {
-              value: item.quantity || 0,
-              requestChange: _.bind(self.debounce, self, ["bill", i], "quantity",
-                function(newValue) {
-                  return parseInt(newValue) || 0;
-                }
-              )
+            if(!readOnly) {
+              var link = {
+                value: item.quantity || 0,
+                requestChange: _.bind(self.debounce, self, ["bill", i], "quantity",
+                  function(newValue) {
+                    return parseInt(newValue) || 0;
+                  }
+                )
+              }
+              return (
+                <BSInput type="text" valueLink={link} />
+              );
             }
-            return (
-              <BSInput type="text" valueLink={link} />
-            );
+            return item.quantity;
           }
         },
         code: {
@@ -330,21 +346,23 @@ var BillDetail = React.createClass({
       }
     };
 
-    //TypeAhead options
-    var addItemOptions = _.map(this.state.items, function(item) {
-      return {
-        display: util.format("%s: %s", _(item.code).toString(), _(item.name).toString()),
-        toString: function(){ return this.display; },
-        item: item
-      };
-    });
-    addItemOptions.push({
-      display: __("transaction::customItem"),
-      toString: function() { return this.display; },
-      item: {
-        id: -1,
-      }
-    });
+    if(!readOnly) {
+      //TypeAhead options
+      var addItemOptions = _.map(this.state.items, function(item) {
+        return {
+          display: util.format("%s: %s", _(item.code).toString(), _(item.name).toString()),
+          toString: function(){ return this.display; },
+          item: item
+        };
+      });
+      addItemOptions.push({
+        display: __("transaction::customItem"),
+        toString: function() { return this.display; },
+        item: {
+          id: -1,
+        }
+      });
+    }
 
     var noteLink = {
       value: this.state.notes,
@@ -372,29 +390,44 @@ var BillDetail = React.createClass({
 
     var showArchive = this.state.bill.length && this.state.customerEmail;
     var showPayNow = this.state.bill.length > 0;
-    var buttonsConfig = [
-      {
-        content: __("transaction::saveForLater"),
-        warningMessage: __("areYouSure"),
-        callback: _.bind(this.saveBill, this, true),
-        props: {
-          bsStyle: "primary",
-          disabled: !showArchive
+    if(!readOnly) {
+      var buttonsConfig = [
+        {
+          content: __("transaction::saveForLater"),
+          warningMessage: __("areYouSure"),
+          callback: _.bind(this.saveBill, this, true),
+          props: {
+            bsStyle: "primary",
+            disabled: !showArchive
+          }
+        },
+        {
+          content: __("transaction::recordFullPayment"),
+          warningMessage: __("areYouSure"),
+          callback: _.bind(this.saveBill, this, false),
+          props: {
+            bsStyle: "success",
+            disabled: !showPayNow
+          }
         }
-      },
-      {
-        content: __("transaction::recordFullPayment"),
-        warningMessage: __("areYouSure"),
-        callback: _.bind(this.saveBill, this, false),
-        props: {
-          bsStyle: "success",
-          disabled: !showPayNow
+      ];
+    } else {
+      var buttonsConfig = [
+        {
+          content: __("update"),
+          warningMessage: __("areYouSure"),
+          callback: this.updateBill,
+          props: {
+            bsStyle: "primary",
+          }
         }
-      }
-    ];
+      ];
+    }
+    var initialDiscounts = this.props.billDetails.discounts || [];
     return (
       <div>
         <BSPanel header={__("transaction::itemList")}>
+          {!readOnly ?
           <BSRow>
             <BSCol md={4} sm={6}>
               <label>
@@ -415,6 +448,7 @@ var BillDetail = React.createClass({
               />
             </BSCol>
           </BSRow>
+          : null}
           <BSRow>
             <MKTableSorter
               config={BillTableConfig}
@@ -426,21 +460,24 @@ var BillDetail = React.createClass({
             />
           </BSRow>
         </BSPanel>
-
+        {!readOnly || (initialDiscounts.length > 0) ?
         <MKCollapsablePanel header={__("transaction::discountHeader")} >
           <MKDiscountTable
+            readOnly={readOnly}
             ref="discountTable"
             onChange={this.onDiscountChange}
             hasTaxes={!_.isEmpty(this.state.taxInfos)}
+            discounts={this.props.billDetails.discounts}
           />
         </MKCollapsablePanel>
-
+        : null}
         <BSPanel header={__("transaction::billInfo")}>
           <BSCol lg={4} md={6}>
             <MKBillInfo billInfo={billInfo} taxInfos={this.state.taxInfos} />
             <MKListModButtons buttons={buttonsConfig} />
           </BSCol>
           <BSCol lg={4} md={6}>
+            {!readOnly ?
             <BSInput
               type="select"
               label={__("transaction::linkToEvent")}
@@ -451,7 +488,18 @@ var BillDetail = React.createClass({
                 return <option value={event.id} key={event.id}>{event.name}</option>
               })}
             </BSInput>
+            : [<label>
+                {__("transaction::linkToEvent")}
+              </label>,
+              <p>{this.props.billDetails.idEvent?
+                "#" + this.props.billDetails.idEvent + ": " +
+                 this.props.billDetails.eventName
+                : __("none")
+              }
+              </p>]
+            }
             <MKCustomerInformation
+              readOnly={readOnly}
               email={this.state.customerEmail}
               onEmailChanged={this.onCustomerEmailChanged}
             />

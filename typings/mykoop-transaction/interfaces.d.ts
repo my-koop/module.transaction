@@ -54,6 +54,8 @@ declare module mktransaction {
     discounts: Discount[];
     notes: string;
     taxes: TaxInfo[];
+    idEvent: number;
+    eventName: string;
   }
 
   export interface Discount {

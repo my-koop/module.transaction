@@ -2,9 +2,10 @@ var React     = require("react");
 var BSInput   = require("react-bootstrap/Input");
 var BSCol     = require("react-bootstrap/Col");
 
-var MKListModButtons = require("mykoop-core/components/ListModButtons");
-var MKFormTable      = require("mykoop-core/components/FormTable");
-var MKDebouncerMixin = require("mykoop-core/components/DebouncerMixin");
+var MKListModButtons      = require("mykoop-core/components/ListModButtons");
+var MKOrderedTableActions = require("mykoop-core/components/OrderedTableActions");
+var MKFormTable           = require("mykoop-core/components/FormTable");
+var MKDebouncerMixin      = require("mykoop-core/components/DebouncerMixin");
 
 // Use this to provide localization strings.
 var __ = require("language").__;
@@ -19,16 +20,27 @@ var DiscountTable = React.createClass({
   mixins: [MKDebouncerMixin],
 
   propTypes: {
+    discounts: React.PropTypes.arrayOf({
+      isAfterTax: React.PropTypes.bool,
+      value: React.PropTypes.number,
+      type: React.PropTypes.number
+    }),
+    readOnly: React.PropTypes.bool,
     onChange: React.PropTypes.func.isRequired,
     hasTaxes: React.PropTypes.bool
   },
   ////////////////////////////
   /// Life Cycle methods
-  getInitialState: function() {
+  getInitialState: function(props) {
+    props = props || this.props;
     return {
       // {isAfterTax: boolean, value: number, type: DiscountType }
-      discounts: []
+      discounts: props.discounts || []
     }
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    this.setState(this.getInitialState(nextProps));
   },
 
   ////////////////////////////
@@ -66,6 +78,20 @@ var DiscountTable = React.createClass({
   render: function() {
     var self = this;
 
+    if(this.props.readOnly) {
+      return (
+        <div>
+          {_.map(this.state.discounts, function(discount) {
+            return (
+              <p>
+                {discount.value}{discountInfo[discount.type]}
+              </p>
+            );
+          })}
+        </div>
+      );
+    }
+
     var length = this.state.discounts.length;
     var discounts = this.state.discounts.map(function(discount, iDiscount) {
       // Value link to input
@@ -85,13 +111,11 @@ var DiscountTable = React.createClass({
           content: info.symbol,
           tooltip: __("transaction::changeDiscountType", {context: info.name}),
           props: {
-            className: "active"
+            className: "active",
           }
         };
         if(discount.type !== type) {
-          buttonDef.props = {
-            className: ""
-          };
+          buttonDef.props.className = "";
           buttonDef.callback = function() {
             discount.type = type;
             self.setDiscounts(self.state.discounts);
@@ -105,7 +129,7 @@ var DiscountTable = React.createClass({
           content: __("transaction::tax"),
           tooltip: __("transaction::discountTaxSwitch", {context: discount.isAfterTax}),
           props: {
-            className: discount.isAfterTax ? "active" : ""
+            className: discount.isAfterTax ? "active" : "",
           },
           callback: function() {
             discount.isAfterTax = !discount.isAfterTax;
@@ -114,50 +138,19 @@ var DiscountTable = React.createClass({
         });
       }
 
-      // Delete button
-      actionButtons = [
-        {
-          icon: "remove",
-          tooltip: __("transaction::deleteDiscount"),
-          warningMessage: __("areYouSure"),
-          callback: function() {
-            self.state.discounts.splice(iDiscount, 1);
-            self.setDiscounts(self.state.discounts);
-          }
-        },
-        {
-          icon: "arrow-up",
-          tooltip: __("moveUp"),
-          hide: iDiscount === 0,
-          callback: function() {
-            var discounts = self.state.discounts;
-            discounts.splice(iDiscount - 1, 0, discounts.splice(iDiscount, 1)[0]);
-            self.setDiscounts(discounts);
-          }
-        },
-        {
-          icon: "arrow-down",
-          tooltip: __("moveDown"),
-          hide: iDiscount >= (length - 1),
-          callback: function() {
-            var discounts = self.state.discounts;
-            discounts.splice(iDiscount + 1, 0, discounts.splice(iDiscount, 1)[0]);
-            self.setDiscounts(discounts);
-          }
-        },
-      ];
-
       // Return row for this discount
-      return (
-        [
-          <MKListModButtons buttons={actionButtons} />,
-          <BSInput
-            type="text"
-            valueLink={link}
-          />,
-          <MKListModButtons buttons={typeSwitchers} />
-        ]
-      );
+      return [
+        <MKOrderedTableActions
+          content={self.state.discounts}
+          index={iDiscount}
+          onContentModified={self.setDiscounts}
+        />,
+        <BSInput
+          type="text"
+          valueLink={link}
+        />,
+        <MKListModButtons buttons={typeSwitchers} />
+      ];
     });
 
     // Put an Add button at the top of the table
@@ -170,12 +163,14 @@ var DiscountTable = React.createClass({
       <MKListModButtons buttons={[addButton]} />
     ]);
 
+    var uniqueActionsCount = length > 1 ? (length > 2 ? 3 : 2) : 1;
     return (
       <BSCol md={8}>
         <MKFormTable
           headers={[
             {
-              title:__("actions")
+              title:__("actions"),
+              props: {className: "list-mod-min-width-" + uniqueActionsCount}
             },
             __("transaction::discounts"),
             __("transaction::discountTypes")

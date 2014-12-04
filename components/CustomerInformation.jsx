@@ -31,6 +31,7 @@ var CustomerInformation = React.createClass({
   mixins: [MKDebouncerMixin],
 
   propTypes: {
+    readOnly: React.PropTypes.bool,
     email: React.PropTypes.string,
     // (email: string) => void; Only if email is valid
     onEmailChanged: React.PropTypes.func.isRequired
@@ -41,7 +42,6 @@ var CustomerInformation = React.createClass({
   getInitialState: function(props) {
     props = props || this.props;
     return {
-
       email: {
         value: this.props.email || "",
         validationState: EmailValidationState.Initial,
@@ -58,8 +58,9 @@ var CustomerInformation = React.createClass({
   /// Render method
   render: function() {
     var self = this;
+    var readOnly = this.props.readOnly;
 
-    var emailLink = {
+    var emailLink = !readOnly && {
       value: this.state.email.value,
       requestChange: function(newEmail) {
         // Assume email is invalid until we get a response from the server
@@ -132,16 +133,19 @@ var CustomerInformation = React.createClass({
 
     return (
       <div>
-        <label>
-          {__("transaction::customerEmail")}
-          <BSInput
-            type="email"
-            valueLink={emailLink}
-            bsStyle={inputStyle}
-            addonBefore={<MKIcon glyph="envelope" fixedWidth />}
-            addonAfter={emailAddon}
-          />
-        </label>
+        {!readOnly ?
+        <BSInput
+          type="email"
+          valueLink={emailLink}
+          label={__("transaction::customerEmail")}
+          bsStyle={inputStyle}
+          addonBefore={<MKIcon glyph="envelope" fixedWidth />}
+          addonAfter={emailAddon}
+        />
+        : [
+          <label>{__("transaction::customerEmail")}</label>,
+          <p>{this.state.email.value}</p>
+        ]}
       </div>
     );
   }

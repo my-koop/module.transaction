@@ -41,6 +41,12 @@ var BillDetailPage = React.createClass({
         MKAlertTrigger.showAlert(__(firstError.key, firstError));
         return;
       }
+      var customId = -1;
+      res.items = _.map(res.items, function(item) {
+        item.id = item.id || customId--;
+        item.name = item.name || "";
+        return item;
+      });
       self.setState({
         billDetails: res
       });
@@ -53,6 +59,7 @@ var BillDetailPage = React.createClass({
         <h1>
           {__("transaction::billDetailsWelcome")} #{this.props.params.id}
         </h1>
+        {JSON.stringify(this.state.billDetails)}
         {this.state.billDetails ?
           <MKBillDetail
             readOnly

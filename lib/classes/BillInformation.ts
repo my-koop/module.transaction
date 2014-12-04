@@ -13,7 +13,9 @@ function makeSelectBillQuery(whereClause: string) {
       coalesce(count(bt.idTransaction),0) AS transactionCount,\
       b.discounts,\
       b.notes,\
-      b.taxes\
+      b.taxes,\
+      b.idEvent,\
+      e.name AS eventName\
     FROM bill b\
     LEFT JOIN bill_transaction bt ON b.idBill=bt.idBill\
     LEFT JOIN transaction t ON bt.idTransaction=t.idTransaction \
@@ -42,6 +44,8 @@ class BillInformation implements mktransaction.Bill {
   discounts: mktransaction.Discount[];
   notes: string;
   taxes: mktransaction.TaxInfo[];
+  idEvent: number;
+  eventName: string;
 
   constructor(dbQueryResult) {
     this.idBill = dbQueryResult.idBill;
@@ -65,6 +69,8 @@ class BillInformation implements mktransaction.Bill {
     } catch(e) {
       this.taxes = [];
     }
+    this.idEvent = dbQueryResult.idEvent;
+    this.eventName = dbQueryResult.eventName;
   }
 }
 

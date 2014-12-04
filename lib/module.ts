@@ -278,7 +278,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           return callback(new DatabaseError(err));
         }
         if(result.length === 0) {
-          return callback(new ApplicationError(null, {id: "notFound"}));
+          return callback(new ResourceNotFoundError(null, {id: "notFound"}));
         }
         callback(null, new BillInformation(result[0]));
       }
