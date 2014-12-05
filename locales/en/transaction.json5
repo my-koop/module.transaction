@@ -55,7 +55,7 @@
         notEmpty: "This bill contains transactions and cannot be deleted"
       }
     }
-  }
+  },
 
   //Report
   financialReportWelcome : "Financial Report",

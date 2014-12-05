@@ -592,7 +592,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       WHERE bill.category IN( 'product', 'membership', 'subscription') \
       AND (transaction.date BETWEEN ? AND ?) \
       GROUP BY bill.category",
-      [params.toDate, params.fromDate],
+      [params.fromDate, params.toDate],
       function(err, rows){
         cleanup();
         callback(err && new DatabaseError(err), { reports: _.map(rows, function(report){ return report }) } );

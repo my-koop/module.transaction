@@ -57,7 +57,7 @@
         notEmpty: "Cette facture possède des transactions et ne peut être supprimée"
       }
     }
-  }
+  },
 
   //Report
   financialReportWelcome : "Rapports financiers",
