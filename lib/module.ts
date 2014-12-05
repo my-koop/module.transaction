@@ -590,8 +590,9 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       INNER JOIN bill_transaction on bill.idbill = bill_transaction.idbill \
       INNER JOIN transaction on transaction.idTransaction = bill_transaction.idTransaction \
       WHERE bill.category IN( 'product', 'membership', 'subscription') \
-      AND (transaction.date BETWEEN '" + params.fromDate + "' AND '" + params.toDate + "') \
+      AND (transaction.date BETWEEN ? AND ?) \
       GROUP BY bill.category",
+      [params.toDate, params.fromDate],
       function(err, rows){
         cleanup();
         callback(err && new DatabaseError(err), { reports: _.map(rows, function(report){ return report }) } );

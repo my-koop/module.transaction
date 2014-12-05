@@ -37,6 +37,10 @@ var FinancialReport = React.createClass({
       data: {
         fromDate: self.state.fromDate,
         toDate: self.state.toDate
+      },
+      options: {
+        i18nErrors: {},
+        alertErrors: true
       }
     }, function(err, res){
         if(err) {
