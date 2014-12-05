@@ -10,6 +10,7 @@
   tax: "Taxes",
   tax_tps: "GST",
   tax_tvq: "QST",
+  showDetailsTooltip: "Show details",
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
   createdDate: "Date created",

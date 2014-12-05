@@ -10,6 +10,7 @@
   tax: "Taxes",
   tax_tps: "TPS",
   tax_tvq: "TVQ",
+  showDetailsTooltip: "Voir les détails",
   customItem: "Personnalisé",
   billEnterCodeOrName: "Entrer le code, nom de l'article ou \"Personnalisé\"",
   createdDate: "Date de création",

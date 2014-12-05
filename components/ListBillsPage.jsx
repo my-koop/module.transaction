@@ -223,7 +223,7 @@ var ListBillsPage = React.createClass({
     var buttons = [{
       icon: "search-plus",
       tooltip: {
-        text: __("transaction::details"),
+        text: __("transaction::showDetailsTooltip"),
         overlayProps: {
           placement: "top"
         }
