@@ -70,7 +70,6 @@ var BillHistoryPage = React.createClass({
             }
             return bill;
           });
-          console.log(styledBills);
           self.setState({
             bills: styledBills
           })
