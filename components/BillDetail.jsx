@@ -141,6 +141,7 @@ var BillDetail = React.createClass({
           archiveBill: archiveBill,
           customerEmail: this.state.customerEmail,
           idEvent: this.state.idEvent,
+          category: "product",
           items: _.map(this.state.bill, function(item) {
             return {
               id: item.id,

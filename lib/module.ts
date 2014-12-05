@@ -598,7 +598,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   getFinancialReport(
-    params: Transaction.db.FinancialReport,
+    params: mktransaction.db.FinancialReport,
     callback: (err, report) => void
   ) {
     this.db.getConnection(function(err, connection, cleanup) {
