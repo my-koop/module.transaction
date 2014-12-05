@@ -79,6 +79,9 @@
 
   //Bill History
   billHistoryTab: "Bill History",
-  billHistoryWelcome: "Bill history"
+  billHistoryWelcome: "Bill history",
+  billHistoryDetailsTooltip: "View this bill in details",
+  isClosed: "Bill is Closed",
+  billHistoryNoResult: "No bill to display"
 
 }

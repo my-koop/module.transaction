@@ -4,15 +4,19 @@ var BSCol = require("react-bootstrap/Col");
 var BSButton = require("react-bootstrap/Button");
 
 // My Koop components
-var MKTableSorter              = require("mykoop-core/components/TableSorter");
-var MKListModButtons           = require("mykoop-core/components/ListModButtons");
-var MKIcon                     = require("mykoop-core/components/Icon");
+var MKTableSorter     = require("mykoop-core/components/TableSorter");
+var MKListModButtons  = require("mykoop-core/components/ListModButtons");
+var MKIcon            = require("mykoop-core/components/Icon");
+var MKAlert           = require("mykoop-core/components/Alert");
 
 // Utilities
 var _            = require("lodash");
 var __           = require("language").__;
 var actions      = require("actions");
 var formatMoney  = require("language").formatMoney;
+var formatDate   = require("language").formatDate;
+var Router       = require("react-router");
+var getRouteName = require("mykoop-utils/frontend/getRouteName");
 
 
 var BillHistoryPage = React.createClass({
@@ -29,25 +33,53 @@ var BillHistoryPage = React.createClass({
 
   componentWillReceiveProps: function (nextProps) {
     if(this.props.userId !== nextProps.userId) {
-      this.updateMembershipInformation(nextProps.userId);
+      this.getBillHistory(nextProps.userId);
     }
   },
 
-  componentDidMount: function(){
+  actionsGenerator: function(bill) {
+    return [
+      {
+        icon: "edit",
+        tooltip: {
+          text: __("transaction::billHistoryDetailsTooltip"),
+          overlayProps: {
+            placement: "top"
+          }
+        },
+        callback: function() {
+          Router.transitionTo(getRouteName(["dashboard", "bill", "details"]), {id: bill.idbill});
+        }
+      }
+    ];
+  },
+
+  getBillHistory: function(userId){
     var self = this;
     actions.transaction.bill.history({
       data: {
-        userId: self.props.userId
+        userId: userId
       }
     }, function(err , res){
         if(err){
           console.log(err);
         } else {
+          var styledBills = _.map(res.bills, function(bill){
+            if(bill.isClosed == 0){
+              bill.__rowProps = { className: "danger"}
+            }
+            return bill;
+          });
+          console.log(styledBills);
           self.setState({
-            bills: res.bills
+            bills: styledBills
           })
         }
     })
+  },
+
+  componentDidMount: function(){
+    this.getBillHistory(this.props.userId);
   },
 
   render: function() {
@@ -56,27 +88,40 @@ var BillHistoryPage = React.createClass({
     // TableSorter Config
     var BillTableConfig = {
       defaultOrdering: [
-        "idBill",
         "createdDate",
         "isClosed",
         "total",
-        "paid"
+        "paid",
+        "actions"
       ],
 
       columns: {
-        idBill: {
+        idbill: {
           name: __("id")
         },
         createdDate: {
-          name: __("transaction::createdDate")
+          name: __("transaction::createdDate"),
+          cellGenerator: function(bill) {
+            return (
+              (bill.createdDate !== null) ? formatDate(new Date(bill.createdDate)) : null
+            );
+          }
         },
         total: {
-          name: __("transaction::total")
-
+          name: __("transaction::total"),
+          cellGenerator: function(bill) {
+            return (
+              formatMoney(bill.total)
+            );
+          }
         },
         paid: {
-          name: __("transaction::paid")
-
+          name: __("transaction::paid"),
+           cellGenerator: function(bill) {
+            return (
+              formatMoney(bill.paid)
+            );
+          }
         },
         isClosed: {
           name: __("transaction::isClosed")
@@ -87,6 +132,14 @@ var BillHistoryPage = React.createClass({
           isStatic: true,
           headerProps: {
             className: "list-mod-min-width-3"
+          },
+          cellGenerator: function(bill) {
+            return (
+              <MKListModButtons
+                defaultTooltipDelay={500}
+                buttons={self.actionsGenerator(bill)}
+              />
+            );
           }
         }
       }
@@ -98,15 +151,20 @@ var BillHistoryPage = React.createClass({
           {__("transaction::billHistoryWelcome")}
         </h1>
 
-        <MKTableSorter
-          config={BillTableConfig}
-          items={this.state.bills}
-          bordered
-          striped
-          condensed
-          hover
-          responsive
-        />
+        { this.state.bills.length > 0 ?
+            <MKTableSorter
+              config={BillTableConfig}
+              items={this.state.bills}
+              bordered
+              striped
+              condensed
+              hover
+              responsive
+            />
+        : <MKAlert bsStyle="danger">
+            {__("transaction::billHistoryNoResult")}
+          </MKAlert>
+        }
       </BSCol>
     );
   }
