@@ -123,7 +123,7 @@ export function attachControllers(
     },
     binder.makeSimpleController("getBillHistory", function(req: Express.Request) {
       return {
-        userId: req.param("id")
+        userId: req.param("userId")
       }
     })
   );

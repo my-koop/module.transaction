@@ -601,9 +601,35 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   getBillHistory(
-    params: number,
+    params,
     callback: (err, bills) => void
-  ){
+  ) {
+     this.db.getConnection(function(err, connection, cleanup) {
+      if(err) {
+        cleanup();
+        return callback(new DatabaseError(err), null);
+      }
+      logger.verbose("Getting bill history for user", params.userId);
+      connection.query(" \
+      SELECT \
+        bill.idbill, \
+        bill.createdDate, \
+        (closedDate is not null) as isClosed, \
+        total, \
+        SUM(transaction.amount) as paid \
+      FROM bill \
+      LEFT join bill_transaction on bill.idbill = bill_transaction.idbill \
+      left join transaction on bill_transaction.idTransaction = transaction.idTransaction \
+      WHERE bill.idUser = ? \
+      group by bill.idbill",
+      [params.userId],
+      function(err, rows){
+        cleanup();
+        callback(err && new DatabaseError(err), { bills: _.map(rows, function(report){ return report }) } );
+      })
+    });
+
+
 
   }
 }

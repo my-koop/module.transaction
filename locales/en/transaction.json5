@@ -79,5 +79,6 @@
 
   //Bill History
   billHistoryTab: "Bill History",
+  billHistoryWelcome: "Bill history"
 
 }

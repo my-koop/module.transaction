@@ -81,4 +81,5 @@
 
   //Bill History
   billHistoryTab: "Historique des factures",
+  billHistoryWelcome: "Historique des factures"
 }

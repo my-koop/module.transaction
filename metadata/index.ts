@@ -10,7 +10,7 @@ metaDataBuilder.addData("translations", translations);
 metaDataBuilder.addData("endpoints", endpoints);
 
 metaDataBuilder.addData("myAccountPlugins", {
-  mailingList: {
+  billhistory: {
     titleKey: "transaction::billHistoryTab",
     hash: "billhistory",
     component: {
@@ -21,7 +21,7 @@ metaDataBuilder.addData("myAccountPlugins", {
 });
 
 metaDataBuilder.addData("adminEditPlugins", {
-  mailingList: {
+  billhistory: {
     titleKey: "transaction::billHistoryTab",
     hash: "billhistory",
     component: {
