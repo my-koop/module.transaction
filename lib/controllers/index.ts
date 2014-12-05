@@ -103,5 +103,19 @@ export function attachControllers(
         };
       }
     )
-  )
+  );
+
+  binder.attach(
+    {
+      endPoint: endPoints.transaction.report
+    },
+    binder.makeSimpleController("getFinancialReport", function(req: Express.Request) {
+      return {
+        fromDate: req.param("fromDate"),
+        toDate: req.param("toDate")
+      }
+    })
+  );
+
+
 }

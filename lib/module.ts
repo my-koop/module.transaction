@@ -378,8 +378,9 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           notes = ?, \
           idUser = ?, \
           idEvent = ?, \
+          category = ?, \
           closedDate = " + closedDate,
-          [params.total, params.notes, idUser, idEvent],
+          [params.total, params.notes, idUser, idEvent, params.category],
           function(err, res) {
             callback(
               err && new DatabaseError(err),
@@ -564,6 +565,39 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         )
       }
     ], callback);
+  }
+
+  getFinancialReport(
+    params: Transaction.db.FinancialReport,
+    callback: (err, report) => void
+  ) {
+    this.db.getConnection(function(err, connection, cleanup) {
+      if(err) {
+        cleanup();
+        return callback(new DatabaseError(err), null);
+      }
+      logger.verbose("Getting report from", params.fromDate ,"to", params.toDate);
+      connection.query(" \
+      SELECT \
+        category, \
+        ifnull(SUM(transaction.amount), 0) as total, \
+        ifnull(SUM(CASE WHEN transaction.amount > 0 THEN transaction.amount ELSE 0 END), 0) as totalSales, \
+        ifnull(SUM(CASE WHEN transaction.amount < 0 THEN transaction.amount ELSE 0 END), 0) as totalRefunds, \
+        count(transaction.idTransaction) as transactions, \
+        ifnull(SUM(CASE WHEN transaction.amount > 0 THEN 1 ELSE 0 END), 0) as sales, \
+        ifnull(SUM(CASE WHEN transaction.amount < 0 THEN 1 ELSE 0 END), 0) as refunds  \
+      FROM bill \
+      INNER JOIN bill_transaction on bill.idbill = bill_transaction.idbill \
+      INNER JOIN transaction on transaction.idTransaction = bill_transaction.idTransaction \
+      WHERE bill.category IN( 'product', 'membership', 'subscription') \
+      AND (transaction.date BETWEEN ? AND ?) \
+      GROUP BY bill.category",
+      [params.fromDate, params.toDate],
+      function(err, rows){
+        cleanup();
+        callback(err && new DatabaseError(err), { reports: _.map(rows, function(report){ return report }) } );
+      })
+    });
   }
 }
 

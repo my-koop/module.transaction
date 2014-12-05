@@ -22,6 +22,7 @@ declare module Transaction {
     }[];
     notes?: string;
     total: number;
+    category: string;
   }
 
   export interface BillId {
@@ -56,6 +57,16 @@ declare module Transaction {
   export interface TaxInfo {
     rate: number;
     localizeKey: string;
+  }
+
+  export interface FinancialReport {
+    category: string;
+    total: number;
+    totalSales: number;
+    totalRefunds: number;
+    transactions: number;
+    sales: number;
+    refunds: number;
   }
 
   module GetBill {

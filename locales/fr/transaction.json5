@@ -48,7 +48,6 @@
   switchBillState_closed: "Afficher ouvertes",
   closeBillTooltip: "Fermer cette facture",
   openBillTooltip: "Réouvrir la facture",
-
   errors: {
     app: {
       id: {
@@ -58,5 +57,25 @@
         notEmpty: "Cette facture possède des transactions et ne peut être supprimée"
       }
     }
-  }
+  },
+
+  //Report
+  financialReportWelcome : "Rapports financiers",
+  financialReportExplanation : "",
+  financialReportPanelHeaderStart :  "Rapport pour la période du ",
+  financialReportPanelHeaderMid :  " au ",
+  financialReportCategory_product : "Articles",
+  financialReportCategory_membership : "Adhésion",
+  financialReportCategory_subscription : "Cotisation",
+  financialReportFieldTotal : "Total",
+  financialReportFieldTotalSales : "Total des ventes",
+  financialReportFieldTotalRefunds : "Total des remboursements",
+  financialReportFieldTransactions : "transactions",
+  financialReportFieldSales : "ventes",
+  financialReportFieldRefunds : "remboursements",
+  financialReportSubmit : "Envoyer",
+  financialReportIN: " avec ",
+  financialReportLabelFromDate : "Date du début de la période",
+  financialReportLabelToDate : "Date de fin de la période",
+  financialReportNoResult: "Aucune transaction n'a été enregistrée durant cette période."
 }

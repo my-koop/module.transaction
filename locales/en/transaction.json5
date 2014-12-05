@@ -46,7 +46,6 @@
   switchBillState_closed: "Show open",
   closeBillTooltip: "Close this bill",
   openBillTooltip: "Reopen this bill",
-
   errors: {
     app: {
       id: {
@@ -56,5 +55,25 @@
         notEmpty: "This bill contains transactions and cannot be deleted"
       }
     }
-  }
+  },
+
+  //Report
+  financialReportWelcome : "Financial Report",
+  financialReportExplanation : "",
+  financialReportPanelHeaderStart :  "Report for transactions that occured between ",
+  financialReportPanelHeaderMid :  " and ",
+  financialReportCategory_product : "Products",
+  financialReportCategory_membership : "Memberships",
+  financialReportCategory_subscription : "Subscriptions",
+  financialReportFieldTotal : "Total",
+  financialReportFieldTotalSales : "Total sales",
+  financialReportFieldTotalRefunds : "Total refunds",
+  financialReportFieldTransactions : "transactions",
+  financialReportFieldSales : "sales",
+  financialReportFieldRefunds : "refunds",
+  financialReportSubmit : "Submit",
+  financialReportIN : " in ",
+  financialReportLabelFromDate : "Report start date",
+  financialReportLabelToDate : "Report end date",
+  financialReportNoResult: "No transaction occured in this time span"
 }

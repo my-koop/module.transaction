@@ -15,5 +15,10 @@ declare module Transaction {
       amount: number;
       isAfterTax: boolean;
     }
+
+    export interface FinancialReport{
+      fromDate: Date;
+      toDate: Date;
+    }
   }
 }
