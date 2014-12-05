@@ -58,6 +58,10 @@ declare module mktransaction {
       params: Transaction.DeleteBill.Params,
       callback: Transaction.DeleteBill.Callback
     );
+    getBillHistory(
+      params: number,
+      callback: (err, bills) => void
+    );
   }
 
 }

@@ -6,5 +6,25 @@ var metaDataBuilder = new utils.MetaDataBuilder();
 routes.addRoutes(metaDataBuilder);
 metaDataBuilder.addData("translations", translations);
 metaDataBuilder.addData("endpoints", endpoints);
+metaDataBuilder.addData("myAccountPlugins", {
+    mailingList: {
+        titleKey: "transaction::billHistoryTab",
+        hash: "billhistory",
+        component: {
+            resolve: "component",
+            value: "BillHistoryPage"
+        }
+    }
+});
+metaDataBuilder.addData("adminEditPlugins", {
+    mailingList: {
+        titleKey: "transaction::billHistoryTab",
+        hash: "billhistory",
+        component: {
+            resolve: "component",
+            value: "BillHistoryPage"
+        }
+    }
+});
 var metaData = metaDataBuilder.get();
 module.exports = metaData;

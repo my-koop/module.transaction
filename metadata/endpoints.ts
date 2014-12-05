@@ -37,6 +37,10 @@ var endpoints = {
       delete: {
         path: "/bills/:id",
         method: "delete"
+      },
+      history: {
+        path: "/users/bills/:id",
+        method: "get"
       }
     },
     taxes: {

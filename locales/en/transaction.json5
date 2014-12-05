@@ -75,5 +75,9 @@
   financialReportIN : " in ",
   financialReportLabelFromDate : "Report start date",
   financialReportLabelToDate : "Report end date",
-  financialReportNoResult: "No transaction occured in this time span"
+  financialReportNoResult: "No transaction occured in this time span",
+
+  //Bill History
+  billHistoryTab: "Bill History",
+
 }

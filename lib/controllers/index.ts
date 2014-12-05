@@ -117,5 +117,16 @@ export function attachControllers(
     })
   );
 
+   binder.attach(
+    {
+      endPoint: endPoints.transaction.bill.history
+    },
+    binder.makeSimpleController("getBillHistory", function(req: Express.Request) {
+      return {
+        userId: req.param("id")
+      }
+    })
+  );
+
 
 }

@@ -599,6 +599,13 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       })
     });
   }
+
+  getBillHistory(
+    params: number,
+    callback: (err, bills) => void
+  ){
+
+  }
 }
 
 export = Module;

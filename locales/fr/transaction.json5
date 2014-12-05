@@ -77,5 +77,8 @@
   financialReportIN: " avec ",
   financialReportLabelFromDate : "Date du début de la période",
   financialReportLabelToDate : "Date de fin de la période",
-  financialReportNoResult: "Aucune transaction n'a été enregistrée durant cette période."
+  financialReportNoResult: "Aucune transaction n'a été enregistrée durant cette période.",
+
+  //Bill History
+  billHistoryTab: "Historique des factures",
 }
