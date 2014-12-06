@@ -101,14 +101,8 @@ declare module mktransaction {
     export interface Params {
       id: number;
     }
-    export interface Result {
-      customerEmail: string;
-      discounts: Discount[];
-      idEvent: number;
+    export interface Result extends Bill {
       items: BillItem[];
-      notes: string;
-      taxes: TaxInfo[];
-      total: number;
     }
     export interface Callback {
       (err: Error, res?: Result): void;

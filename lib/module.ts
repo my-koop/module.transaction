@@ -350,6 +350,41 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     );
   }
 
+  __updateInventory(
+    connection: mysql.IConnection,
+    params: {items: {id: number; quantity: number}[]},
+    callback
+  ) {
+    var queryParams = [];
+    var itemsIds = [];
+    var cases = _(params.items)
+      .filter(function(item) {
+        return _.isNumber(item.id) && item.id > 0;
+      })
+      .reduce(function(cases, item) {
+        itemsIds.push(item.id);
+        queryParams.push(item.id);
+        queryParams.push(item.quantity);
+        return cases + " WHEN ? THEN quantity-?";
+      }, "");
+
+    if(!_.isEmpty(queryParams)) {
+      connection.query(
+        "UPDATE item SET quantity = CASE id " + cases +
+        " END WHERE id IN (?)",
+        queryParams.concat([itemsIds]),
+        function(err, result) {
+          if(err) {
+            return callback(new DatabaseError(err));
+          }
+          callback();
+        }
+      )
+    } else {
+      callback();
+    }
+  }
+
   saveNewBill(
     params: mktransaction.NewBill,
     callback: mktransaction.saveNewBillCallback
@@ -476,6 +511,9 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         );
       },
       function(callback) {
+        self.__updateInventory(connection, params, callback);
+      },
+      function(callback) {
         // must create a transaction with the full amount
         if(!params.archiveBill) {
           self.__addBillTransaction(
@@ -575,12 +613,21 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     var self = this;
     async.waterfall([
       function(next) {
-        self.__getBill(connection, params, next);
+        self.__getBillDetails(connection, params, next);
       },
-      function(result: mktransaction.GetBill.CallbackResult, next) {
+      function(result: mktransaction.GetBillDetails.Result, next) {
         if(result.transactionCount) {
           return next(new ApplicationError(null, {transactionCount: "notEmpty"}));
         }
+        var itemOpposite = _.map(result.items, function(item) {
+          return {
+            id: item.id,
+            quantity: -item.quantity
+          }
+        });
+        self.__updateInventory(connection, {items: itemOpposite}, next);
+      },
+      function(next) {
         connection.query(
           "DELETE FROM bill WHERE idbill=?",
           [params.id],
