@@ -54,15 +54,16 @@ var BillDetailPage = React.createClass({
   },
 
   render: function() {
+    var id = parseInt(this.props.params.id);
     return (
       <div>
         <h1>
-          {__("transaction::billDetailsWelcome")} #{this.props.params.id}
+          {__("transaction::billDetailsWelcome")} #{id}
         </h1>
         {this.state.billDetails ?
           <MKBillDetail
             readOnly
-            idBill={this.props.params.id}
+            idBill={id}
             billDetails={this.state.billDetails}
           />
         : null}

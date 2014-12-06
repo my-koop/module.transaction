@@ -7,7 +7,7 @@ var BSTable       = require("react-bootstrap/Table");
 var BSInput       = require("react-bootstrap/Input");
 var BSButton      = require("react-bootstrap/Button");
 var BSButtonGroup = require("react-bootstrap/ButtonGroup");
-var Router        =  require("react-router");
+var Router        = require("react-router");
 
 // My Koop components
 var MKTableSorter         = require("mykoop-core/components/TableSorter");
@@ -60,8 +60,7 @@ var BillDetail = React.createClass({
     return {
       // {id: number, name: string, code: number, price:number, quantity: number}
       bill: billDetails.items || [],
-      // { info : {isAfterTax: boolean, value: number, type: DiscountType }
-      // apply: ((total) => newTotal)[] }
+      // {isAfterTax: boolean, value: number, type: DiscountType }[]
       discounts: billDetails.discounts || [],
       customerEmail: billDetails.customerEmail || null,
       // mktransaction.TaxInfo[]
@@ -152,9 +151,9 @@ var BillDetail = React.createClass({
           }),
           discounts: _.map(this.state.discounts, function(discount) {
             return  {
-              type: discount.info.type,
-              value: discount.info.value,
-              isAfterTax: discount.info.isAfterTax
+              type: discount.type,
+              value: discount.value,
+              isAfterTax: discount.isAfterTax
             };
           }),
           notes: this.state.notes
@@ -308,7 +307,7 @@ var BillDetail = React.createClass({
                   });
                 }
               }
-              return <BSInput type="text" valueLink={link} />
+              return <BSInput type="text" valueLink={link} />;
             }
             return item.name;
           }
@@ -450,26 +449,26 @@ var BillDetail = React.createClass({
       <div>
         <BSPanel header={__("transaction::itemList")}>
           {!readOnly ?
-          <BSRow>
-            <BSCol md={4} sm={6}>
-              <label>
-                {__("transaction::addItemToBill")}
-              </label>
-              <Typeahead
-                placeholder={__("transaction::billEnterCodeOrName")}
-                options={addItemOptions}
-                onOptionSelected={this.onItemSelected}
-                clearOnSelect
-                maxVisible={4}
-                customClasses={{
-                  input: "form-control",
-                  results: "mk-typeahead-results",
-                  listItem: "mk-typeahead-item",
-                  listAnchor: "mk-typeahead-anchor",
-                }}
-              />
-            </BSCol>
-          </BSRow>
+            <BSRow>
+              <BSCol md={4} sm={6}>
+                <label>
+                  {__("transaction::addItemToBill")}
+                </label>
+                <Typeahead
+                  placeholder={__("transaction::billEnterCodeOrName")}
+                  options={addItemOptions}
+                  onOptionSelected={this.onItemSelected}
+                  clearOnSelect
+                  maxVisible={4}
+                  customClasses={{
+                    input: "form-control",
+                    results: "mk-typeahead-results",
+                    listItem: "mk-typeahead-item",
+                    listAnchor: "mk-typeahead-anchor",
+                  }}
+                />
+              </BSCol>
+            </BSRow>
           : null}
           <BSRow>
             <MKTableSorter
@@ -483,14 +482,14 @@ var BillDetail = React.createClass({
           </BSRow>
         </BSPanel>
         {!readOnly || (initialDiscounts.length > 0) ?
-        <MKCollapsablePanel header={__("transaction::discountHeader")} >
-          <MKDiscountTable
-            readOnly={readOnly}
-            onChange={this.onDiscountChange}
-            hasTaxes={!_.isEmpty(this.state.taxInfos)}
-            discounts={this.state.discounts}
-          />
-        </MKCollapsablePanel>
+          <MKCollapsablePanel header={__("transaction::discountHeader")} >
+            <MKDiscountTable
+              readOnly={readOnly}
+              onChange={this.onDiscountChange}
+              hasTaxes={!_.isEmpty(this.state.taxInfos)}
+              discounts={this.state.discounts}
+            />
+          </MKCollapsablePanel>
         : null}
         <BSPanel header={__("transaction::billInfo")}>
           <BSCol lg={4} md={6}>
@@ -499,25 +498,27 @@ var BillDetail = React.createClass({
           </BSCol>
           <BSCol lg={4} md={6}>
             {!readOnly ?
-            <BSInput
-              type="select"
-              label={__("transaction::linkToEvent")}
-              valueLink={eventLink}
-            >
-              <option value={-1} key={-1}>{__("none")}</option>
-              {_.map(this.state.events, function(event) {
-                return <option value={event.id} key={event.id}>{event.name}</option>
-              })}
-            </BSInput>
-            : [<label key={1}>
-                {__("transaction::linkToEvent")}
-              </label>,
-              <p key={2}>{this.props.billDetails.idEvent?
-                "#" + this.props.billDetails.idEvent + ": " +
-                 this.props.billDetails.eventName
-                : __("none")
-              }
-              </p>]
+              <BSInput
+                type="select"
+                label={__("transaction::linkToEvent")}
+                valueLink={eventLink}
+              >
+                <option value={-1} key={-1}>{__("none")}</option>
+                {_.map(this.state.events, function(event) {
+                  return <option value={event.id} key={event.id}>{event.name}</option>
+                })}
+              </BSInput>
+            : [
+                <label key={1}>
+                  {__("transaction::linkToEvent")}
+                </label>,
+                <p key={2}>{this.props.billDetails.idEvent ?
+                  "#" + this.props.billDetails.idEvent + ": " +
+                   this.props.billDetails.eventName
+                  : __("none")
+                }
+                </p>
+              ]
             }
             <MKCustomerInformation
               readOnly={readOnly}

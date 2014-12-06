@@ -134,14 +134,14 @@ var CustomerInformation = React.createClass({
     return (
       <div>
         {!readOnly ?
-        <BSInput
-          type="email"
-          valueLink={emailLink}
-          label={__("transaction::customerEmail")}
-          bsStyle={inputStyle}
-          addonBefore={<MKIcon glyph="envelope" fixedWidth />}
-          addonAfter={emailAddon}
-        />
+          <BSInput
+            type="email"
+            valueLink={emailLink}
+            label={__("transaction::customerEmail")}
+            bsStyle={inputStyle}
+            addonBefore={<MKIcon glyph="envelope" fixedWidth />}
+            addonAfter={emailAddon}
+          />
         : [
           <label key={1}>{__("transaction::customerEmail")}</label>,
           <p key={2}>{this.state.email.value}</p>

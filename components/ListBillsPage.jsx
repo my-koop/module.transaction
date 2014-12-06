@@ -334,7 +334,7 @@ var ListBillsPage = React.createClass({
             return (
               <div key={i}>
                   <Link
-                    to={"adminEdit"}
+                    to="adminEdit"
                     params={{id: bill.idUser}}
                   >
                     {bill.idUser}
