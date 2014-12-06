@@ -59,8 +59,13 @@ declare module mktransaction {
       callback: Transaction.DeleteBill.Callback
     );
     getBillHistory(
-      params: number,
-      callback: (err, bills) => void
+      connection: mysql.IConnection,
+      params: Transaction.GetBillHistory.Params,
+      callback: Transaction.GetBillHistory.Callback
+    );
+    __getBillHistory(
+      params: Transaction.GetBillHistory.Params,
+      callback: Transaction.GetBillHistory.Callback
     );
   }
 

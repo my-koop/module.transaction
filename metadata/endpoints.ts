@@ -39,7 +39,7 @@ var endpoints = {
         method: "delete"
       },
       history: {
-        path: "/users/bills/:userId",
+        path: "/users/:id/bills",
         method: "get"
       }
     },

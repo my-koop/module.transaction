@@ -601,15 +601,23 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   getBillHistory(
-    params,
-    callback: (err, bills) => void
+    connection: mysql.IConnection,
+    params: Transaction.GetBillHistory.Params,
+    callback: Transaction.GetBillHistory.Callback
+  ) {
+    this.callWithConnection(this.__getBillHistory, params, callback);
+  }
+
+  __getBillHistory(
+    params: Transaction.GetBillHistory.Params,
+    callback: Transaction.GetBillHistory.Callback
   ) {
      this.db.getConnection(function(err, connection, cleanup) {
       if(err) {
         cleanup();
         return callback(new DatabaseError(err), null);
       }
-      logger.verbose("Getting bill history for user", params.userId);
+      logger.debug("Getting bill history for user", params.id);
       connection.query(" \
       SELECT \
         bill.idbill, \
@@ -622,10 +630,9 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       left join transaction on bill_transaction.idTransaction = transaction.idTransaction \
       WHERE bill.idUser = ? \
       group by bill.idbill",
-      [params.userId],
+      [params.id],
       function(err, rows){
-        cleanup();
-        callback(err && new DatabaseError(err), { bills: _.map(rows, function(report){ return report }) } );
+        callback(err && new DatabaseError(err), { bills: _.map(rows, function(report){ return report; }) } );
       })
     });
 

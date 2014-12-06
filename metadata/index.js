@@ -6,16 +6,6 @@ var metaDataBuilder = new utils.MetaDataBuilder();
 routes.addRoutes(metaDataBuilder);
 metaDataBuilder.addData("translations", translations);
 metaDataBuilder.addData("endpoints", endpoints);
-metaDataBuilder.addData("myAccountPlugins", {
-    billhistory: {
-        titleKey: "transaction::billHistoryTab",
-        hash: "billhistory",
-        component: {
-            resolve: "component",
-            value: "BillHistoryPage"
-        }
-    }
-});
 metaDataBuilder.addData("adminEditPlugins", {
     billhistory: {
         titleKey: "transaction::billHistoryTab",

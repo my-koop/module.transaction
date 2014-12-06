@@ -6,7 +6,6 @@ var BSButton = require("react-bootstrap/Button");
 // My Koop components
 var MKTableSorter     = require("mykoop-core/components/TableSorter");
 var MKListModButtons  = require("mykoop-core/components/ListModButtons");
-var MKIcon            = require("mykoop-core/components/Icon");
 var MKAlert           = require("mykoop-core/components/Alert");
 
 // Utilities
@@ -40,7 +39,7 @@ var BillHistoryPage = React.createClass({
   actionsGenerator: function(bill) {
     return [
       {
-        icon: "edit",
+        icon: "search-plus",
         tooltip: {
           text: __("transaction::billHistoryDetailsTooltip"),
           overlayProps: {
@@ -58,22 +57,22 @@ var BillHistoryPage = React.createClass({
     var self = this;
     actions.transaction.bill.history({
       data: {
-        userId: userId
+        id: userId
       }
     }, function(err , res){
-        if(err){
-          console.log(err);
-        } else {
-          var styledBills = _.map(res.bills, function(bill){
-            if(bill.isClosed == 0){
-              bill.__rowProps = { className: "danger"}
-            }
-            return bill;
-          });
-          self.setState({
-            bills: styledBills
-          })
-        }
+      if(err){
+        console.log(err);
+      } else {
+        var styledBills = _.map(res.bills, function(bill){
+          if(bill.isClosed == 0){
+            bill.__rowProps = { className: "danger"}
+          }
+          return bill;
+        });
+        self.setState({
+          bills: styledBills
+        })
+      }
     })
   },
 
@@ -102,7 +101,7 @@ var BillHistoryPage = React.createClass({
           name: __("transaction::createdDate"),
           cellGenerator: function(bill) {
             return (
-              (bill.createdDate !== null) ? formatDate(new Date(bill.createdDate)) : null
+              (bill.createdDate !== null) ? formatDate(new Date(bill.createdDate),"LLL") : null
             );
           }
         },
@@ -130,7 +129,7 @@ var BillHistoryPage = React.createClass({
           name: __("actions"),
           isStatic: true,
           headerProps: {
-            className: "list-mod-min-width-3"
+            className: "list-mod-min-width-1"
           },
           cellGenerator: function(bill) {
             return (
@@ -146,10 +145,6 @@ var BillHistoryPage = React.createClass({
 
     return (
       <BSCol md={12}>
-        <h1>
-          {__("transaction::billHistoryWelcome")}
-        </h1>
-
         { this.state.bills.length > 0 ?
             <MKTableSorter
               config={BillTableConfig}
@@ -160,7 +155,7 @@ var BillHistoryPage = React.createClass({
               hover
               responsive
             />
-        : <MKAlert bsStyle="danger">
+        : <MKAlert bsStyle="warning">
             {__("transaction::billHistoryNoResult")}
           </MKAlert>
         }

@@ -85,4 +85,13 @@ declare module Transaction {
     }
     export interface Callback extends successCallback {}
   }
+
+  module GetBillHistory {
+    export interface Params {
+      id: number;
+    }
+    export interface Callback {
+      (err: Error, result?: any)
+    }
+  }
 }
