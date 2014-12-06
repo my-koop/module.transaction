@@ -118,7 +118,7 @@ export function attachControllers(
     {
       endPoint: endPoints.transaction.taxes.get
     },
-    binder.makeSimpleController("getTaxInformation")
+    binder.makeSimpleController(transaction.getTaxInformation)
   );
 
   binder.attach(

@@ -66,7 +66,15 @@ declare module mktransaction {
 
   export interface TaxInfo {
     rate: number;
-    localizeKey: string;
+    name: string;
+  }
+
+  module GetTaxInformation {
+    export interface Params {}
+    export interface Result extends Array<TaxInfo> {}
+    export interface Callback {
+      (err, taxes?: Result): void;
+    }
   }
 
   export interface FinancialReport {

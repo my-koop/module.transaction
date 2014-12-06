@@ -4,6 +4,7 @@ import async = require("async");
 import _ = require("lodash");
 import DiscountTypes = require("./common/discountTypes");
 import billUtils = require("./common/billUtils");
+import taxUtils = require("./common/taxUtils");
 import BillInformation = require("./classes/BillInformation");
 var MySqlHelper = utils.MySqlHelper;
 var DatabaseError = utils.errors.DatabaseError;
@@ -16,10 +17,12 @@ var logger = utils.getLogger(module);
 class Module extends utils.BaseModule implements mktransaction.Module {
   private db: mkdatabase.Module;
   private user: mkuser.Module;
+  private core: mkcore.Module;
 
   init() {
     this.db = <mkdatabase.Module>this.getModuleManager().get("database");
     this.user = <mkuser.Module>this.getModuleManager().get("user");
+    this.core = <mkcore.Module>this.getModuleManager().get("core");
     controllerList.attachControllers(new utils.ModuleControllersBinder(this));
   }
 
@@ -59,35 +62,25 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   getTaxInformation(
-    params: any,
-    callback: (err, taxes?: mktransaction.TaxInfo[]) => void
+    params: mktransaction.GetTaxInformation.Params,
+    callback: mktransaction.GetTaxInformation.Callback
   ) {
-    this.db.getConnection(function(err, connection, cleanup) {
+    this.callWithConnection(this.__getTaxInformation, params, callback);
+  }
+
+  __getTaxInformation(
+    connection: mysql.IConnection,
+    params: mktransaction.GetTaxInformation.Params,
+    callback: mktransaction.GetTaxInformation.Callback
+  ) {
+    this.core.__getSettings(connection, {
+      keys: [taxUtils.settingsKey]
+    }, function(err, res) {
       if(err) {
-        return callback(new DatabaseError(err));
+        return callback(err);
       }
-      async.waterfall([
-        function(callback) {
-          connection.query(
-            "SELECT rate, localizeKey FROM taxes",
-            function(err, rows) {
-              callback(err && new DatabaseError(err), rows);
-            }
-          );
-        },
-        function(rows, callback) {
-          var taxInfos = _.map(rows, function(row: any) {
-            return {
-              rate: row.rate,
-              localizeKey: row.localizeKey
-            };
-          });
-          callback(null, taxInfos);
-        }
-      ], function(err, taxInfos: any[]) {
-        cleanup();
-        callback(err, taxInfos);
-      });
+      var taxInfos = taxUtils.parseSettings(res[taxUtils.settingsKey]);
+      callback(null, taxInfos.active ? taxInfos.taxes: []);
     });
   }
 
@@ -401,6 +394,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     var idBill = -1;
     var idUser = null;
     var billTotal;
+    var taxes: mktransaction.TaxInfo[];
     // can't archive a bill without a customer email
     assert(!params.archiveBill || params.customerEmail);
 
@@ -431,10 +425,17 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           new ApplicationError(null, {customerEmail: ["invalid"]})
         );
       },
-      function calculateTotal(next) {
+      function getTaxes(next) {
+        self.__getTaxInformation(connection, {}, next);
+      },
+      function calculateTotal(
+        taxesResult: mktransaction.GetTaxInformation.Result,
+        next
+      ) {
+        taxes = taxesResult;
         var billTotalInfo = billUtils.calculateBillTotal(
           params.items,
-          [], //FIXME:: GetTaxInformations
+          taxes,
           params.discounts
         );
         billTotal = billTotalInfo.total;
@@ -463,6 +464,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           createdDate = NOW(), \
           total = ?, \
           notes = ?, \
+          taxes = ?, \
           idUser = ?, \
           idEvent = ?, \
           category = ?, \
@@ -471,6 +473,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           [
             billTotal,
             params.notes,
+            JSON.stringify(taxes),
             idUser,
             idEvent,
             params.category,

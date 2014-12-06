@@ -119,7 +119,7 @@ var BillDetail = React.createClass({
       self.setState({
         events: events,
         items: items,
-        taxes: taxes,
+        taxInfos: taxes,
         finishedLoading: true
       });
     });

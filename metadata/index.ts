@@ -20,6 +20,18 @@ metaDataBuilder.addData("adminEditPlugins", {
   }
 });
 
-
+metaDataBuilder.addData("core", {
+  contributions: {
+    settings: {
+      taxes: {
+        titleKey: "taxes::settingsTitle",
+        component: {
+          resolve: "component",
+          value: "TaxesSettings"
+        }
+      }
+    }
+  }
+});
 var metaData = metaDataBuilder.get();
 export = metaData;
