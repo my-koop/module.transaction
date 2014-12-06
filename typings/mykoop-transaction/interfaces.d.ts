@@ -24,7 +24,6 @@ declare module mktransaction {
     idEvent?: number;
     items: BillItem[];
     notes?: string;
-    total: number;
     category: string;
   }
 

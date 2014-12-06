@@ -400,6 +400,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     var self = this;
     var idBill = -1;
     var idUser = null;
+    var billTotal;
     // can't archive a bill without a customer email
     assert(!params.archiveBill || params.customerEmail);
 
@@ -430,12 +431,19 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           new ApplicationError(null, {customerEmail: ["invalid"]})
         );
       },
-
+      function calculateTotal(next) {
+        var billTotalInfo = billUtils.calculateBillTotal(
+          params.items,
+          [], //FIXME:: GetTaxInformations
+          params.discounts
+        );
+        billTotal = billTotalInfo.total;
+        next();
+      },
       mysqlHelper.beginTransaction,
 
       function(callback) {
         logger.debug("Create new bill id");
-        var total = params.total;
         var closedDate = params.archiveBill ? "NULL" : "NOW()";
         var idEvent = _.isNumber(params.idEvent) && params.idEvent >= 0 ?
           params.idEvent
@@ -461,7 +469,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           discounts = ?, \
           closedDate = " + closedDate,
           [
-            params.total,
+            billTotal,
             params.notes,
             idUser,
             idEvent,
@@ -510,7 +518,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           }
         );
       },
-      function(callback) {
+      function updateInventory(callback) {
         self.__updateInventory(connection, params, callback);
       },
       function(callback) {
@@ -520,7 +528,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             connection,
             {
               idBill: idBill,
-              amount: params.total
+              amount: billTotal
             },
             function(err) {
               callback(err);

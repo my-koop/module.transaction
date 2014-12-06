@@ -136,7 +136,6 @@ var BillDetail = React.createClass({
     actions.transaction.bill.new(
       {
         data: {
-          total: this.total,
           archiveBill: archiveBill,
           customerEmail: this.state.customerEmail,
           idEvent: this.state.idEvent,
