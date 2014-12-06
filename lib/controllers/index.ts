@@ -27,6 +27,21 @@ export function attachControllers(
 
   binder.attach(
     {
+      endPoint: endPoints.transaction.bill.update,
+    },
+    binder.makeSimpleController<mktransaction.UpdateBill.Params>(
+      transaction.updateBill,
+      function(req: Express.Request) {
+        return {
+          id: parseInt(req.param("id")),
+          notes: req.param("notes")
+        }
+      }
+    )
+  );
+
+  binder.attach(
+    {
       endPoint: endPoints.transaction.bill.list,
       validation: validation.listBill
     },
@@ -40,7 +55,22 @@ export function attachControllers(
     {
       endPoint: endPoints.transaction.bill.get
     },
-    binder.makeSimpleController<Transaction.GetBill.Params>(transaction.getBill,
+    binder.makeSimpleController<mktransaction.GetBill.Params>(
+      transaction.getBill,
+      function(req: Express.Request) {
+        return {
+          id: parseInt(req.param("id", 0))
+        };
+      }
+    )
+  );
+
+  binder.attach(
+    {
+      endPoint: endPoints.transaction.bill.details
+    },
+    binder.makeSimpleController<mktransaction.GetBillDetails.Params>(
+      transaction.getBillDetails,
       function(req: Express.Request) {
         return {
           id: parseInt(req.param("id", 0))
@@ -95,7 +125,7 @@ export function attachControllers(
     {
       endPoint: endPoints.transaction.bill.delete
     },
-    binder.makeSimpleController<Transaction.DeleteBill.Params>(
+    binder.makeSimpleController<mktransaction.DeleteBill.Params>(
       transaction.deleteBill,
       function(req) {
         return {

@@ -25,22 +25,25 @@ var formatMoney = require("language").formatMoney;
 var _ = require("lodash");
 var actions = require("actions");
 var util = require("util");
-var EmailValidationState = require("../lib/common_modules/EmailValidationState");
+var EmailValidationState = require("../lib/common/EmailValidationState");
 
 var CustomerInformation = React.createClass({
   mixins: [MKDebouncerMixin],
 
   propTypes: {
+    readOnly: React.PropTypes.bool,
+    email: React.PropTypes.string,
     // (email: string) => void; Only if email is valid
     onEmailChanged: React.PropTypes.func.isRequired
   },
 
   ////////////////////////////
   /// Life Cycle methods
-  getInitialState: function() {
+  getInitialState: function(props) {
+    props = props || this.props;
     return {
       email: {
-        value: "",
+        value: this.props.email || "",
         validationState: EmailValidationState.Initial,
         // used to know if the response is still relevant
         reqId: 0
@@ -55,9 +58,10 @@ var CustomerInformation = React.createClass({
   /// Render method
   render: function() {
     var self = this;
+    var readOnly = this.props.readOnly;
 
-    var emailLink = {
-      value: this.state.customerEmail,
+    var emailLink = !readOnly && {
+      value: this.state.email.value,
       requestChange: function(newEmail) {
         // Assume email is invalid until we get a response from the server
         self.props.onEmailChanged(null);
@@ -129,16 +133,19 @@ var CustomerInformation = React.createClass({
 
     return (
       <div>
-        <label>
-          {__("transaction::customerEmail")}
+        {!readOnly ?
           <BSInput
             type="email"
             valueLink={emailLink}
+            label={__("transaction::customerEmail")}
             bsStyle={inputStyle}
             addonBefore={<MKIcon glyph="envelope" fixedWidth />}
             addonAfter={emailAddon}
           />
-        </label>
+        : [
+          <label key={1}>{__("transaction::customerEmail")}</label>,
+          <p key={2}>{this.state.email.value}</p>
+        ]}
       </div>
     );
   }

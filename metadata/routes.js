@@ -1,8 +1,8 @@
 function addRoutes(metaData) {
     metaData.addFrontendRoute({
-        idPath: ["dashboard", "transaction"],
+        idPath: ["dashboard", "bill"],
         name: null,
-        path: "transaction"
+        path: "bill"
     });
     metaData.addFrontendRoute({
         idPath: ["dashboard", "financialreport"],
@@ -12,30 +12,32 @@ function addRoutes(metaData) {
     });
     {
         metaData.addFrontendRoute({
-            idPath: ["dashboard", "transaction", "bill"],
-            name: null,
-            path: "bill"
+            idPath: ["dashboard", "bill", "new"],
+            component: "NewBillPage",
+            name: "newBill",
+            path: "new"
         });
-        {
-            metaData.addFrontendRoute({
-                idPath: ["dashboard", "transaction", "bill", "new"],
-                component: "NewBillPage",
-                name: "newBill",
-                path: "new"
-            });
-            metaData.addFrontendRoute({
-                idPath: ["dashboard", "transaction", "bill", "list"],
-                component: "ListBillsPage",
-                name: "listBills",
-                path: ":state",
-                params: {
-                    state: [
-                        "open",
-                        "closed"
-                    ]
-                }
-            });
-        }
+        metaData.addFrontendRoute({
+            idPath: ["dashboard", "bill", "details"],
+            component: "BillDetailPage",
+            name: "billDetails",
+            path: "details/:id",
+            params: {
+                id: [121]
+            }
+        });
+        metaData.addFrontendRoute({
+            idPath: ["dashboard", "bill", "list"],
+            component: "ListBillsPage",
+            name: "listBills",
+            path: ":state",
+            params: {
+                state: [
+                    "open",
+                    "closed"
+                ]
+            }
+        });
     }
 }
 exports.addRoutes = addRoutes;

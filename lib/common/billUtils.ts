@@ -1,9 +1,21 @@
 import _ = require("lodash");
 import discountTypes = require("./discountTypes");
+var discountInfo = discountTypes.DiscountInfo;
 
 export interface DiscountInfo {
   apply: (value: number) => number;
-  info: Transaction.Discount
+  info: mktransaction.Discount
+}
+
+export function convertDiscounts(discounts: mktransaction.Discount[]) {
+  return _.map(discounts, function(discount) {
+    var func = discountInfo[discount.type]
+      .applyDiscount.bind(null, discount.value);
+    return {
+      info: discount,
+      apply: func
+    };
+  });
 }
 
 // amount: total amount to apply discounts
@@ -35,14 +47,14 @@ function applyDiscounts(
 
 export function calculateBillTotal(
   items: {price: number; quantity: number}[],
-  taxInfo: Transaction.TaxInfo[],
-  discounts: DiscountInfo[]
+  taxInfo: mktransaction.TaxInfo[],
+  discounts: mktransaction.Discount[]
 ) {
   var subtotal = _.reduce(items, function(subtotal: number, item) {
       return subtotal + ((item.price * item.quantity) || 0);
   }, 0);
-
-  var discountBeforeTax = applyDiscounts(subtotal, discounts, false);
+  var discountsInfo = convertDiscounts(discounts);
+  var discountBeforeTax = applyDiscounts(subtotal, discountsInfo, false);
 
   var subtotalAfterTax = discountBeforeTax.total;
 
@@ -54,7 +66,7 @@ export function calculateBillTotal(
     return taxAmount;
   });
   subtotalAfterTax += totalTax;
-  var discountAfterTax = applyDiscounts(subtotalAfterTax, discounts, true);
+  var discountAfterTax = applyDiscounts(subtotalAfterTax, discountsInfo, true);
 
   return {
     total: discountAfterTax.total,

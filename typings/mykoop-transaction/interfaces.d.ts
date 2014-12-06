@@ -1,6 +1,6 @@
 
 
-declare module Transaction {
+declare module mktransaction {
   export interface successCallback {
     (err?: Error): void;
   }
@@ -10,18 +10,20 @@ declare module Transaction {
     amount: number;
   }
 
+  export interface BillItem {
+    id: number;
+    price: number;
+    quantity: number;
+    name: string;
+  }
+
   export interface NewBill {
     archiveBill: boolean;
     customerEmail?: string;
     discounts?: Discount[];
     idEvent?: number;
-    items: {
-      id: number;
-      price: number;
-      quantity: number;
-    }[];
+    items: BillItem[];
     notes?: string;
-    total: number;
     category: string;
   }
 
@@ -39,13 +41,21 @@ declare module Transaction {
   }
 
   export interface Bill {
-    closedDate: string; // can be null
-    createdDate: string;
     idBill: number;
-    idUser: number; // can be null
     paid: number;
     total: number;
+    createdDate: string;
+    closedDate: string; // can be null
+    idUser: number; // can be null
+    customerFirstName: string;
+    customerLastName: string;
+    customerEmail: string;
     transactionCount: number;
+    discounts: Discount[];
+    notes: string;
+    taxes: TaxInfo[];
+    idEvent: number;
+    eventName: string;
   }
 
   export interface Discount {
@@ -92,6 +102,28 @@ declare module Transaction {
     }
     export interface Callback {
       (err: Error, result?: any)
+    }
+  }
+
+  module GetBillDetails {
+    export interface Params {
+      id: number;
+    }
+    export interface Result extends Bill {
+      items: BillItem[];
+    }
+    export interface Callback {
+      (err: Error, res?: Result): void;
+    }
+  }
+
+  module UpdateBill {
+    export interface Params {
+      id: number;
+      notes: string;
+    }
+    export interface Callback {
+      (err?: Error): void;
     }
   }
 }
