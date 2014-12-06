@@ -1,7 +1,8 @@
-var React = require("react");
-var BSCol = require("react-bootstrap/Col");
-var Link  = require("react-router").Link;
+var React  = require("react");
+var Router = require("react-router");
+var Link   = Router.Link;
 
+var BSCol = require("react-bootstrap/Col");
 var BSButton = require("react-bootstrap/Button");
 
 // My Koop components
@@ -20,10 +21,9 @@ var async        = require("async");
 var actions      = require("actions");
 var formatDate   = require("language").formatDate;
 var formatMoney  = require("language").formatMoney;
-var getRouteName = require("mykoop-utils/frontend/getRouteName");
 var BillState    = require("../lib/common_modules/BillState");
 
-var thisRouteName = getRouteName(["dashboard", "transaction", "bill", "list"]);
+var thisRouteName = "listBills";
 var openBillsColumns = [
   "idBill",
   "idUser",
@@ -60,7 +60,7 @@ var ListBillsPage = React.createClass({
 
   getInitialState: function() {
     return {
-      // Transaction.Bill[]
+      // mktransaction.Bill[]
       bills: [],
       billState: BillState[this.props.params.state]
     }
@@ -220,7 +220,18 @@ var ListBillsPage = React.createClass({
 
   actionsGenerator: function(bill) {
     var self = this;
-    var buttons = [];
+    var buttons = [{
+      icon: "search-plus",
+      tooltip: {
+        text: __("transaction::showDetailsTooltip"),
+        overlayProps: {
+          placement: "top"
+        }
+      },
+      callback: function() {
+        Router.transitionTo("billDetails", {id: bill.idBill});
+      }
+    }];
 
     if(this.getBillState() === BillState.open) {
       // Add transaction action
@@ -323,7 +334,7 @@ var ListBillsPage = React.createClass({
             return (
               <div key={i}>
                   <Link
-                    to={getRouteName(["dashboard", "adminEdit"])}
+                    to="adminEdit"
                     params={{id: bill.idUser}}
                   >
                     {bill.idUser}

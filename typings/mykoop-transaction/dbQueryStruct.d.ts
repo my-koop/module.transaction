@@ -1,6 +1,6 @@
 
 
-declare module Transaction {
+declare module mktransaction {
   export module db {
     export interface BillItem {
       idBill: number;
