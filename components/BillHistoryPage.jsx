@@ -47,7 +47,7 @@ var BillHistoryPage = React.createClass({
           }
         },
         callback: function() {
-          Router.transitionTo(getRouteName(["dashboard", "bill", "details"]), {id: bill.idbill});
+          Router.transitionTo("billDetails", {id: bill.idBill});
         }
       }
     ];
