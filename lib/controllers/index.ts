@@ -151,7 +151,7 @@ export function attachControllers(
     {
       endPoint: endPoints.transaction.bill.history
     },
-    binder.makeSimpleController("getBillHistory", function(req: Express.Request) {
+    binder.makeSimpleController(transaction.getBillHistory, function(req: Express.Request) {
       return {
         id: parseInt(req.param("id", -1))
       }
