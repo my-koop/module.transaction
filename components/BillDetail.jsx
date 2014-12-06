@@ -21,7 +21,7 @@ var MKDiscountTable       = require("./DiscountTable");
 var MKBillInfo            = require("./BillInfo");
 var MKCustomerInformation = require("./CustomerInformation");
 
-var billUtils = require("../lib/common_modules/billUtils");
+var billUtils = require("../lib/common/billUtils");
 
 // Utilities
 var __ = require("language").__;

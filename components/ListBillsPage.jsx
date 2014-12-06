@@ -21,7 +21,7 @@ var async        = require("async");
 var actions      = require("actions");
 var formatDate   = require("language").formatDate;
 var formatMoney  = require("language").formatMoney;
-var BillState    = require("../lib/common_modules/BillState");
+var BillState    = require("../lib/common/BillState");
 
 var thisRouteName = "listBills";
 var openBillsColumns = [

@@ -14,8 +14,8 @@ var _ = require("lodash");
 var util = require("util");
 
 // Possible type of discount
-var discountInfo = require("../lib/common_modules/discountTypes").DiscountInfo;
-var billUtils = require("../lib/common_modules/billUtils");
+var discountInfo = require("../lib/common/discountTypes").DiscountInfo;
+var billUtils = require("../lib/common/billUtils");
 
 var DiscountTable = React.createClass({
   mixins: [MKDebouncerMixin],

@@ -25,7 +25,7 @@ var formatMoney = require("language").formatMoney;
 var _ = require("lodash");
 var actions = require("actions");
 var util = require("util");
-var EmailValidationState = require("../lib/common_modules/EmailValidationState");
+var EmailValidationState = require("../lib/common/EmailValidationState");
 
 var CustomerInformation = React.createClass({
   mixins: [MKDebouncerMixin],
