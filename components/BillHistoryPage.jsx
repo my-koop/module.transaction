@@ -122,7 +122,12 @@ var BillHistoryPage = React.createClass({
           }
         },
         isClosed: {
-          name: __("transaction::isClosed")
+          name: __("transaction::status"),
+          cellGenerator: function(bill){
+            return (
+              __("transaction::billIsClosed", {context: bill.isClosed})
+            );
+          }
         },
 
         actions: {

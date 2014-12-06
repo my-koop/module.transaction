@@ -686,16 +686,16 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   }
 
   getBillHistory(
-    connection: mysql.IConnection,
-    params: Transaction.GetBillHistory.Params,
-    callback: Transaction.GetBillHistory.Callback
+    params: mktransaction.GetBillHistory.Params,
+    callback: mktransaction.GetBillHistory.Callback
   ) {
     this.callWithConnection(this.__getBillHistory, params, callback);
   }
 
   __getBillHistory(
-    params: Transaction.GetBillHistory.Params,
-    callback: Transaction.GetBillHistory.Callback
+    connection: mysql.IConnection,
+    params: mktransaction.GetBillHistory.Params,
+    callback: mktransaction.GetBillHistory.Callback
   ) {
      this.db.getConnection(function(err, connection, cleanup) {
       if(err) {

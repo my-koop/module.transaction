@@ -79,13 +79,13 @@ declare module mktransaction {
       callback: mktransaction.UpdateBill.Callback
     );
     getBillHistory(
-      connection: mysql.IConnection,
-      params: Transaction.GetBillHistory.Params,
-      callback: Transaction.GetBillHistory.Callback
+      params: mktransaction.GetBillHistory.Params,
+      callback: mktransaction.GetBillHistory.Callback
     );
     __getBillHistory(
-      params: Transaction.GetBillHistory.Params,
-      callback: Transaction.GetBillHistory.Callback
+      connection: mysql.IConnection,
+      params: mktransaction.GetBillHistory.Params,
+      callback: mktransaction.GetBillHistory.Callback
     );
   }
 

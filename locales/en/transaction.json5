@@ -82,7 +82,9 @@
   //Bill History
   billHistoryTab: "Bill History",
   billHistoryDetailsTooltip: "View this bill in details",
-  isClosed: "Bill is Closed",
+  status: "Closed/Open",
+  billIsClosed_1: "Closed",
+  billIsClosed_0: "Open",
   billHistoryNoResult: "No bill to display"
 
 }
