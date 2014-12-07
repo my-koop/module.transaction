@@ -124,7 +124,6 @@ var TaxesSettings = React.createClass({
     if(!areTaxesActive) {
       // No actions when inactive
       tableHeaders.shift();
-
     }
 
     var activeLink = {

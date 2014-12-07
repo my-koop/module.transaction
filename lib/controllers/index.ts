@@ -141,8 +141,8 @@ export function attachControllers(
     },
     binder.makeSimpleController("getFinancialReport", function(req: Express.Request) {
       return {
-        fromDate: req.param("fromDate"),
-        toDate: req.param("toDate")
+        fromDate: new Date(req.param("fromDate")),
+        toDate: new Date(req.param("toDate"))
       }
     })
   );
