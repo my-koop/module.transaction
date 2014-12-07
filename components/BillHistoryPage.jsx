@@ -65,7 +65,7 @@ var BillHistoryPage = React.createClass({
       } else {
         var styledBills = _.map(res.bills, function(bill){
           if(bill.isClosed == 0){
-            bill.__rowProps = { className: "danger"}
+            bill.__rowProps = { className: "warning"}
           }
           return bill;
         });
@@ -92,7 +92,10 @@ var BillHistoryPage = React.createClass({
         "paid",
         "actions"
       ],
-
+      sort: {
+        column: "isClosed",
+        order: "asc"
+      },
       columns: {
         idbill: {
           name: __("id")

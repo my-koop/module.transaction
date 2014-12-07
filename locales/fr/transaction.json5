@@ -85,7 +85,7 @@
   billHistoryTab: "Historique des factures",
   billHistoryDetailsTooltip: "Consulter les détails de cette facture",
   status: "Ouverte/Fermée",
+  billIsClosed: "Ouverte",
   billIsClosed_1: "Fermée",
-  billIsClosed_0: "Ouverte",
   billHistoryNoResult: "Aucune facture à afficher"
 }

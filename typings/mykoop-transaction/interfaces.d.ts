@@ -100,8 +100,17 @@ declare module mktransaction {
     export interface Params {
       id: number;
     }
+    export interface Result {
+      bills: {
+        idbill: number;
+        createdDate: Date;
+        isClosed: number;
+        total: number;
+        paid: number;
+      }[];
+    }
     export interface Callback {
-      (err: Error, result?: any)
+      (err: Error, result?: Result)
     }
   }
 
