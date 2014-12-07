@@ -61,7 +61,7 @@ export function calculateBillTotal(
   // Apply taxes
   var totalTax = 0;
   var taxes = _.map(taxInfo, function(tax, i) {
-    var taxAmount = subtotalAfterTax * tax.rate;
+    var taxAmount = subtotalAfterTax * tax.rate/100;
     totalTax += taxAmount;
     return taxAmount;
   });

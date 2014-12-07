@@ -17,6 +17,7 @@ var MKAddTransactionModal      = require("./AddTransactionModal");
 // Utilities
 var _            = require("lodash");
 var __           = require("language").__;
+var util         = require("util");
 var async        = require("async");
 var actions      = require("actions");
 var formatDate   = require("language").formatDate;
@@ -115,6 +116,11 @@ var ListBillsPage = React.createClass({
           _.forEach(bills, function(bill) {
             bill.createdDate = new Date(bill.createdDate);
             bill.closedDate = bill.closedDate ? new Date(bill.closedDate) : null;
+            bill.user = bill.idUser ? util.format("%d: %s %s",
+              bill.idUser,
+              bill.customerFirstName,
+              bill.customerLastName
+            ): null;
           });
           self.setState({
             bills: bills
@@ -328,29 +334,33 @@ var ListBillsPage = React.createClass({
         },
         idUser: {
           name: __("user"),
+          customFilterData: function(bill) {
+            return bill.user;
+          },
           cellGenerator: function(bill, i) {
             if(bill.idUser === null) return null;
-            // FIXME:: Make a link to the actual user and not to myaccount
             return (
               <div key={i}>
-                  <Link
-                    to="adminEdit"
-                    params={{id: bill.idUser}}
-                  >
-                    {bill.idUser}
-                  </Link>
+                <Link
+                  to="adminEdit"
+                  params={{id: bill.idUser}}
+                >
+                  {bill.user}
+                </Link>
               </div>
             );
           }
         },
         createdDate: {
           name: __("transaction::createdDate"),
+          customFilterData: true,
           cellGenerator: function(bill, i) {
             return formatDate(bill.createdDate, "LLL");
           }
         },
         closedDate: {
           name: __("transaction::closedDate"),
+          customFilterData: true,
           cellGenerator: function(bill, i) {
             return bill.closedDate ? formatDate(bill.closedDate, "LLL") : null;
           }

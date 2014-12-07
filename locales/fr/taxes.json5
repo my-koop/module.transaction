@@ -1,0 +1,7 @@
+{
+  settingsTitle: "Taxes",
+  name: "Nom",
+  rate: "Taux",
+  activeCheckboxLabel: "Appliquer les taxes sur les factures",
+  addTaxOptions: "Ajouter une taxe"
+}

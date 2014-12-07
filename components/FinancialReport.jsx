@@ -29,53 +29,56 @@ var FinancialReport = React.createClass({
 
   onSubmit: function(e) {
     e.preventDefault();
-    if(!this.state.toDate || !this.state.fromDate){
+    var fromDate = this.state.fromDate;
+    var toDate = this.state.toDate;
+    if(!fromDate || !toDate) {
       return;
     }
     var self = this;
     actions.transaction.report({
       data: {
-        fromDate: self.state.fromDate,
-        toDate: self.state.toDate
+        fromDate: fromDate,
+        toDate: toDate
       },
       options: {
         i18nErrors: {},
         alertErrors: true
       }
-    }, function(err, res){
-        if(err) {
-          console.log(err);
-        } else {
-          self.setState({
-            reports: res.reports
-          });
-        }
+    }, function(err, res) {
+      if(err) {
+        console.log(err);
+      } else {
+        self.setState({
+          reports: res.reports,
+          fromDateReport: fromDate,
+          toDateReport: toDate,
+        });
       }
-    );
+    });
   },
 
-  onDateChange: function(whatDatePicker, date, dateStr){
+  onDateChange: function(whatDatePicker, date, dateStr) {
     var state = this.state;
-    state[whatDatePicker] = dateStr;
+    state[whatDatePicker] = date;
     this.setState(state);
   },
 
-  formatReport: function(report){
+  formatReport: function(report) {
     return (
       <div>
-        <p>
-          { __("transaction::financialReportFieldTotal")  + ": " + formatMoney(report.total)
+        <p key="transactions">
+          {__("transaction::financialReportFieldTotal") + ": " + formatMoney(report.total)
           + __("transaction::financialReportIN") + report.transactions + " "
           + __("transaction::financialReportFieldTransactions")}
         </p>
-        <p>
-          {__("transaction::financialReportFieldTotalSales")   + ": " }
+        <p key="sales">
+          {__("transaction::financialReportFieldTotalSales") + ": " }
           <span className="text-success">  { formatMoney(report.totalSales) } </span>
           {__("transaction::financialReportIN") + report.sales + " "
           + __("transaction::financialReportFieldSales")}
         </p>
-        <p>
-          {__("transaction::financialReportFieldTotalRefunds")   + ": "}
+        <p key="refunds">
+          {__("transaction::financialReportFieldTotalRefunds") + ": "}
           <span className="text-danger">{formatMoney(report.totalRefunds)} </span>
           {__("transaction::financialReportIN") + report.refunds + " "
           + __("transaction::financialReportFieldRefunds")}
@@ -84,16 +87,18 @@ var FinancialReport = React.createClass({
     );
   },
 
-  getReportHeader: function(){
+  getReportHeader: function() {
     return (
-      __("transaction::financialReportPanelHeaderStart") + formatDate(new Date(this.state.fromDate),"LLL") +
-      __("transaction::financialReportPanelHeaderMid") + formatDate(new Date(this.state.toDate),"LLL")
+      __("transaction::financialReportPanelHeaderStart") +
+        formatDate(this.state.fromDateReport, "LLL") +
+      __("transaction::financialReportPanelHeaderMid") +
+       formatDate(this.state.toDateReport, "LLL")
     );
   },
 
-  displayReport: function(categories){
-    if(this.state.reports){
-      if(this.state.reports.length > 0){
+  displayReport: function(categories) {
+    if(this.state.reports) {
+      if(this.state.reports.length > 0) {
         return (
           <div block className="col-md-8">
             <BSPanel header={this.getReportHeader()}>
@@ -114,9 +119,9 @@ var FinancialReport = React.createClass({
     return null;
   },
 
-  render: function(){
+  render: function() {
     var self = this;
-    var categories = _.map(this.state.reports, function(report, key){
+    var categories = _.map(this.state.reports, function(report, key) {
       return (
         <BSPanel key={key} header={__("transaction::financialReportCategory", { context: report.category})}>
           {self.formatReport(report)}
@@ -125,38 +130,51 @@ var FinancialReport = React.createClass({
     })
     return (
       <div>
-        <div block className="col-md-12">
-          <h1> {__("transaction::financialReportWelcome")} </h1>
-          <p> {__("transaction::financialReportExplanation")} </p>
-        </div>
-        <form onSubmit={this.onSubmit}>
-          <div block className="col-md-4">
-            {__("transaction::financialReportLabelFromDate")}
-            <MKDateTimePicker
-              format="yyyy-MM-dd"
-              min={new Date("2014-01-01")}
-              max={new Date()}
-              onChange={this.onDateChange.bind(null,"fromDate")}
-            />
-          </div>
-          <div block className="col-md-4">
-            {__("transaction::financialReportLabelToDate")}
-            <MKDateTimePicker
-              format="yyyy-MM-dd"
-              min={ new Date("2014-01-01")}
-              max={ new Date()}
-              onChange={this.onDateChange.bind(null,"toDate")}
-            />
-          </div>
-          <div block className="col-md-12">
-            <BSInput
-              type="submit"
-              value={__("transaction::financialReportSubmit")}
-              bsStyle="primary"
-            />
-          </div>
-        </form>
-        { this.displayReport(categories)}
+        <BSRow>
+          <BSCol xs={12}>
+            <h1> {__("transaction::financialReportWelcome")} </h1>
+            <p> {__("transaction::financialReportExplanation")} </p>
+          </BSCol>
+        </BSRow>
+        <BSRow>
+          <BSCol xs={12}>
+            <form onSubmit={this.onSubmit}>
+              <BSRow>
+                <BSCol md={4}>
+                  {__("transaction::financialReportLabelFromDate")}
+                  <MKDateTimePicker
+                    date={this.state.fromDate}
+                    max={this.state.toDate || undefined}
+                    onChange={this.onDateChange.bind(null,"fromDate")}
+                  />
+                </BSCol>
+                <BSCol md={4}>
+                  {__("transaction::financialReportLabelToDate")}
+                  <MKDateTimePicker
+                    date={this.state.toDate}
+                    min={this.state.fromDate || undefined}
+                    onChange={this.onDateChange.bind(null,"toDate")}
+                  />
+                </BSCol>
+              </BSRow>
+              <BSRow className="top-margin-15">
+                <BSCol md={12}>
+                  <BSInput
+                    type="submit"
+                    disabled={!this.state.toDate || !this.state.fromDate}
+                    value={__("transaction::financialReportSubmit")}
+                    bsStyle="primary"
+                  />
+                </BSCol>
+              </BSRow>
+            </form>
+          </BSCol>
+        </BSRow>
+        <BSRow>
+          <BSCol xs={12}>
+            {this.displayReport(categories)}
+          </BSCol>
+        </BSRow>
       </div>
     );
   },

@@ -61,8 +61,8 @@ var NewBillPage = React.createClass({
     infos = infos.concat(_.map(billInfo.taxes, function(taxAmount, i) {
       var info = self.props.taxInfos[i];
       var taxText = util.format("%s (%s\%)",
-        __("transaction::tax", {context: info.localizeKey}),
-        (info.rate * 100).toFixed(3)
+        info.name,
+        (info.rate).toFixed(3)
       );
       return {
         text: taxText,

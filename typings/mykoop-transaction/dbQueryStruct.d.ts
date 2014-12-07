@@ -16,7 +16,7 @@ declare module mktransaction {
       isAfterTax: boolean;
     }
 
-    export interface FinancialReport{
+    export interface FinancialReport {
       fromDate: Date;
       toDate: Date;
     }

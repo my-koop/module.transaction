@@ -115,7 +115,7 @@ var DiscountTable = React.createClass({
       });
       // add button to select if discount is applied before or after taxes
       if(self.props.hasTaxes) {
-        typeSwitchers.push({
+        var taxDiscountButton = {
           content: __("transaction::tax"),
           tooltip: __("transaction::discountTaxSwitch", {context: discount.isAfterTax}),
           props: {
@@ -125,7 +125,7 @@ var DiscountTable = React.createClass({
             discount.isAfterTax = !discount.isAfterTax;
             self.setDiscounts(self.state.discounts);
           }
-        });
+        };
       }
 
       // Return row for this discount
@@ -139,7 +139,13 @@ var DiscountTable = React.createClass({
           type="text"
           valueLink={link}
         />,
-        <MKListModButtons buttons={typeSwitchers} />
+        <div>
+          <MKListModButtons buttons={typeSwitchers} />
+          {" "}
+          {taxDiscountButton ?
+            <MKListModButtons buttons={[taxDiscountButton]} />
+          : null}
+        </div>
       ];
     });
 

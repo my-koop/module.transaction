@@ -39,6 +39,16 @@ declare module mktransaction {
       callback: listBillsCallback
     );
 
+    getTaxInformation(
+      params: mktransaction.GetTaxInformation.Params,
+      callback: mktransaction.GetTaxInformation.Callback
+    );
+    __getTaxInformation(
+      connection: mysql.IConnection,
+      params: mktransaction.GetTaxInformation.Params,
+      callback: mktransaction.GetTaxInformation.Callback
+    );
+
     getBill(
       params: mktransaction.GetBill.Params,
       callback: mktransaction.GetBill.Callback
