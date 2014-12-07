@@ -3,6 +3,7 @@ var Typeahead = require("react-typeahead").Typeahead;
 var BSCol     = require("react-bootstrap/Col");
 var BSRow     = require("react-bootstrap/Row");
 var BSPanel   = require("react-bootstrap/Panel");
+var BSAlert   = require("react-bootstrap/Alert");
 var BSTable   = require("react-bootstrap/Table");
 var BSInput   = require("react-bootstrap/Input");
 var BSButton  = require("react-bootstrap/Button");
@@ -20,8 +21,10 @@ var MKBillInfo          = require("./BillInfo");
 
 
 // Utilities
-var __ = require("language").__;
-var formatMoney = require("language").formatMoney;
+var language = require("language");
+var formatDate = language.formatDate;
+var formatMoney = language.formatMoney;
+var __ = language.__;
 var _ = require("lodash");
 var actions = require("actions");
 var util = require("util");
@@ -53,7 +56,31 @@ var CustomerInformation = React.createClass({
 
   ////////////////////////////
   /// component methods
-
+  retrieveCustomerInfo: function(newEmailInfo) {
+    var self = this;
+    actions.user.customerInfo(
+    {
+      silent: true,
+      data: {
+        email: newEmailInfo.value
+      }
+    }, function(err, result) {
+      // treat this response only if its the last we made
+      var isValid = !err;
+      var newState = !isValid ?
+        EmailValidationState.Invalid
+      : EmailValidationState.Valid;
+      newEmailInfo.validationState = newState;
+      self.setState({
+        email: newEmailInfo,
+        customerInfo: result
+      }, function() {
+        if(isValid) {
+          self.props.onEmailChanged(newEmailInfo.value);
+        }
+      });
+    });
+  },
   ////////////////////////////
   /// Render method
   render: function() {
@@ -64,48 +91,24 @@ var CustomerInformation = React.createClass({
       value: this.state.email.value,
       requestChange: function(newEmail) {
         // Assume email is invalid until we get a response from the server
+        self.setState({
+          customerInfo: null
+        });
         self.props.onEmailChanged(null);
         var newEmailInfo = {
           validationState: EmailValidationState.Waiting,
           value: newEmail,
           reqId: self.state.email.reqId
         };
+
         self.debounce([], "email", function(newEmailInfo) {
           if(newEmail === "") {
             newEmailInfo.validationState = EmailValidationState.Initial;
-            return self.setState({email: newEmailInfo});
-          }
-          var curReqId = newEmailInfo.reqId + 1;
-          newEmailInfo.reqId = curReqId;
-          self.setState({
-            email: newEmailInfo
-          }, function() {
-            actions.user.emailExists(
-            {
-              silent: true,
-              data: {
-                email: newEmailInfo.value
-              }
-            }, function(err, result) {
-              // treat this response only if its the last we made
-              if(curReqId === self.state.email.reqId) {
-                var isValid = result && result.isValid;
-                var newState =
-                  err || !isValid ?
-                    EmailValidationState.Invalid
-                  : EmailValidationState.Valid;
-                newEmailInfo.validationState = newState;
-                self.setState({
-                  email: newEmailInfo
-                }, function() {
-                  if(isValid) {
-                    self.props.onEmailChanged(newEmailInfo.value);
-                  }
-                });
-              }
+            return self.setState({
+              email: newEmailInfo,
             });
-          });
-
+          }
+          self.retrieveCustomerInfo(newEmailInfo);
           return newEmailInfo;
         }, 1000, newEmailInfo);
       }
@@ -131,8 +134,51 @@ var CustomerInformation = React.createClass({
         break;
     }
 
+    var customerInfo = this.state.customerInfo;
+    var customerInfoPanel = null;
+    if(customerInfo) {
+      var expiration = customerInfo.subscriptionExpiration;
+      var expirationDate = expiration && new Date(expiration);
+      var isMember = !!expiration;
+      var isActiveMember = expirationDate && expirationDate >= new Date();
+      var openBillCount = customerInfo.openBillCount;
+      var unpaidAmount = customerInfo.unpaidAmount;
+      var info = __("transaction::customerInfo",
+        {
+          context: isActiveMember ? "active" : isMember ? "inactive" : "notMember",
+
+        }
+      )
+      customerInfoPanel = (
+        <div>
+          <p>
+            <strong>
+              {customerInfo.firstName} {customerInfo.lastName}
+            </strong>
+            {isActiveMember ? [
+              "'s membership expires on ",
+              formatDate(expirationDate)
+            ]
+            : isMember ? [
+                "'s membership",
+                <strong className="text-warning"> expired on {formatDate(expirationDate)}</strong>
+              ] :
+                <strong className="text-danger"> is not a member </strong>
+            }
+            {openBillCount ? [
+              "and has ",
+              <strong className="text-danger">{openBillCount} open bills</strong>,
+              " with a total of ",
+              <strong>{formatMoney(unpaidAmount)} unpaid</strong>
+            ] : null
+            }.
+          </p>
+        </div>
+      );
+    }
+
     return (
-      <div>
+      <BSPanel>
         {!readOnly ?
           <BSInput
             type="email"
@@ -146,7 +192,8 @@ var CustomerInformation = React.createClass({
           <label key={1}>{__("transaction::customerEmail")}</label>,
           <p key={2}>{this.state.email.value}</p>
         ]}
-      </div>
+        {customerInfoPanel}
+      </BSPanel>
     );
   }
 

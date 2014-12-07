@@ -143,4 +143,22 @@ declare module mktransaction {
       (err?: Error): void;
     }
   }
+
+  module GetCustomerInformations {
+    export interface Params {
+      email: string;
+    }
+    export interface Result {
+      id: number;
+      firstName: string;
+      lastName: string;
+      // null if not a member
+      subscriptionExpiration: Date;
+      openBillCount: number;
+      unpaidAmount: number;
+    }
+    export interface Callback {
+      (err: Error, res?: Result): void;
+    }
+  }
 }
