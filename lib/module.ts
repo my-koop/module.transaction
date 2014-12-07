@@ -678,11 +678,48 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       AND (transaction.date BETWEEN ? AND ?) \
       GROUP BY bill.category",
       [params.fromDate, params.toDate],
-      function(err, rows){
+      function(err, rows) {
         cleanup();
-        callback(err && new DatabaseError(err), { reports: _.map(rows, function(report){ return report }) } );
+        callback(err && new DatabaseError(err), {
+          reports: _.map(rows, function(report) { return report })
+        });
       })
     });
+  }
+
+  getBillHistory(
+    params: mktransaction.GetBillHistory.Params,
+    callback: mktransaction.GetBillHistory.Callback
+  ) {
+    this.callWithConnection(this.__getBillHistory, params, callback);
+  }
+
+  __getBillHistory(
+    connection: mysql.IConnection,
+    params: mktransaction.GetBillHistory.Params,
+    callback: mktransaction.GetBillHistory.Callback
+  ) {
+    logger.debug("Getting bill history for user", params.id);
+    connection.query(
+      "SELECT \
+        b.idBill, \
+        b.createdDate, \
+        (closedDate is not null) as isClosed, \
+        total, \
+        SUM(t.amount) as paid \
+      FROM bill b\
+      LEFT join bill_transaction bt on b.idbill = bt.idbill \
+      left join transaction t on bt.idTransaction = t.idTransaction \
+      WHERE b.idUser = ? \
+      GROUP BY b.idbill\
+      ORDER BY createdDate DESC",
+      [params.id],
+      function(err, rows) {
+        callback(err && new DatabaseError(err), {
+          bills: _.map(rows, function(row: any) { return row; })
+        });
+      }
+    );
   }
 }
 

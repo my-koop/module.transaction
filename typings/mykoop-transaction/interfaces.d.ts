@@ -96,6 +96,24 @@ declare module mktransaction {
     export interface Callback extends successCallback {}
   }
 
+  module GetBillHistory {
+    export interface Params {
+      id: number;
+    }
+    export interface Result {
+      bills: {
+        idbill: number;
+        createdDate: Date;
+        isClosed: number;
+        total: number;
+        paid: number;
+      }[];
+    }
+    export interface Callback {
+      (err: Error, result?: Result)
+    }
+  }
+
   module GetBillDetails {
     export interface Params {
       id: number;
