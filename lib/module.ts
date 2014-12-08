@@ -724,6 +724,79 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       }
     );
   }
+
+  getCustomerInformations(
+    params: mktransaction.GetCustomerInformations.Params,
+    callback: mktransaction.GetCustomerInformations.Callback
+  ) {
+    this.callWithConnection(this.__getCustomerInformations, params, callback);
+  }
+
+  __getCustomerInformations(
+    connection: mysql.IConnection,
+    params: mktransaction.GetCustomerInformations.Params,
+    callback: mktransaction.GetCustomerInformations.Callback
+  ) {
+    var self = this;
+    async.waterfall([
+      function checkUser(next) {
+        self.user.__getIdForEmail(connection, {
+          email: params.email
+        }, next);
+      },
+      function retrieveInfo(res: mkuser.GetIdForEmail.CallbackResult, next) {
+        var id = +res;
+        if(id === -1) {
+          return next(new ResourceNotFoundError(null, {email: "notFound"}));
+        }
+        connection.query(
+          "SELECT \
+            u.id,\
+            u.firstname AS firstName,\
+            u.lastname AS lastName,\
+            m.subscriptionExpirationDate AS subscriptionExpiration,\
+            coalesce(b.openBillCount, 0) AS openBillCount,\
+            coalesce(b.total - b.paid, 0) AS unpaidAmount\
+          FROM user u\
+          LEFT JOIN (\
+            SELECT \
+              b.idBill, \
+              sum(b.total) AS total,\
+              count(b.idBill) AS openBillCount,\
+              b.idUser,\
+              coalesce(sum(amount), 0) AS paid\
+            FROM bill b\
+            LEFT JOIN bill_transaction bt ON b.idbill=bt.idbill\
+            LEFT JOIN transaction t ON bt.idTransaction=t.idTransaction\
+            WHERE b.idUser=? AND b.closedDate IS NULL\
+          ) b ON b.idUser=u.id\
+          LEFT JOIN member m ON m.id=u.id\
+          WHERE u.id=?",
+          [id, id],
+          function(err, rows) {
+            if(err) {
+              return next(new DatabaseError(err));
+            }
+            if(rows.length !== 1) {
+              // At this point we know the user exists, therefore it is a
+              // fatal error to have nothing available
+              return next(new DatabaseError(err));
+            }
+            var res = rows[0];
+            var info: mktransaction.GetCustomerInformations.Result = {
+              id: id,
+              firstName: res.firstName,
+              lastName: res.lastName,
+              subscriptionExpiration: res.subscriptionExpiration,
+              openBillCount: res.openBillCount,
+              unpaidAmount: res.unpaidAmount
+            };
+            next(null, info);
+          }
+        );
+      }
+    ], <any>callback);
+  }
 }
 
 export = Module;

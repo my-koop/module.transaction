@@ -147,7 +147,7 @@ export function attachControllers(
     })
   );
 
-   binder.attach(
+  binder.attach(
     {
       endPoint: endPoints.transaction.bill.history
     },
@@ -158,5 +158,15 @@ export function attachControllers(
     })
   );
 
-
+  binder.attach(
+    {endPoint: endPoints.user.customerInfo},
+    binder.makeSimpleController<mktransaction.GetCustomerInformations.Params>(
+      transaction.getCustomerInformations,
+      function(req) {
+        return {
+          email: req.param("email")
+        }
+      }
+    )
+  );
 }

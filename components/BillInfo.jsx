@@ -24,7 +24,7 @@ var NewBillPage = React.createClass({
       })
     }).isRequired,
     taxInfos: React.PropTypes.arrayOf(React.PropTypes.shape({
-      localizeKey: React.PropTypes.string.isRequired,
+      name: React.PropTypes.string.isRequired,
       rate: React.PropTypes.number.isRequired
     })).isRequired
   },

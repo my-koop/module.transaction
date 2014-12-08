@@ -97,6 +97,16 @@ declare module mktransaction {
       params: mktransaction.GetBillHistory.Params,
       callback: mktransaction.GetBillHistory.Callback
     );
+
+    getCustomerInformations(
+      params: mktransaction.GetCustomerInformations.Params,
+      callback: mktransaction.GetCustomerInformations.Callback
+    );
+    __getCustomerInformations(
+      connection: mysql.IConnection,
+      params: mktransaction.GetCustomerInformations.Params,
+      callback: mktransaction.GetCustomerInformations.Callback
+    );
   }
 
 }

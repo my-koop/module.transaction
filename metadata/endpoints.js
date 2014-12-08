@@ -60,6 +60,12 @@ var endpoints = {
             path: "/transaction/report",
             method: "get"
         }
+    },
+    user: {
+        customerInfo: {
+            path: "/customers/:email/",
+            method: "get"
+        }
     }
 };
 module.exports = endpoints;
