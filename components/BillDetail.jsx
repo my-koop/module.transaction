@@ -67,7 +67,8 @@ var BillDetail = React.createClass({
       taxInfos: billDetails.taxes || [],
       notes: billDetails.notes || null,
       idEvent: billDetails.idEvent || -1,
-      finishedLoading: props.readOnly
+      finishedLoading: props.readOnly,
+      sendInvoiceEmail: true
     }
   },
 
@@ -153,7 +154,8 @@ var BillDetail = React.createClass({
               isAfterTax: discount.isAfterTax
             };
           }),
-          notes: this.state.notes
+          notes: this.state.notes,
+          sendInvoiceEmail: +this.state.sendInvoiceEmail
         }
       }, function (err, res) {
         if (err) {
@@ -272,9 +274,10 @@ var BillDetail = React.createClass({
     }, amount);
   },
 
-  onCustomerEmailChanged: function(email) {
+  onCustomerEmailChanged: function(email, isValid) {
     this.setState({
-      customerEmail: email
+      customerEmail: email,
+      isCustomerEmailValid: isValid
     });
   },
 
@@ -399,6 +402,14 @@ var BillDetail = React.createClass({
         });
       }
     };
+    var sendInvoiceLink = {
+      value: this.state.sendInvoiceEmail,
+      requestChange: function(newValue) {
+        self.setState({
+          sendInvoiceEmail: newValue
+        });
+      }
+    };
 
     var billInfo = billUtils.calculateBillTotal(
       this.state.bill,
@@ -407,7 +418,7 @@ var BillDetail = React.createClass({
     );
     this.total = billInfo.total;
 
-    var showArchive = this.state.bill.length && this.state.customerEmail;
+    var showArchive = this.state.bill.length && this.state.isCustomerEmailValid;
     var showPayNow = this.state.bill.length > 0;
     if(!readOnly) {
       var buttonsConfig = [
@@ -510,6 +521,7 @@ var BillDetail = React.createClass({
               readOnly={readOnly}
               email={this.state.customerEmail}
               onEmailChanged={this.onCustomerEmailChanged}
+              sendInvoiceLink={sendInvoiceLink}
             />
             <BSInput
               type="textarea"

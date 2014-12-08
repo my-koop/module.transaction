@@ -2,15 +2,15 @@ function makeSelectBillQuery(whereClause: string) {
   return (
     "SELECT \
       b.idBill,\
-      coalesce(sum(amount),0) AS paid,\
+      coalesce(sum(amount), 0) AS paid,\
       total,\
       createdDate,\
       closedDate,\
       idUser,\
       u.firstname AS customerFirstName,\
       u.lastname AS customerLastName,\
-      u.email AS customerEmail,\
-      coalesce(count(bt.idTransaction),0) AS transactionCount,\
+      coalesce(u.email, b.email) AS customerEmail,\
+      coalesce(count(bt.idTransaction), 0) AS transactionCount,\
       b.discounts,\
       b.notes,\
       b.taxes,\

@@ -25,6 +25,7 @@ declare module mktransaction {
     items: BillItem[];
     notes?: string;
     category: string;
+    sendInvoiceEmail?: number;
   }
 
   export interface BillId {

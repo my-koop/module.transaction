@@ -90,6 +90,7 @@
   billHistoryNoResult: "Aucune facture à afficher",
 
   unknownEmail: "Ce courriel est inconnu du système",
+  customerInformations: "Information du client",
   customerName: "<name>__info.firstName__ __info.lastName__<name>",
   customerInfo_active: "L'adhésion de $t(transaction::customerName) expire le __info.date__",
   customerInfo_inactive: "L'adhésion de $t(transaction::customerName) <exp>a expiré le __info.date__<exp>",

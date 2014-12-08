@@ -38,7 +38,8 @@ var CustomerInformation = React.createClass({
     readOnly: React.PropTypes.bool,
     email: React.PropTypes.string,
     // (email: string) => void; Only if email is valid
-    onEmailChanged: React.PropTypes.func.isRequired
+    onEmailChanged: React.PropTypes.func.isRequired,
+    sendInvoiceLink: React.PropTypes.object
   },
 
   ////////////////////////////
@@ -72,9 +73,8 @@ var CustomerInformation = React.createClass({
         EmailValidationState.Invalid
       : EmailValidationState.Valid;
       self.customerInfo = result;
-      self.setState({
-        validationState: newState
-      });
+      self.props.onEmailChanged(email, isValid = isValid);
+      self.setState({validationState: newState});
     });
   },
 
@@ -89,7 +89,7 @@ var CustomerInformation = React.createClass({
       value: this.props.email,
       requestChange: function(newEmail) {
         self.customerInfo = null;
-        self.props.onEmailChanged(newEmail);
+        self.props.onEmailChanged(newEmail, isValid = false);
         self.debounce([], "validationState", function() {
           if(newEmail === "") {
             return EmailValidationState.Initial;
@@ -191,7 +191,7 @@ var CustomerInformation = React.createClass({
 
     return (
       <BSPanel>
-        {!readOnly ?
+        {!readOnly ? [
           <BSInput
             type="email"
             valueLink={emailLink}
@@ -199,8 +199,14 @@ var CustomerInformation = React.createClass({
             bsStyle={inputStyle}
             addonBefore={<MKIcon glyph="envelope" fixedWidth />}
             addonAfter={emailAddon}
+          />,
+          this.props.email &&
+          <BSInput
+            type="checkbox"
+            checkedLink={this.props.sendInvoiceLink}
+            label={__("transaction::sendInvoice")}
           />
-        : [
+        ] : [
           <label key={1}>{__("transaction::customerEmail")}</label>,
           <p key={2}>{this.props.email}</p>
         ]}
