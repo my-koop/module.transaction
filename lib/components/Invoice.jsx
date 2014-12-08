@@ -5,9 +5,9 @@ var moment = prequire("moment");
 var PropTypes = React.PropTypes;
 var _ = require("lodash");
 var billUtils = require("../common/billUtils");
-
+var accounting = prequire("accounting");
 var formatMoney = function(amount) {
-  return _.isNumber(amount) ? amount.toFixed(2) + "$" : "0.00$";
+  return accounting.formatMoney(amount);
 }
 var formatDate = function(date, format) {
   return moment(date).format(format);
