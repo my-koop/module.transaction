@@ -31,6 +31,7 @@
     "lodash": "^2.4.1",
     "mykoop-logger": "git://github.com/my-koop/module.logger",
     "mykoop-utils": "git://github.com/my-koop/module.utils#final",
+    "node-jsx": "^0.11.0",
     "parent-require": "^1.0.0"
   },
   "devDependencies": {
