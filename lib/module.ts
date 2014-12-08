@@ -6,7 +6,7 @@ import DiscountTypes = require("./common/discountTypes");
 import billUtils = require("./common/billUtils");
 import taxUtils = require("./common/taxUtils");
 import BillInformation = require("./classes/BillInformation");
-//var components = require("./components/index");
+var components = require("./components/index");
 var MySqlHelper = utils.MySqlHelper;
 var DatabaseError = utils.errors.DatabaseError;
 var ApplicationError = utils.errors.ApplicationError;
@@ -398,6 +398,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     var idUser = null;
     var billTotal;
     var taxes: mktransaction.TaxInfo[];
+    var billTotalInfo;
     // can't archive a bill without a customer email
     assert(!params.archiveBill || params.customerEmail);
 
@@ -432,7 +433,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         next
       ) {
         taxes = taxesResult;
-        var billTotalInfo = billUtils.calculateBillTotal(
+        billTotalInfo = billUtils.calculateBillTotal(
           params.items,
           taxes,
           params.discounts
@@ -543,10 +544,17 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       },
       function sendEmail(next) {
         if(params.customerEmail && params.sendInvoiceEmail) {
+          var renderProps = _.merge(params, {
+            idBill: idBill,
+            idUser: idUser,
+            billTotal: billTotal,
+            taxes: taxes,
+            billTotalInfo: billTotalInfo
+          });
           self.communications.sendEmail({
             to: params.customerEmail,
             subject: "MyKoop invoice #" + idBill,
-            message: require("util").inspect(params)
+            message: components("Invoice", renderProps)
           }, next);
         }
       },
