@@ -45,25 +45,25 @@ var CustomerInformation = React.createClass({
   /// Life Cycle methods
   getInitialState: function(props) {
     props = props || this.props;
+    var validationState = EmailValidationState.Initial;
+    if(this.props.email) {
+      validationState = EmailValidationState.Waiting;
+      this.retrieveCustomerInfo(this.props.email);
+    }
     return {
-      email: {
-        value: this.props.email || "",
-        validationState: EmailValidationState.Initial,
-        // used to know if the response is still relevant
-        reqId: 0
-      }
+      validationState: validationState,
     }
   },
 
   ////////////////////////////
   /// component methods
-  retrieveCustomerInfo: function(newEmailInfo) {
+  retrieveCustomerInfo: function(email) {
     var self = this;
     actions.user.customerInfo(
     {
       silent: true,
       data: {
-        email: newEmailInfo.value
+        email: email
       }
     }, function(err, result) {
       // treat this response only if its the last we made
@@ -71,17 +71,14 @@ var CustomerInformation = React.createClass({
       var newState = !isValid ?
         EmailValidationState.Invalid
       : EmailValidationState.Valid;
-      newEmailInfo.validationState = newState;
+      self.customerInfo = result;
       self.setState({
-        email: newEmailInfo,
-        customerInfo: result
-      }, function() {
-        if(isValid) {
-          self.props.onEmailChanged(newEmailInfo.value);
-        }
+        validationState: newState
       });
     });
   },
+
+  customerInfo: null,
   ////////////////////////////
   /// Render method
   render: function() {
@@ -89,36 +86,24 @@ var CustomerInformation = React.createClass({
     var readOnly = this.props.readOnly;
 
     var emailLink = !readOnly && {
-      value: this.state.email.value,
+      value: this.props.email,
       requestChange: function(newEmail) {
-        // Assume email is invalid until we get a response from the server
-        self.setState({
-          customerInfo: null
-        });
+        self.customerInfo = null;
         self.props.onEmailChanged(newEmail);
-        var newEmailInfo = {
-          validationState: EmailValidationState.Waiting,
-          value: newEmail,
-          reqId: self.state.email.reqId
-        };
-
-        self.debounce([], "email", function(newEmailInfo) {
+        self.debounce([], "validationState", function() {
           if(newEmail === "") {
-            newEmailInfo.validationState = EmailValidationState.Initial;
-            return self.setState({
-              email: newEmailInfo,
-            });
+            return EmailValidationState.Initial;
           }
-          self.retrieveCustomerInfo(newEmailInfo);
-          return newEmailInfo;
-        }, 1000, newEmailInfo);
+          self.retrieveCustomerInfo(newEmail);
+          return EmailValidationState.Waiting;
+        }, 1000, EmailValidationState.Waiting);
       }
     };
 
     var emailAddon = undefined;
     var inputStyle = undefined;
     var isWaiting = false;
-    switch(self.state.email.validationState) {
+    switch(self.state.validationState) {
       case EmailValidationState.Initial:
         break;
       case EmailValidationState.Invalid:
@@ -137,7 +122,8 @@ var CustomerInformation = React.createClass({
         break;
     }
 
-    var customerInfo = this.state.customerInfo;
+    // Relies on validationState to re render
+    var customerInfo = this.customerInfo;
     var customerInfoPanel = null;
     if(customerInfo) {
       var expiration = customerInfo.subscriptionExpiration;
@@ -216,7 +202,7 @@ var CustomerInformation = React.createClass({
           />
         : [
           <label key={1}>{__("transaction::customerEmail")}</label>,
-          <p key={2}>{this.state.email.value}</p>
+          <p key={2}>{this.props.email}</p>
         ]}
         {customerInfoPanel}
       </BSPanel>
