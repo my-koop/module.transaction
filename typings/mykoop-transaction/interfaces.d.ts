@@ -138,6 +138,7 @@ declare module mktransaction {
     export interface Params {
       id: number;
       notes: string;
+      idEvent: number;
     }
     export interface Callback {
       (err?: Error): void;

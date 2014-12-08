@@ -72,21 +72,18 @@ var BillDetail = React.createClass({
   },
 
   componentDidMount: function () {
-    if(this.props.readOnly) {
-      return;
-    }
     var self = this;
     var items = [];
     var taxes;
     var events;
     var queries = [
-      {
+      !this.props.readOnly && {
         action: actions.inventory.list,
         processResult: function(res) {
           items = res.items;
         }
       },
-      {
+      !this.props.readOnly && {
         action: actions.transaction.taxes.get,
         processResult: function(res) {
           taxes = res;
@@ -100,6 +97,7 @@ var BillDetail = React.createClass({
         }
       },
     ];
+    queries = _.compact(queries);
 
     async.each(queries, function(query, next) {
       query.action({
@@ -184,7 +182,8 @@ var BillDetail = React.createClass({
       alertSuccess: true,
       data: {
         id: this.props.idBill,
-        notes: this.state.notes
+        notes: this.state.notes,
+        idEvent: this.state.idEvent,
       }
     });
   },
@@ -496,29 +495,16 @@ var BillDetail = React.createClass({
             <MKListModButtons buttons={buttonsConfig} />
           </BSCol>
           <BSCol lg={4} md={6}>
-            {!readOnly ?
-              <BSInput
-                type="select"
-                label={__("transaction::linkToEvent")}
-                valueLink={eventLink}
-              >
-                <option value={-1} key={-1}>{__("none")}</option>
-                {_.map(this.state.events, function(event) {
-                  return <option value={event.id} key={event.id}>{event.name}</option>
-                })}
-              </BSInput>
-            : [
-                <label key={1}>
-                  {__("transaction::linkToEvent")}
-                </label>,
-                <p key={2}>{this.props.billDetails.idEvent ?
-                  "#" + this.props.billDetails.idEvent + ": " +
-                   this.props.billDetails.eventName
-                  : __("none")
-                }
-                </p>
-              ]
-            }
+            <BSInput
+              type="select"
+              label={__("transaction::linkToEvent")}
+              valueLink={eventLink}
+            >
+              <option value={-1} key={-1}>{__("none")}</option>
+              {_.map(this.state.events, function(event) {
+                return <option value={event.id} key={event.id}>{event.name}</option>
+              })}
+            </BSInput>
             <MKCustomerInformation
               readOnly={readOnly}
               email={this.state.customerEmail}

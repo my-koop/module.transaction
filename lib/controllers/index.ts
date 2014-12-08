@@ -34,7 +34,8 @@ export function attachControllers(
       function(req: Express.Request) {
         return {
           id: parseInt(req.param("id")),
-          notes: req.param("notes")
+          notes: req.param("notes"),
+          idEvent: parseInt(req.param("idEvent")) || null
         }
       }
     )
