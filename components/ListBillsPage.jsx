@@ -120,7 +120,7 @@ var ListBillsPage = React.createClass({
               bill.idUser,
               bill.customerFirstName,
               bill.customerLastName
-            ): null;
+            ): bill.customerEmail;
           });
           self.setState({
             bills: bills
@@ -338,17 +338,19 @@ var ListBillsPage = React.createClass({
             return bill.user;
           },
           cellGenerator: function(bill, i) {
-            if(bill.idUser === null) return null;
-            return (
-              <div key={i}>
-                <Link
-                  to="adminEdit"
-                  params={{id: bill.idUser}}
-                >
-                  {bill.user}
-                </Link>
-              </div>
-            );
+            if(bill.idUser) {
+              return (
+                <div key={i}>
+                  <Link
+                    to="adminEdit"
+                    params={{id: bill.idUser}}
+                  >
+                    {bill.user}
+                  </Link>
+                </div>
+              );
+            }
+            return bill.user;
           }
         },
         createdDate: {

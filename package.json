@@ -4,8 +4,9 @@
   "mykoop": {
     "dependencies": {
       "database": "^1.0.0",
-      "user" : "^1.0.0",
-      "core" : "^1.0.0",
+      "user": "^1.0.0",
+      "core": "^1.0.0",
+      "communications": "^1.0.0",
       "event": "^1.0.0"
     }
   },
@@ -29,6 +30,11 @@
     "async": "^0.9.0",
     "lodash": "^2.4.1",
     "mykoop-logger": "git://github.com/my-koop/module.logger",
-    "mykoop-utils": "git://github.com/my-koop/module.utils#final"
+    "mykoop-utils": "git://github.com/my-koop/module.utils#final",
+    "node-jsx": "^0.11.0",
+    "parent-require": "^1.0.0"
+  },
+  "devDependencies": {
+    "react-tools": "^0.11.2"
   }
 }

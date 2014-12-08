@@ -1,6 +1,7 @@
 import _ = require("lodash");
 import discountTypes = require("./discountTypes");
 var discountInfo = discountTypes.DiscountInfo;
+import util = require("util");
 
 export interface DiscountInfo {
   apply: (value: number) => number;
@@ -75,4 +76,53 @@ export function calculateBillTotal(
     discountBeforeTax: discountBeforeTax.discountInfo,
     discountAfterTax: discountAfterTax.discountInfo
   };
+}
+
+export function orderBillInfo(billInfo, taxInfos, __) {
+  var infos = [];
+  if(billInfo.discountBeforeTax.discount) {
+    infos.push({
+      text: __("transaction::subtotal"),
+      amount: billInfo.discountBeforeTax.subtotal
+    });
+    infos.push({
+      text: __("transaction::discounts"),
+      amount: billInfo.discountBeforeTax.discount
+    });
+  }
+  infos.push({
+    text: __("transaction::subtotal"),
+    amount: billInfo.subtotal,
+    isBold: true
+  });
+
+  infos = infos.concat(_.map(billInfo.taxes, function(taxAmount, i) {
+    var info = taxInfos[i];
+    var taxText = util.format("%s (%s\%)",
+      info.name,
+      (info.rate).toFixed(3)
+    );
+    return {
+      text: taxText,
+      amount: taxAmount
+    };
+  }));
+
+  if(billInfo.discountAfterTax.discount) {
+    infos.push({
+      text: __("transaction::subtotal"),
+      amount: billInfo.discountAfterTax.subtotal
+    });
+    infos.push({
+      text: __("transaction::discounts"),
+      amount: billInfo.discountAfterTax.discount
+    });
+  }
+  infos.push({
+    text: __("transaction::total"),
+    amount: billInfo.total,
+    isBold: true
+  });
+
+  return infos;
 }

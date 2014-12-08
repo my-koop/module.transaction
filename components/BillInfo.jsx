@@ -5,7 +5,7 @@ var BSTable   = require("react-bootstrap/Table");
 var formatMoney = require("language").formatMoney;
 var _ = require("lodash");
 var __ = require("language").__;
-var util = require("util");
+var billUtils = require("../lib/common/billUtils");
 
 var NewBillPage = React.createClass({
 
@@ -40,51 +40,11 @@ var NewBillPage = React.createClass({
   render: function() {
     var self = this;
 
-    var infos = [];
-    var billInfo = this.props.billInfo;
-    if(billInfo.discountBeforeTax.discount) {
-      infos.push({
-        text: __("transaction::subtotal"),
-        amount: billInfo.discountBeforeTax.subtotal
-      });
-      infos.push({
-        text: __("transaction::discounts"),
-        amount: billInfo.discountBeforeTax.discount
-      });
-    }
-    infos.push({
-      text: __("transaction::subtotal"),
-      amount: billInfo.subtotal,
-      isBold: true
-    });
-
-    infos = infos.concat(_.map(billInfo.taxes, function(taxAmount, i) {
-      var info = self.props.taxInfos[i];
-      var taxText = util.format("%s (%s\%)",
-        info.name,
-        (info.rate).toFixed(3)
-      );
-      return {
-        text: taxText,
-        amount: taxAmount
-      };
-    }));
-
-    if(billInfo.discountAfterTax.discount) {
-      infos.push({
-        text: __("transaction::subtotal"),
-        amount: billInfo.discountAfterTax.subtotal
-      });
-      infos.push({
-        text: __("transaction::discounts"),
-        amount: billInfo.discountAfterTax.discount
-      });
-    }
-    infos.push({
-      text: __("transaction::total"),
-      amount: billInfo.total,
-      isBold: true
-    });
+    var infos = billUtils.orderBillInfo(
+      this.props.billInfo,
+      this.props.taxInfos,
+      __
+    );
 
     var billInfoRows = _.map(infos, function(info, i) {
       var className = info.isBold ? "bold-row" : "";

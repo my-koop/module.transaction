@@ -6,11 +6,11 @@ import DiscountTypes = require("./common/discountTypes");
 import billUtils = require("./common/billUtils");
 import taxUtils = require("./common/taxUtils");
 import BillInformation = require("./classes/BillInformation");
+var components = require("./components/index");
 var MySqlHelper = utils.MySqlHelper;
 var DatabaseError = utils.errors.DatabaseError;
 var ApplicationError = utils.errors.ApplicationError;
 var ResourceNotFoundError = ApplicationError.ResourceNotFoundError;
-
 import assert = require("assert");
 var logger = utils.getLogger(module);
 
@@ -18,11 +18,13 @@ class Module extends utils.BaseModule implements mktransaction.Module {
   private db: mkdatabase.Module;
   private user: mkuser.Module;
   private core: mkcore.Module;
+  private communications: mkcommunications.Module;
 
   init() {
     this.db = <mkdatabase.Module>this.getModuleManager().get("database");
     this.user = <mkuser.Module>this.getModuleManager().get("user");
     this.core = <mkcore.Module>this.getModuleManager().get("core");
+    this.communications = <mkcommunications.Module>this.getModuleManager().get("communications");
     controllerList.attachControllers(new utils.ModuleControllersBinder(this));
   }
 
@@ -396,6 +398,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     var idUser = null;
     var billTotal;
     var taxes: mktransaction.TaxInfo[];
+    var billTotalInfo;
     // can't archive a bill without a customer email
     assert(!params.archiveBill || params.customerEmail);
 
@@ -416,15 +419,11 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         // no email is considered valid if we don't archive the bill
         callback(null, null);
       },
-
       function(id, callback) {
         idUser = ~id ? id : null;
         logger.debug("user id is ", idUser);
-        // an id of -1 is an error, but null is acceptable
-        callback(
-          !(~id) &&
-          new ApplicationError(null, {customerEmail: ["invalid"]})
-        );
+        // accept all emails
+        callback();
       },
       function getTaxes(next) {
         self.__getTaxInformation(connection, {}, next);
@@ -434,7 +433,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         next
       ) {
         taxes = taxesResult;
-        var billTotalInfo = billUtils.calculateBillTotal(
+        billTotalInfo = billUtils.calculateBillTotal(
           params.items,
           taxes,
           params.discounts
@@ -470,6 +469,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           idEvent = ?, \
           category = ?, \
           discounts = ?, \
+          email = ?,\
           closedDate = " + closedDate,
           [
             billTotal,
@@ -478,7 +478,8 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             idUser,
             idEvent,
             params.category,
-            JSON.stringify(billDiscounts)
+            JSON.stringify(billDiscounts),
+            params.customerEmail
           ],
           function(err, res) {
             callback(
@@ -488,7 +489,6 @@ class Module extends utils.BaseModule implements mktransaction.Module {
           }
         );
       },
-
       function(id, callback) {
         idBill = id;
         logger.debug("Link items to idBill: %d", idBill);
@@ -542,7 +542,22 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         }
         callback(null);
       },
-
+      function sendEmail(next) {
+        if(params.customerEmail && params.sendInvoiceEmail) {
+          var renderProps = _.merge(params, {
+            idBill: idBill,
+            idUser: idUser,
+            billTotal: billTotal,
+            taxes: taxes,
+            billTotalInfo: billTotalInfo
+          });
+          self.communications.sendEmail({
+            to: params.customerEmail,
+            subject: "MyKoop invoice #" + idBill,
+            message: components("Invoice", renderProps)
+          }, next);
+        }
+      },
       mysqlHelper.commitTransaction
     ], <any>_.partialRight(mysqlHelper.cleanup, function(err) {
       callback(err, {idBill: idBill});
