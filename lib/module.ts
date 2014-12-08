@@ -325,12 +325,13 @@ class Module extends utils.BaseModule implements mktransaction.Module {
     params: mktransaction.UpdateBill.Params,
     callback: mktransaction.UpdateBill.Callback
   ) {
-    var newValue = {
-      notes: params.notes
+    var newValues = {
+      notes: params.notes,
+      idEvent: params.idEvent
     };
     connection.query(
       "UPDATE bill SET ? WHERE idBill = ?",
-      [newValue, params.id],
+      [newValues, params.id],
       function(err, res) {
         if(err) {
           return callback(new DatabaseError(err));
