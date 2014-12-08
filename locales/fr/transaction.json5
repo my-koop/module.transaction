@@ -87,5 +87,15 @@
   status: "Ouverte/Fermée",
   billIsClosed: "Ouverte",
   billIsClosed_1: "Fermée",
-  billHistoryNoResult: "Aucune facture à afficher"
+  billHistoryNoResult: "Aucune facture à afficher",
+
+  unknownEmail: "Ce courriel est inconnu du système",
+  customerName: "<name>__info.firstName__ __info.lastName__<name>",
+  customerInfo_active: "L'adhésion de $t(transaction::customerName) expire le __info.date__",
+  customerInfo_inactive: "L'adhésion de $t(transaction::customerName) <exp>a expiré le __info.date__<exp>",
+  customerInfo_notMember: "$t(transaction::customerName) <not>n'est pas un membre<not>",
+  customerOpenBills: " et a <open>__info.bill__ factures ouvertes<open> pour un total de <unpaid>__info.amount__ impayé<unpaid>",
+  customerInfo_activeBills: "$t(transaction::customerInfo_active) $t(transaction::customerOpenBills)",
+  customerInfo_inactiveBills: "$t(transaction::customerInfo_inactive) $t(transaction::customerOpenBills)",
+  customerInfo_notMemberBills: "$t(transaction::customerInfo_notMember) $t(transaction::customerOpenBills)",
 }

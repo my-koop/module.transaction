@@ -28,6 +28,7 @@ var __ = language.__;
 var _ = require("lodash");
 var actions = require("actions");
 var util = require("util");
+var tokenizer = require("mykoop-utils/frontend/tokenizer");
 var EmailValidationState = require("../lib/common/EmailValidationState");
 
 var CustomerInformation = React.createClass({
@@ -94,7 +95,7 @@ var CustomerInformation = React.createClass({
         self.setState({
           customerInfo: null
         });
-        self.props.onEmailChanged(null);
+        self.props.onEmailChanged(newEmail);
         var newEmailInfo = {
           validationState: EmailValidationState.Waiting,
           value: newEmail,
@@ -116,14 +117,16 @@ var CustomerInformation = React.createClass({
 
     var emailAddon = undefined;
     var inputStyle = undefined;
+    var isWaiting = false;
     switch(self.state.email.validationState) {
       case EmailValidationState.Initial:
         break;
       case EmailValidationState.Invalid:
-        inputStyle = "error";
+        inputStyle = "warning";
         emailAddon = <MKIcon glyph="close" />;
         break;
       case EmailValidationState.Waiting:
+        isWaiting = true;
         inputStyle = "warning";
         //FIXME:: Waiting on https://github.com/my-koop/service.website/issues/261
         emailAddon = <MKIcon glyph="spinner" className="fa-spin" />;
@@ -143,35 +146,58 @@ var CustomerInformation = React.createClass({
       var isActiveMember = expirationDate && expirationDate >= new Date();
       var openBillCount = customerInfo.openBillCount;
       var unpaidAmount = customerInfo.unpaidAmount;
+      var context = isActiveMember ? "active" : isMember ? "inactive" : "notMember"
+      context = openBillCount ? context + "Bills" : context;
       var info = __("transaction::customerInfo",
         {
-          context: isActiveMember ? "active" : isMember ? "inactive" : "notMember",
-
+          context: context,
+          info: {
+            firstName: customerInfo.firstName,
+            lastName: customerInfo.lastName,
+            date: expirationDate && formatDate(expirationDate),
+            bill: openBillCount,
+            amount: formatMoney(unpaidAmount)
+          }
         }
-      )
+      );
+      var sentence = tokenizer(info, [
+        "<name>",
+        "<exp>",
+        "<not>",
+        "<open>",
+        "<unpaid>"
+      ]);
+      var result = _.map(sentence, function(s) {
+        switch(s.token) {
+          case "<name>": return <strong key="name">{s.text}</strong>;
+          case "<exp>": return <strong key="expiration" className="text-warning">{s.text}</strong>;
+          case "<not>": return <strong key="notMember" className="text-danger">{s.text}</strong>;
+          case "<open>": return <strong key="openBills" className="text-danger">{s.text}</strong>;
+          case "<unpaid>": return (
+            <strong
+              key="unpaid"
+              className={unpaidAmount ? "text-danger" : ""}
+            >
+              {s.text}
+            </strong>
+          );
+          default: return s.text;
+        }
+      });
       customerInfoPanel = (
         <div>
           <p>
-            <strong>
-              {customerInfo.firstName} {customerInfo.lastName}
+            {result}.
+          </p>
+        </div>
+      );
+    } else if(!isWaiting && this.props.email) {
+      customerInfoPanel = (
+        <div>
+          <p>
+            <strong className="text-warning">
+              {__("transaction::unknownEmail")}.
             </strong>
-            {isActiveMember ? [
-              "'s membership expires on ",
-              formatDate(expirationDate)
-            ]
-            : isMember ? [
-                "'s membership",
-                <strong className="text-warning"> expired on {formatDate(expirationDate)}</strong>
-              ] :
-                <strong className="text-danger"> is not a member </strong>
-            }
-            {openBillCount ? [
-              "and has ",
-              <strong className="text-danger">{openBillCount} open bills</strong>,
-              " with a total of ",
-              <strong>{formatMoney(unpaidAmount)} unpaid</strong>
-            ] : null
-            }.
           </p>
         </div>
       );

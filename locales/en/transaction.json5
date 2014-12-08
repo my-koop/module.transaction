@@ -85,6 +85,15 @@
   status: "Closed/Open",
   billIsClosed: "Open",
   billIsClosed_1: "Closed",
-  billHistoryNoResult: "No bill to display"
+  billHistoryNoResult: "No bill to display",
 
+  unknownEmail: "This email is not recognised by the system",
+  customerName: "<name>__info.firstName__ __info.lastName__<name>",
+  customerInfo_active: "$t(transaction::customerName)'s membership expires on __info.date__",
+  customerInfo_inactive: "$t(transaction::customerName)'s membership <exp>expired on __info.date__<exp>",
+  customerInfo_notMember: "$t(transaction::customerName)<not> is not a member<not>",
+  customerOpenBills: " and has <open>__info.bill__ open bills<open> with a total of <unpaid>__info.amount__ unpaid<unpaid>",
+  customerInfo_activeBills: "$t(transaction::customerInfo_active) $t(transaction::customerOpenBills)",
+  customerInfo_inactiveBills: "$t(transaction::customerInfo_inactive) $t(transaction::customerOpenBills)",
+  customerInfo_notMemberBills: "$t(transaction::customerInfo_notMember) $t(transaction::customerOpenBills)",
 }

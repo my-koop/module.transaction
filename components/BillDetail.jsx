@@ -477,6 +477,7 @@ var BillDetail = React.createClass({
               condensed
               hover
               responsive
+              hidePager
             />
           </BSRow>
         </BSPanel>
