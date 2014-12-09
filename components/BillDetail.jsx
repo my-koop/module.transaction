@@ -510,9 +510,13 @@ var BillDetail = React.createClass({
         <BSPanel header={__("transaction::billInfo")}>
           <BSCol lg={4} md={6}>
             <MKBillInfo billInfo={billInfo} taxInfos={this.state.taxInfos} />
-            <MKListModButtons buttons={buttonsConfig} />
+            <MKListModButtons
+              className="invoice-actions"
+              buttons={buttonsConfig}
+              justified
+            />
           </BSCol>
-          <BSCol lg={4} md={6}>
+          <BSCol lg={6} md={6}>
             <BSInput
               type="select"
               label={__("transaction::linkToEvent")}
