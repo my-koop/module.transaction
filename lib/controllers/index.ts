@@ -222,11 +222,14 @@ export function attachControllers(
   binder.attach(
     {
       endPoint: endPoints.user.customerInfo,
-      permissions: {
+      // FIXME:: Right now this route is needed by UserList Component which is used
+      // for a lot of things, therefore this is not protected until another route
+      // is created to handle that scenario
+      /*permissions: {
         users: {
           view: true
         }
-      }
+      }*/
     },
     binder.makeSimpleController<mktransaction.GetCustomerInformations.Params>(
       transaction.getCustomerInformations,
