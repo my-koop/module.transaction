@@ -7,6 +7,7 @@ export function addRoutes(metaData: utils.MetaDataBuilder) {
   });
   metaData.addFrontendRoute({
     idPath: ["dashboard", "financialreport"],
+    i18nKey: "transaction::sidebar.reports",
     component: "FinancialReport",
     name: "financialReport",
     path: "financialreport",
@@ -21,6 +22,7 @@ export function addRoutes(metaData: utils.MetaDataBuilder) {
   {
     metaData.addFrontendRoute({
       idPath: ["dashboard", "bill", "new"],
+      i18nKey: "transaction::sidebar.createInvoice",
       component: "NewBillPage",
       name: "newBill",
       path: "new",
@@ -33,6 +35,7 @@ export function addRoutes(metaData: utils.MetaDataBuilder) {
 
     metaData.addFrontendRoute({
       idPath: ["dashboard", "bill", "details"],
+      i18nKey: "transaction::billDetailsWelcome",
       component: "BillDetailPage",
       name: "billDetails",
       path: "details/:id",
@@ -48,6 +51,7 @@ export function addRoutes(metaData: utils.MetaDataBuilder) {
 
     metaData.addFrontendRoute({
       idPath: ["dashboard", "bill", "list"],
+      i18nKey: "transaction::sidebar.listInvoices",
       component: "ListBillsPage",
       name: "listBills",
       path: ":state",
