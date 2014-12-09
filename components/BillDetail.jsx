@@ -16,10 +16,12 @@ var MKCollapsablePanel    = require("mykoop-core/components/CollapsablePanel");
 var MKAlertTrigger        = require("mykoop-core/components/AlertTrigger");
 var MKIcon                = require("mykoop-core/components/Icon");
 var MKDebouncerMixin      = require("mykoop-core/components/DebouncerMixin");
+var MKFeedbacki18nMixin   = require("mykoop-core/components/Feedbacki18nMixin");
 var MKConfirmationTrigger = require("mykoop-core/components/ConfirmationTrigger");
 var MKDiscountTable       = require("./DiscountTable");
 var MKBillInfo            = require("./BillInfo");
 var MKCustomerInformation = require("./CustomerInformation");
+var MKTransactionPermissionsMixin = require("./TransactionPermissionsMixin");
 
 var billUtils = require("../lib/common/billUtils");
 
@@ -32,7 +34,11 @@ var util = require("util");
 var async = require("async");
 
 var BillDetail = React.createClass({
-  mixins: [MKDebouncerMixin],
+  mixins: [
+    MKDebouncerMixin,
+    MKFeedbacki18nMixin,
+    MKTransactionPermissionsMixin
+  ],
   ////////////////////////////
   /// Life Cycle methods
   propTypes: {
@@ -50,7 +56,7 @@ var BillDetail = React.createClass({
 
   getDefaultProps: function() {
     return {
-      billDetails: {}
+      billDetails: {},
     }
   },
 
@@ -75,10 +81,10 @@ var BillDetail = React.createClass({
   componentDidMount: function () {
     var self = this;
     var items = [];
-    var taxes;
-    var events;
+    var taxes = [];
+    var events = [];
     var queries = [
-      !this.props.readOnly && {
+      !this.props.readOnly && this.canListInventory && {
         action: actions.inventory.list,
         processResult: function(res) {
           items = res.items;
@@ -90,7 +96,7 @@ var BillDetail = React.createClass({
           taxes = res;
         }
       },
-      {
+      this.canListEvents && {
         action: actions.event.list,
         data: {isClosed: false, startedOnly: true},
         processResult: function(res) {
@@ -441,7 +447,7 @@ var BillDetail = React.createClass({
           }
         }
       ];
-    } else {
+    } else if(this.canUpdate) {
       var buttonsConfig = [
         {
           content: __("update"),
@@ -454,8 +460,10 @@ var BillDetail = React.createClass({
       ];
     }
     var initialDiscounts = this.state.discounts || [];
+
     return (
       <div>
+        {this.renderFeedback()}
         <BSPanel header={__("transaction::itemList")}>
           {!readOnly ?
             <BSRow>
@@ -510,6 +518,7 @@ var BillDetail = React.createClass({
             <BSInput
               type="select"
               label={__("transaction::linkToEvent")}
+              readOnly={!this.canListEvents}
               valueLink={eventLink}
             >
               <option value={-1} key={-1}>{__("none")}</option>
@@ -528,6 +537,7 @@ var BillDetail = React.createClass({
               className="textarea-resize-vertical"
               label={__("transaction::billNotes")}
               placeholder={__("transaction::billNotesPlaceholder")}
+              readOnly={readOnly && !this.canUpdate}
               valueLink={noteLink}
             />
           </BSCol>

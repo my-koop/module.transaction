@@ -2,20 +2,37 @@ function addRoutes(metaData) {
     metaData.addFrontendRoute({
         idPath: ["dashboard", "bill"],
         name: null,
-        path: "bill"
+        path: "bill",
+        permissions: {
+            invoices: {
+                read: true
+            }
+        }
     });
     metaData.addFrontendRoute({
         idPath: ["dashboard", "financialreport"],
         component: "FinancialReport",
         name: "financialReport",
-        path: "financialreport"
+        path: "financialreport",
+        permissions: {
+            invoices: {
+                reports: true,
+                read: true
+            }
+        }
     });
     {
         metaData.addFrontendRoute({
             idPath: ["dashboard", "bill", "new"],
             component: "NewBillPage",
             name: "newBill",
-            path: "new"
+            path: "new",
+            permissions: {
+                invoices: {
+                    create: true,
+                    read: true
+                }
+            }
         });
         metaData.addFrontendRoute({
             idPath: ["dashboard", "bill", "details"],
@@ -24,6 +41,11 @@ function addRoutes(metaData) {
             path: "details/:id",
             params: {
                 id: [121]
+            },
+            permissions: {
+                invoices: {
+                    read: true
+                }
             }
         });
         metaData.addFrontendRoute({
@@ -36,6 +58,11 @@ function addRoutes(metaData) {
                     "open",
                     "closed"
                 ]
+            },
+            permissions: {
+                invoices: {
+                    read: true
+                }
             }
         });
     }

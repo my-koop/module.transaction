@@ -26,6 +26,7 @@
   deleteBillWarning: "Attention, la suppression d'une facture NE supprime PAS les\
  transactions qui y sont reliées. Veuillez effectuer un remboursement complet au préalable\
  pour ne pas avoir de transactions orphelines",
+  missingPermissionsCreateBill: "Vous avez le privilèges de créer des factures, cependant il vous manque les privilèges suivants pour être complètement fonctionnel:",
 
   customerEmail: "Courriel du client",
   billNotes: "Notes",

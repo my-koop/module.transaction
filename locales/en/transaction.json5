@@ -23,9 +23,9 @@
   addTransactionTooltip: "Add payment/Refund",
   recordTransaction: "Record payment/Refund",
   transactionAmount: "Amount",
- deleteBillWarning: "Warning, deleting a bill DOES NOT delete transactions linked\
+  deleteBillWarning: "Warning, deleting a bill DOES NOT delete transactions linked\
  to it. Do a full refund beforehand to avoid orphaned transactions.",
-
+  missingPermissionsCreateBill: "You have the permission to create new bills, however you are missing the following permissions to be fully effective:",
   customerEmail: "Customer Email",
   billNotes: "Notes",
   billNotesPlaceholder: "Enter a note for this bill",
