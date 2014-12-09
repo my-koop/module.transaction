@@ -11,7 +11,6 @@ var BSButton  = require("react-bootstrap/Button");
 // My Koop components
 var MKTableSorter       = require("mykoop-core/components/TableSorter");
 var MKListModButtons    = require("mykoop-core/components/ListModButtons");
-var MKSpinner           = require("mykoop-core/components/Spinner");
 var MKCollapsablePanel  = require("mykoop-core/components/CollapsablePanel");
 var MKAlertTrigger      = require("mykoop-core/components/AlertTrigger");
 var MKIcon              = require("mykoop-core/components/Icon");

@@ -215,6 +215,7 @@ var ListBillsPage = React.createClass({
       },
       function(callback) {
         bill.paid += amount;
+        bill.transactionCount++;
         self.setState({
           bills: self.state.bills
         }, function() {

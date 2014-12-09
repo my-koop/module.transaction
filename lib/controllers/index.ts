@@ -160,7 +160,11 @@ export function attachControllers(
   );
 
   binder.attach(
-    {endPoint: endPoints.user.customerInfo},
+    {
+      endPoint: endPoints.user.customerInfo,
+      permissions: {
+      }
+    },
     binder.makeSimpleController<mktransaction.GetCustomerInformations.Params>(
       transaction.getCustomerInformations,
       function(req) {
