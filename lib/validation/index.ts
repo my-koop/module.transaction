@@ -34,7 +34,7 @@ export function newBill(obj) {
 
   var newBillConstraint = {
     total: {numericality: true},
-    customerEmail: {email: true},
+    customerEmail: {},
     archiveBill: {},
     items: {
       presence: true,

@@ -535,6 +535,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
               amount: billTotal
             },
             function(err) {
+              logger.debug("Finished adding transaction to bill", arguments);
               callback(err);
             }
           )
@@ -544,6 +545,7 @@ class Module extends utils.BaseModule implements mktransaction.Module {
       },
       function sendEmail(next) {
         if(params.customerEmail && params.sendInvoiceEmail) {
+          logger.debug("Sending invoice by email");
           var renderProps = _.merge(params, {
             idBill: idBill,
             idUser: idUser,
@@ -556,12 +558,16 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             subject: "MyKoop invoice #" + idBill,
             message: components("Invoice", renderProps)
           }, next);
+          return;
         }
+        next();
       },
       mysqlHelper.commitTransaction
-    ], <any>_.partialRight(mysqlHelper.cleanup, function(err) {
-      callback(err, {idBill: idBill});
-    }));
+    ], function(err) {
+      mysqlHelper.cleanup(err, function(err) {
+        callback(err, {idBill: idBill});
+      });
+    });
   }
 
   __addTransaction(

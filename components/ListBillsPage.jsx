@@ -324,6 +324,11 @@ var ListBillsPage = React.createClass({
     // TableSorter Config
     var BillTableConfig = {
       defaultOrdering: this.getTableColumns(),
+      sort: {
+        column: this.getBillState() === BillState.open ?
+          "createdDate" : "closedDate",
+        order: "desc"
+      },
       columns: {
         idBill: {
           name: __("id")
