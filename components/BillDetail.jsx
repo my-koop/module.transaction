@@ -16,7 +16,6 @@ var MKCollapsablePanel    = require("mykoop-core/components/CollapsablePanel");
 var MKAlertTrigger        = require("mykoop-core/components/AlertTrigger");
 var MKIcon                = require("mykoop-core/components/Icon");
 var MKDebouncerMixin      = require("mykoop-core/components/DebouncerMixin");
-var MKFeedbacki18nMixin   = require("mykoop-core/components/Feedbacki18nMixin");
 var MKConfirmationTrigger = require("mykoop-core/components/ConfirmationTrigger");
 var MKDiscountTable       = require("./DiscountTable");
 var MKBillInfo            = require("./BillInfo");
@@ -36,7 +35,6 @@ var async = require("async");
 var BillDetail = React.createClass({
   mixins: [
     MKDebouncerMixin,
-    MKFeedbacki18nMixin,
     MKTransactionPermissionsMixin
   ],
   ////////////////////////////
@@ -78,7 +76,7 @@ var BillDetail = React.createClass({
     }
   },
 
-  componentDidMount: function () {
+  componentWillMount: function () {
     var self = this;
     var items = [];
     var taxes = [];
@@ -426,6 +424,7 @@ var BillDetail = React.createClass({
 
     var showArchive = this.state.bill.length && this.state.isCustomerEmailValid;
     var showPayNow = this.state.bill.length > 0;
+    var buttonsConfig = [];
     if(!readOnly) {
       var buttonsConfig = [
         {
@@ -447,7 +446,7 @@ var BillDetail = React.createClass({
           }
         }
       ];
-    } else if(this.canUpdate) {
+    } else if(this.canUpdateInvoices) {
       var buttonsConfig = [
         {
           content: __("update"),
@@ -463,7 +462,6 @@ var BillDetail = React.createClass({
 
     return (
       <div>
-        {this.renderFeedback()}
         <BSPanel header={__("transaction::itemList")}>
           {!readOnly ?
             <BSRow>
@@ -537,7 +535,7 @@ var BillDetail = React.createClass({
               className="textarea-resize-vertical"
               label={__("transaction::billNotes")}
               placeholder={__("transaction::billNotesPlaceholder")}
-              readOnly={readOnly && !this.canUpdate}
+              readOnly={readOnly && !this.canUpdateInvoices}
               valueLink={noteLink}
             />
           </BSCol>

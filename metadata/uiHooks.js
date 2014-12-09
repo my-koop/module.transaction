@@ -14,7 +14,7 @@ var uiHooks = {
             },
             permissions: {
                 invoices: {
-                    view: true
+                    read: true
                 }
             },
             priority: 125
@@ -75,7 +75,7 @@ var uiHooks = {
                         },
                         permissions: {
                             invoices: {
-                                view: true
+                                read: true
                             }
                         },
                         priority: 150
@@ -98,9 +98,7 @@ var uiHooks = {
             },
             priority: 150,
             permissions: {
-                invoices: {
-                    view: true
-                }
+                invoices: {}
             }
         }
     }

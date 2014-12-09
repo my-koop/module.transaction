@@ -13,6 +13,7 @@ var MKConfirmationTrigger      = require("mykoop-core/components/ConfirmationTri
 var MKIcon                     = require("mykoop-core/components/Icon");
 var MKCustomerInformationModal = require("./CustomerInformationModal");
 var MKAddTransactionModal      = require("./AddTransactionModal");
+var MKTransactionPermissionsMixin = require("./TransactionPermissionsMixin");
 
 // Utilities
 var _            = require("lodash");
@@ -48,6 +49,7 @@ columns[BillState.open] = openBillsColumns;
 columns[BillState.closed] = closedBillsColumns;
 
 var ListBillsPage = React.createClass({
+  mixins: [MKTransactionPermissionsMixin],
   ////////////////////////////
   /// Life Cycle methods
 
@@ -227,7 +229,7 @@ var ListBillsPage = React.createClass({
 
   actionsGenerator: function(bill) {
     var self = this;
-    var buttons = [{
+    var detailsButton = {
       icon: "search-plus",
       tooltip: {
         text: __("transaction::showDetailsTooltip"),
@@ -238,11 +240,11 @@ var ListBillsPage = React.createClass({
       callback: function() {
         Router.transitionTo("billDetails", {id: bill.idBill});
       }
-    }];
-
-    if(this.getBillState() === BillState.open) {
+    };
+    var billState = this.getBillState();
+    if(billState === BillState.open) {
       // Add transaction action
-      buttons.push({
+      var addTransactionButton = this.canCreateInvoices && {
         icon: "plus",
         tooltip: {
           text: __("transaction::addTransactionTooltip"),
@@ -254,10 +256,10 @@ var ListBillsPage = React.createClass({
           defaultAmount={bill.total - bill.paid}
           onSave={_.bind(this.addTransaction, this, bill)}
         />
-      });
+      };
       // Close bill action
       if(bill.total === bill.paid) {
-        buttons.push({
+        var closeBillButton = this.canCloseInvoices && {
           icon: "close",
           warningMessage: __("areYouSure"),
           tooltip: {
@@ -269,12 +271,12 @@ var ListBillsPage = React.createClass({
           callback: function() {
             self.changeBillState("close", bill);
           }
-        });
+        };
       }
-    } else if(this.getBillState() === BillState.closed) {
+    } else if(billState === BillState.closed) {
       // Open bill action
       var needToSpecifyCustomerInfo = !_.isNumber(bill.idUser);
-      buttons.push({
+      var openBillButton = this.canReopenInvoices && {
         icon: "folder-open",
         warningMessage: !needToSpecifyCustomerInfo ? __("areYouSure") : null,
         tooltip: {
@@ -290,23 +292,28 @@ var ListBillsPage = React.createClass({
         callback: !needToSpecifyCustomerInfo ? function() {
           self.changeBillState("open", bill);
         } : null
-      });
+      };
     }
     // Delete bill action
-    if(!bill.transactionCount) {
-      buttons.push({
-        icon: "trash",
-        warningMessage: __("transaction::deleteBillWarning"),
-        tooltip: {
-          text: __("remove"),
-          overlayProps: {
-            placement: "top"
-          }
-        },
-        callback: _.bind(self.deleteBill, null, bill)
-      });
-    }
-    return buttons;
+    var deleteBillButton = !bill.transactionCount && this.canDeleteInvoices && {
+      icon: "trash",
+      warningMessage: __("areYouSure"),
+      tooltip: {
+        text: __("remove"),
+        overlayProps: {
+          placement: "top"
+        }
+      },
+      callback: _.bind(self.deleteBill, null, bill)
+    };
+
+    return _.compact([
+      detailsButton,
+      addTransactionButton,
+      closeBillButton,
+      openBillButton,
+      deleteBillButton
+    ]);
   },
 
   ////////////////////////////
@@ -391,18 +398,19 @@ var ListBillsPage = React.createClass({
 
     return (
       <BSCol md={12}>
-        <h1>
+        <h1 className="pull-left">
           {__("transaction::listBillWelcome", {context: BillState[this.getBillState()]})}
         </h1>
-        <BSButton>
-          <Link
-            to={thisRouteName}
-            params={{state: BillState[this.getNextBillState()]}}
+        <span className="pull-right h1">
+          <BSButton
+            onClick={function() {Router.transitionTo(thisRouteName, {state: BillState[self.getNextBillState()]})}}
           >
-            <MKIcon glyph="exchange" />
-            {__("transaction::switchBillState", {context: BillState[this.getBillState()]})}
-          </Link>
-        </BSButton>
+            <MKIcon glyph="exchange" fixedWidth />
+            <span className="hidden-xs">
+              {" " + __("transaction::switchBillState", {context: BillState[this.getBillState()]})}
+            </span>
+          </BSButton>
+        </span>
         <MKTableSorter
           config={BillTableConfig}
           items={this.state.bills}

@@ -2,12 +2,7 @@ function addRoutes(metaData) {
     metaData.addFrontendRoute({
         idPath: ["dashboard", "bill"],
         name: null,
-        path: "bill",
-        permissions: {
-            invoices: {
-                read: true
-            }
-        }
+        path: "bill"
     });
     metaData.addFrontendRoute({
         idPath: ["dashboard", "financialreport"],
@@ -29,8 +24,7 @@ function addRoutes(metaData) {
             path: "new",
             permissions: {
                 invoices: {
-                    create: true,
-                    read: true
+                    create: true
                 }
             }
         });
