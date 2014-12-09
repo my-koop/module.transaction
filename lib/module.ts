@@ -778,7 +778,8 @@ class Module extends utils.BaseModule implements mktransaction.Module {
             u.lastname AS lastName,\
             m.subscriptionExpirationDate AS subscriptionExpiration,\
             coalesce(b.openBillCount, 0) AS openBillCount,\
-            coalesce(b.total - b.paid, 0) AS unpaidAmount\
+            coalesce(b.total - b.paid, 0) AS unpaidAmount,\
+            perms AS permissions\
           FROM user u\
           LEFT JOIN (\
             SELECT \
@@ -811,7 +812,8 @@ class Module extends utils.BaseModule implements mktransaction.Module {
               lastName: res.lastName,
               subscriptionExpiration: res.subscriptionExpiration,
               openBillCount: res.openBillCount,
-              unpaidAmount: res.unpaidAmount
+              unpaidAmount: res.unpaidAmount,
+              permissions: (<any>self.user.constructor).deserializePermissions(res.permissions)
             };
             next(null, info);
           }
