@@ -15,7 +15,12 @@ export function attachControllers(
   binder.attach(
     {
       endPoint: endPoints.transaction.bill.new,
-      validation: validation.newBill
+      validation: validation.newBill,
+      permissions: {
+        invoices: {
+          create: true
+        }
+      }
     },
     binder.makeSimpleController(transaction.saveNewBill,
       function(req: Express.Request) {
@@ -28,6 +33,11 @@ export function attachControllers(
   binder.attach(
     {
       endPoint: endPoints.transaction.bill.update,
+      permissions: {
+        invoices: {
+          update: true
+        }
+      }
     },
     binder.makeSimpleController<mktransaction.UpdateBill.Params>(
       transaction.updateBill,
@@ -44,7 +54,12 @@ export function attachControllers(
   binder.attach(
     {
       endPoint: endPoints.transaction.bill.list,
-      validation: validation.listBill
+      validation: validation.listBill,
+      permissions: {
+        invoices: {
+          read: true
+        }
+      }
     },
     binder.makeSimpleController("listBills", function(req: Express.Request) {
       // Assume the request is a get
@@ -54,7 +69,12 @@ export function attachControllers(
 
   binder.attach(
     {
-      endPoint: endPoints.transaction.bill.get
+      endPoint: endPoints.transaction.bill.get,
+      permissions: {
+        invoices: {
+          read: true
+        }
+      }
     },
     binder.makeSimpleController<mktransaction.GetBill.Params>(
       transaction.getBill,
@@ -68,7 +88,12 @@ export function attachControllers(
 
   binder.attach(
     {
-      endPoint: endPoints.transaction.bill.details
+      endPoint: endPoints.transaction.bill.details,
+      permissions: {
+        invoices: {
+          read: true
+        }
+      }
     },
     binder.makeSimpleController<mktransaction.GetBillDetails.Params>(
       transaction.getBillDetails,
@@ -82,7 +107,12 @@ export function attachControllers(
 
   binder.attach(
     {
-      endPoint: endPoints.transaction.bill.close
+      endPoint: endPoints.transaction.bill.close,
+      permissions: {
+        invoices: {
+          close: true
+        }
+      }
     },
     binder.makeSimpleController("closeBill", function(req: Express.Request) {
       return {
@@ -93,7 +123,12 @@ export function attachControllers(
 
   binder.attach(
     {
-      endPoint: endPoints.transaction.bill.open
+      endPoint: endPoints.transaction.bill.open,
+      permissions: {
+        invoices: {
+          reopen: true
+        }
+      }
     },
     binder.makeSimpleController("openBill", function(req: Express.Request) {
       return {
@@ -105,7 +140,12 @@ export function attachControllers(
 
   binder.attach(
     {
-      endPoint: endPoints.transaction.bill.addTransaction
+      endPoint: endPoints.transaction.bill.addTransaction,
+      permissions: {
+        invoices: {
+          create: true
+        }
+      }
     },
     binder.makeSimpleController("addBillTransaction", function(req: Express.Request) {
       return {
@@ -117,14 +157,24 @@ export function attachControllers(
 
   binder.attach(
     {
-      endPoint: endPoints.transaction.taxes.get
+      endPoint: endPoints.transaction.taxes.get,
+      permissions: {
+        invoices: {
+          create: true
+        }
+      }
     },
     binder.makeSimpleController(transaction.getTaxInformation)
   );
 
   binder.attach(
     {
-      endPoint: endPoints.transaction.bill.delete
+      endPoint: endPoints.transaction.bill.delete,
+      permissions: {
+        invoices: {
+          delete: true
+        }
+      }
     },
     binder.makeSimpleController<mktransaction.DeleteBill.Params>(
       transaction.deleteBill,
@@ -138,7 +188,12 @@ export function attachControllers(
 
   binder.attach(
     {
-      endPoint: endPoints.transaction.report
+      endPoint: endPoints.transaction.report,
+      permissions: {
+        invoices: {
+          reports: true
+        }
+      }
     },
     binder.makeSimpleController("getFinancialReport", function(req: Express.Request) {
       return {
@@ -150,7 +205,12 @@ export function attachControllers(
 
   binder.attach(
     {
-      endPoint: endPoints.transaction.bill.history
+      endPoint: endPoints.transaction.bill.history,
+      permissions: {
+        invoices: {
+          read: true
+        }
+      }
     },
     binder.makeSimpleController(transaction.getBillHistory, function(req: Express.Request) {
       return {
@@ -160,7 +220,17 @@ export function attachControllers(
   );
 
   binder.attach(
-    {endPoint: endPoints.user.customerInfo},
+    {
+      endPoint: endPoints.user.customerInfo,
+      // FIXME:: Right now this route is needed by UserList Component which is used
+      // for a lot of things, therefore this is not protected until another route
+      // is created to handle that scenario
+      /*permissions: {
+        users: {
+          view: true
+        }
+      }*/
+    },
     binder.makeSimpleController<mktransaction.GetCustomerInformations.Params>(
       transaction.getCustomerInformations,
       function(req) {

@@ -1,0 +1,13 @@
+{
+  //FIXME: Use the word invoices instead of bills...
+  invoices: {
+    __description: "Bills",
+    create: "Create a new bill",
+    read: "View any bill",
+    update: "Update any bill",
+    delete: "Delete any bill",
+    close: "Close any bill",
+    reopen: "Reopen any bill",
+    reports: "Generate reports from all bill data"
+  }
+}

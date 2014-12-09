@@ -20,6 +20,7 @@ var MKConfirmationTrigger = require("mykoop-core/components/ConfirmationTrigger"
 var MKDiscountTable       = require("./DiscountTable");
 var MKBillInfo            = require("./BillInfo");
 var MKCustomerInformation = require("./CustomerInformation");
+var MKTransactionPermissionsMixin = require("./TransactionPermissionsMixin");
 
 var billUtils = require("../lib/common/billUtils");
 
@@ -32,7 +33,10 @@ var util = require("util");
 var async = require("async");
 
 var BillDetail = React.createClass({
-  mixins: [MKDebouncerMixin],
+  mixins: [
+    MKDebouncerMixin,
+    MKTransactionPermissionsMixin
+  ],
   ////////////////////////////
   /// Life Cycle methods
   propTypes: {
@@ -50,7 +54,7 @@ var BillDetail = React.createClass({
 
   getDefaultProps: function() {
     return {
-      billDetails: {}
+      billDetails: {},
     }
   },
 
@@ -72,13 +76,13 @@ var BillDetail = React.createClass({
     }
   },
 
-  componentDidMount: function () {
+  componentWillMount: function () {
     var self = this;
     var items = [];
-    var taxes;
-    var events;
+    var taxes = [];
+    var events = [];
     var queries = [
-      !this.props.readOnly && {
+      !this.props.readOnly && this.canListInventory && {
         action: actions.inventory.list,
         processResult: function(res) {
           items = res.items;
@@ -90,7 +94,7 @@ var BillDetail = React.createClass({
           taxes = res;
         }
       },
-      {
+      this.canListEvents && {
         action: actions.event.list,
         data: {isClosed: false, startedOnly: true},
         processResult: function(res) {
@@ -420,6 +424,7 @@ var BillDetail = React.createClass({
 
     var showArchive = this.state.bill.length && this.state.isCustomerEmailValid;
     var showPayNow = this.state.bill.length > 0;
+    var buttonsConfig = [];
     if(!readOnly) {
       var buttonsConfig = [
         {
@@ -441,7 +446,7 @@ var BillDetail = React.createClass({
           }
         }
       ];
-    } else {
+    } else if(this.canUpdateInvoices) {
       var buttonsConfig = [
         {
           content: __("update"),
@@ -454,6 +459,7 @@ var BillDetail = React.createClass({
       ];
     }
     var initialDiscounts = this.state.discounts || [];
+
     return (
       <div>
         <BSPanel header={__("transaction::itemList")}>
@@ -510,6 +516,7 @@ var BillDetail = React.createClass({
             <BSInput
               type="select"
               label={__("transaction::linkToEvent")}
+              readOnly={!this.canListEvents}
               valueLink={eventLink}
             >
               <option value={-1} key={-1}>{__("none")}</option>
@@ -528,6 +535,7 @@ var BillDetail = React.createClass({
               className="textarea-resize-vertical"
               label={__("transaction::billNotes")}
               placeholder={__("transaction::billNotesPlaceholder")}
+              readOnly={readOnly && !this.canUpdateInvoices}
               valueLink={noteLink}
             />
           </BSCol>

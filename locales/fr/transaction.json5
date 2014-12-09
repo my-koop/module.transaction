@@ -1,4 +1,5 @@
 {
+  invoices: "Factures",
   newBillWelcome: "Créer une facture",
   billDetailsWelcome: "Détails de la facture",
   itemList: "Liste d'articles",
@@ -25,6 +26,7 @@
   deleteBillWarning: "Attention, la suppression d'une facture NE supprime PAS les\
  transactions qui y sont reliées. Veuillez effectuer un remboursement complet au préalable\
  pour ne pas avoir de transactions orphelines",
+  missingPermissionsCreateBill: "Vous avez le privilèges de créer des factures, cependant il vous manque les privilèges suivants pour être complètement fonctionnel:",
 
   customerEmail: "Courriel du client",
   billNotes: "Notes",
@@ -100,4 +102,17 @@
   customerInfo_activeBills: "$t(transaction::customerInfo_active) $t(transaction::customerOpenBills)",
   customerInfo_inactiveBills: "$t(transaction::customerInfo_inactive) $t(transaction::customerOpenBills)",
   customerInfo_notMemberBills: "$t(transaction::customerInfo_notMember) $t(transaction::customerOpenBills)",
+
+  navbar: {
+    invoices: "$t(transaction::invoices)",
+    quickActions: {
+      createInvoice: "Nouvelle facture"
+    }
+  },
+  sidebar: {
+    invoices: "$t(transaction::invoices)",
+    createInvoice: "$t(transaction::navbar.quickActions.createInvoice)",
+    listInvoices: "Lister les factures",
+    reports: "Rapports financiers"
+  },
 }

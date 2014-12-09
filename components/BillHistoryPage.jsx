@@ -16,9 +16,11 @@ var formatMoney  = require("language").formatMoney;
 var formatDate   = require("language").formatDate;
 var Router       = require("react-router");
 var getRouteName = require("mykoop-utils/frontend/getRouteName");
+var MKTransactionPermissionsMixin = require("./TransactionPermissionsMixin");
 
 
 var BillHistoryPage = React.createClass({
+  mixins: [MKTransactionPermissionsMixin],
 
   propTypes : {
     userId: PropTypes.number.isRequired
@@ -137,7 +139,9 @@ var BillHistoryPage = React.createClass({
           name: __("actions"),
           isStatic: true,
           headerProps: {
-            className: "list-mod-min-width-1"
+            className: this.canUpdateInvoices ?
+              "list-mod-min-width-1"
+            : ""
           },
           cellGenerator: function(bill) {
             return (

@@ -1,4 +1,3 @@
-
 var endpoints = {
   transaction: {
     bill: {

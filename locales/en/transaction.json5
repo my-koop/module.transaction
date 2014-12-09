@@ -1,4 +1,5 @@
 {
+  invoices: "Bills",
   newBillWelcome: "Create bill",
   billDetailsWelcome: "Details of bill",
   itemList: "Item list",
@@ -22,9 +23,9 @@
   addTransactionTooltip: "Add payment/Refund",
   recordTransaction: "Record payment/Refund",
   transactionAmount: "Amount",
- deleteBillWarning: "Warning, deleting a bill DOES NOT delete transactions linked\
+  deleteBillWarning: "Warning, deleting a bill DOES NOT delete transactions linked\
  to it. Do a full refund beforehand to avoid orphaned transactions.",
-
+  missingPermissionsCreateBill: "You have the permission to create new bills, however you are missing the following permissions to be fully effective:",
   customerEmail: "Customer Email",
   billNotes: "Notes",
   billNotesPlaceholder: "Enter a note for this bill",
@@ -99,4 +100,17 @@
   customerInfo_activeBills: "$t(transaction::customerInfo_active) $t(transaction::customerOpenBills)",
   customerInfo_inactiveBills: "$t(transaction::customerInfo_inactive) $t(transaction::customerOpenBills)",
   customerInfo_notMemberBills: "$t(transaction::customerInfo_notMember) $t(transaction::customerOpenBills)",
+
+  navbar: {
+    invoices: "$t(transaction::invoices)",
+    quickActions: {
+      createInvoice: "Create a new bill"
+    }
+  },
+  sidebar: {
+    invoices: "$t(transaction::invoices)",
+    createInvoice: "$t(transaction::navbar.quickActions.createInvoice)",
+    listInvoices: "List bills",
+    reports: "Financial reports"
+  },
 }
