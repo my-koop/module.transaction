@@ -18,7 +18,7 @@
   closedDate: "Date de fermeture",
   transactionCountHeader: "#Transactions",
   recordFullPayment: "Payer maintenant",
-  saveForLater: "Laisser ouvert",
+  saveForLater: "Laisser ouverte",
   paid: "Payé",
   addTransactionTooltip: "Ajouter paiement/remboursement",
   recordTransaction: "Enregistrer paiement/remboursement",

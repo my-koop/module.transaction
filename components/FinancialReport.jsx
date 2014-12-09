@@ -100,19 +100,15 @@ var FinancialReport = React.createClass({
     if(this.state.reports) {
       if(this.state.reports.length > 0) {
         return (
-          <div block className="col-md-8">
-            <BSPanel header={this.getReportHeader()}>
-              {categories}
-            </BSPanel>
-          </div>
+          <BSPanel header={this.getReportHeader()}>
+            {categories}
+          </BSPanel>
         );
       } else {
         return (
-          <div block className="col-md-8">
-            <MKAlert bsStyle="danger">
-              {__("transaction::financialReportNoResult")}
-            </MKAlert>
-          </div>
+          <MKAlert bsStyle="danger">
+            {__("transaction::financialReportNoResult")}
+          </MKAlert>
         );
       }
     }
@@ -136,40 +132,40 @@ var FinancialReport = React.createClass({
             <p> {__("transaction::financialReportExplanation")} </p>
           </BSCol>
         </BSRow>
-        <BSRow>
-          <BSCol xs={12}>
-            <form onSubmit={this.onSubmit}>
-              <BSRow>
-                <BSCol md={4}>
-                  {__("transaction::financialReportLabelFromDate")}
-                  <MKDateTimePicker
-                    date={this.state.fromDate}
-                    max={this.state.toDate || undefined}
-                    onChange={this.onDateChange.bind(null,"fromDate")}
-                  />
-                </BSCol>
-                <BSCol md={4}>
-                  {__("transaction::financialReportLabelToDate")}
-                  <MKDateTimePicker
-                    date={this.state.toDate}
-                    min={this.state.fromDate || undefined}
-                    onChange={this.onDateChange.bind(null,"toDate")}
-                  />
-                </BSCol>
-              </BSRow>
-              <BSRow className="top-margin-15">
-                <BSCol md={12}>
-                  <BSInput
-                    type="submit"
-                    disabled={!this.state.toDate || !this.state.fromDate}
-                    value={__("transaction::financialReportSubmit")}
-                    bsStyle="primary"
-                  />
-                </BSCol>
-              </BSRow>
-            </form>
-          </BSCol>
-        </BSRow>
+        <form onSubmit={this.onSubmit}>
+          <BSRow>
+            <BSCol md={4}>
+              <label>{__("transaction::financialReportLabelFromDate")}</label>
+            </BSCol>
+            <BSCol md={4}>
+              <label>{__("transaction::financialReportLabelToDate")}</label>
+            </BSCol>
+          </BSRow>
+          <BSRow>
+            <BSCol md={4}>
+              <MKDateTimePicker
+                date={this.state.fromDate}
+                max={this.state.toDate || undefined}
+                onChange={this.onDateChange.bind(null,"fromDate")}
+              />
+            </BSCol>
+            <BSCol md={4}>
+              <MKDateTimePicker
+                date={this.state.toDate}
+                min={this.state.fromDate || undefined}
+                onChange={this.onDateChange.bind(null,"toDate")}
+              />
+            </BSCol>
+            <BSCol md={4}>
+              <BSInput
+                type="submit"
+                disabled={!this.state.toDate || !this.state.fromDate}
+                value={__("transaction::financialReportSubmit")}
+                bsStyle="primary"
+              />
+            </BSCol>
+          </BSRow>
+        </form>
         <BSRow>
           <BSCol xs={12}>
             {this.displayReport(categories)}
