@@ -1,4 +1,5 @@
 {
+  invoices: "Bills",
   newBillWelcome: "Create bill",
   billDetailsWelcome: "Details of bill",
   itemList: "Item list",
@@ -99,4 +100,17 @@
   customerInfo_activeBills: "$t(transaction::customerInfo_active) $t(transaction::customerOpenBills)",
   customerInfo_inactiveBills: "$t(transaction::customerInfo_inactive) $t(transaction::customerOpenBills)",
   customerInfo_notMemberBills: "$t(transaction::customerInfo_notMember) $t(transaction::customerOpenBills)",
+
+  navbar: {
+    invoices: "$t(transaction::invoices)",
+    quickActions: {
+      createInvoice: "Create a new bill"
+    }
+  },
+  sidebar: {
+    invoices: "$t(transaction::invoices)",
+    createInvoice: "$t(transaction::navbar.quickActions.createInvoice)",
+    listInvoices: "List bills",
+    reports: "Financial reports"
+  },
 }

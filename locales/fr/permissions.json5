@@ -1,0 +1,12 @@
+{
+  invoices: {
+    __description: "Factures",
+    create: "Créer une nouvelle facture",
+    read: "Afficher toute facture",
+    update: "Mettre à jour toute facture",
+    delete: "Supprimer toute facture",
+    close: "Fermer toute facture",
+    reopen: "Réouvrir toute facture",
+    reports: "Générer un rapport à partir des données de toutes les factures"
+  }
+}

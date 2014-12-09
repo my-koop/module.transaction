@@ -8,7 +8,7 @@ export function addRoutes(metaData: utils.MetaDataBuilder) {
   metaData.addFrontendRoute({
     idPath: ["dashboard", "financialreport"],
     component: "FinancialReport",
-    name: "FinancialReport",
+    name: "financialReport",
     path: "financialreport"
   });
   // Bill

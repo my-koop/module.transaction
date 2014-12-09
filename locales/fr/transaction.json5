@@ -1,4 +1,5 @@
 {
+  invoices: "Factures",
   newBillWelcome: "Créer une facture",
   billDetailsWelcome: "Détails de la facture",
   itemList: "Liste d'articles",
@@ -100,4 +101,17 @@
   customerInfo_activeBills: "$t(transaction::customerInfo_active) $t(transaction::customerOpenBills)",
   customerInfo_inactiveBills: "$t(transaction::customerInfo_inactive) $t(transaction::customerOpenBills)",
   customerInfo_notMemberBills: "$t(transaction::customerInfo_notMember) $t(transaction::customerOpenBills)",
+
+  navbar: {
+    invoices: "$t(transaction::invoices)",
+    quickActions: {
+      createInvoice: "Nouvelle facture"
+    }
+  },
+  sidebar: {
+    invoices: "$t(transaction::invoices)",
+    createInvoice: "$t(transaction::navbar.quickActions.createInvoice)",
+    listInvoices: "Lister les factures",
+    reports: "Rapports financiers"
+  },
 }

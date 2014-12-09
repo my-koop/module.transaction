@@ -4,3 +4,4 @@
 exports.general = require("./general");
 exports.transaction = require("./transaction");
 exports.taxes = require("./taxes");
+exports.permissions = require("./permissions");
