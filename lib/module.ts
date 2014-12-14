@@ -426,7 +426,11 @@ class Module extends utils.BaseModule implements mktransaction.Module {
         callback();
       },
       function getTaxes(next) {
-        self.__getTaxInformation(connection, {}, next);
+        if(!params.forceNoTaxes) {
+          self.__getTaxInformation(connection, {}, next);
+        } else {
+          next(null, []);
+        }
       },
       function calculateTotal(
         taxesResult: mktransaction.GetTaxInformation.Result,

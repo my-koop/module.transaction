@@ -1,11 +1,10 @@
 /** @jsx React.DOM */
-var prequire = require('parent-require')
-var React = prequire("react");
-var moment = prequire("moment");
+var React = require("react");
+var moment = require("moment");
 var PropTypes = React.PropTypes;
 var _ = require("lodash");
 var billUtils = require("../common/billUtils");
-var accounting = prequire("accounting");
+var accounting = require("accounting");
 var formatMoney = function(amount) {
   return accounting.formatMoney(amount);
 }

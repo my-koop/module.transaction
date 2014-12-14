@@ -20,6 +20,7 @@ declare module mktransaction {
   export interface NewBill {
     archiveBill: boolean;
     customerEmail?: string;
+    forceNoTaxes?: boolean;
     discounts?: Discount[];
     idEvent?: number;
     items: BillItem[];
