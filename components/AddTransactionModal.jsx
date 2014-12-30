@@ -56,7 +56,7 @@ var AddTransactionModal = React.createClass({
       requestChange: _.bind(this.debounce, this, [], "amount",
         function(newValue) {
           return parseFloat(newValue) || 0;
-        }
+        }, 1000
       )
     }
 

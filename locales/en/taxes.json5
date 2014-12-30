@@ -1,0 +1,7 @@
+{
+  settingsTitle: "Taxes",
+  name: "Name",
+  rate: "Rate",
+  activeCheckboxLabel: "Apply taxes on bills",
+  addTaxOptions: "Add a tax"
+}

@@ -1,6 +1,6 @@
 
 
-declare module Transaction {
+declare module mktransaction {
   export module db {
     export interface BillItem {
       idBill: number;
@@ -14,6 +14,11 @@ declare module Transaction {
       type: string;
       amount: number;
       isAfterTax: boolean;
+    }
+
+    export interface FinancialReport {
+      fromDate: Date;
+      toDate: Date;
     }
   }
 }

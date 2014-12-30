@@ -29,6 +29,14 @@ var endpoints = {
                 path: "/bills/:id",
                 method: "get"
             },
+            update: {
+                path: "/bills/:id",
+                method: "put"
+            },
+            details: {
+                path: "/bills/:id/details",
+                method: "get"
+            },
             addTransaction: {
                 path: "/bills/:id/transactions",
                 method: "post"
@@ -36,6 +44,10 @@ var endpoints = {
             delete: {
                 path: "/bills/:id",
                 method: "delete"
+            },
+            history: {
+                path: "/users/:id/bills",
+                method: "get"
             }
         },
         taxes: {
@@ -43,6 +55,16 @@ var endpoints = {
                 path: "/configs/taxes",
                 method: "get"
             }
+        },
+        report: {
+            path: "/transaction/report",
+            method: "get"
+        }
+    },
+    user: {
+        customerInfo: {
+            path: "/customers/:email/",
+            method: "get"
         }
     }
 };

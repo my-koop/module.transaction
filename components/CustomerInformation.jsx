@@ -3,6 +3,7 @@ var Typeahead = require("react-typeahead").Typeahead;
 var BSCol     = require("react-bootstrap/Col");
 var BSRow     = require("react-bootstrap/Row");
 var BSPanel   = require("react-bootstrap/Panel");
+var BSAlert   = require("react-bootstrap/Alert");
 var BSTable   = require("react-bootstrap/Table");
 var BSInput   = require("react-bootstrap/Input");
 var BSButton  = require("react-bootstrap/Button");
@@ -10,7 +11,6 @@ var BSButton  = require("react-bootstrap/Button");
 // My Koop components
 var MKTableSorter       = require("mykoop-core/components/TableSorter");
 var MKListModButtons    = require("mykoop-core/components/ListModButtons");
-var MKSpinner           = require("mykoop-core/components/Spinner");
 var MKCollapsablePanel  = require("mykoop-core/components/CollapsablePanel");
 var MKAlertTrigger      = require("mykoop-core/components/AlertTrigger");
 var MKIcon              = require("mykoop-core/components/Icon");
@@ -20,103 +20,97 @@ var MKBillInfo          = require("./BillInfo");
 
 
 // Utilities
-var __ = require("language").__;
-var formatMoney = require("language").formatMoney;
+var language = require("language");
+var formatDate = language.formatDate;
+var formatMoney = language.formatMoney;
+var __ = language.__;
 var _ = require("lodash");
 var actions = require("actions");
 var util = require("util");
-var EmailValidationState = require("../lib/common_modules/EmailValidationState");
+var tokenizer = require("mykoop-utils/frontend/tokenizer");
+var EmailValidationState = require("../lib/common/EmailValidationState");
 
 var CustomerInformation = React.createClass({
   mixins: [MKDebouncerMixin],
 
   propTypes: {
+    readOnly: React.PropTypes.bool,
+    email: React.PropTypes.string,
     // (email: string) => void; Only if email is valid
-    onEmailChanged: React.PropTypes.func.isRequired
+    onEmailChanged: React.PropTypes.func.isRequired,
+    sendInvoiceLink: React.PropTypes.object
   },
 
   ////////////////////////////
   /// Life Cycle methods
-  getInitialState: function() {
+  getInitialState: function(props) {
+    props = props || this.props;
+    var validationState = EmailValidationState.Initial;
+    if(this.props.email) {
+      validationState = EmailValidationState.Waiting;
+      this.retrieveCustomerInfo(this.props.email);
+    }
     return {
-      email: {
-        value: "",
-        validationState: EmailValidationState.Initial,
-        // used to know if the response is still relevant
-        reqId: 0
-      }
+      validationState: validationState,
     }
   },
 
   ////////////////////////////
   /// component methods
+  retrieveCustomerInfo: function(email) {
+    var self = this;
+    actions.user.customerInfo(
+    {
+      silent: true,
+      data: {
+        email: email
+      }
+    }, function(err, result) {
+      // treat this response only if its the last we made
+      var isValid = !err;
+      var newState = !isValid ?
+        EmailValidationState.Invalid
+      : EmailValidationState.Valid;
+      self.customerInfo = result;
+      self.props.onEmailChanged(email, isValid = isValid);
+      self.setState({validationState: newState});
+    });
+  },
 
+  customerInfo: null,
   ////////////////////////////
   /// Render method
   render: function() {
     var self = this;
+    var readOnly = this.props.readOnly;
 
-    var emailLink = {
-      value: this.state.customerEmail,
+    var emailLink = !readOnly && {
+      value: this.props.email,
       requestChange: function(newEmail) {
-        // Assume email is invalid until we get a response from the server
-        self.props.onEmailChanged(null);
-        var newEmailInfo = {
-          validationState: EmailValidationState.Waiting,
-          value: newEmail,
-          reqId: self.state.email.reqId
-        };
-        self.debounce([], "email", function(newEmailInfo) {
+        self.customerInfo = null;
+        self.props.onEmailChanged(newEmail, isValid = false);
+        self.debounce([], "validationState", function() {
           if(newEmail === "") {
-            newEmailInfo.validationState = EmailValidationState.Initial;
-            return self.setState({email: newEmailInfo});
+            return EmailValidationState.Initial;
           }
-          var curReqId = newEmailInfo.reqId + 1;
-          newEmailInfo.reqId = curReqId;
-          self.setState({
-            email: newEmailInfo
-          }, function() {
-            actions.user.emailExists(
-            {
-              silent: true,
-              data: {
-                email: newEmailInfo.value
-              }
-            }, function(err, result) {
-              // treat this response only if its the last we made
-              if(curReqId === self.state.email.reqId) {
-                var isValid = result && result.isValid;
-                var newState =
-                  err || !isValid ?
-                    EmailValidationState.Invalid
-                  : EmailValidationState.Valid;
-                newEmailInfo.validationState = newState;
-                self.setState({
-                  email: newEmailInfo
-                }, function() {
-                  if(isValid) {
-                    self.props.onEmailChanged(newEmailInfo.value);
-                  }
-                });
-              }
-            });
-          });
-
-          return newEmailInfo;
-        }, 1000, newEmailInfo);
+          self.retrieveCustomerInfo(newEmail);
+          return EmailValidationState.Waiting;
+        }, 1000, EmailValidationState.Waiting);
       }
     };
 
     var emailAddon = undefined;
     var inputStyle = undefined;
-    switch(self.state.email.validationState) {
+    var isWaiting = false;
+    switch(self.state.validationState) {
       case EmailValidationState.Initial:
         break;
       case EmailValidationState.Invalid:
-        inputStyle = "error";
+        inputStyle = "warning";
         emailAddon = <MKIcon glyph="close" />;
         break;
       case EmailValidationState.Waiting:
+        isWaiting = true;
         inputStyle = "warning";
         //FIXME:: Waiting on https://github.com/my-koop/service.website/issues/261
         emailAddon = <MKIcon glyph="spinner" className="fa-spin" />;
@@ -127,19 +121,96 @@ var CustomerInformation = React.createClass({
         break;
     }
 
+    // Relies on validationState to re render
+    var customerInfo = this.customerInfo;
+    var customerInfoPanel = null;
+    if(customerInfo) {
+      var expiration = customerInfo.subscriptionExpiration;
+      var expirationDate = expiration && new Date(expiration);
+      var isMember = !!expiration;
+      var isActiveMember = expirationDate && expirationDate >= new Date();
+      var openBillCount = customerInfo.openBillCount;
+      var unpaidAmount = customerInfo.unpaidAmount;
+      var context = isActiveMember ? "active" : isMember ? "inactive" : "notMember"
+      context = openBillCount ? context + "Bills" : context;
+      var info = __("transaction::customerInfo",
+        {
+          context: context,
+          info: {
+            firstName: customerInfo.firstName,
+            lastName: customerInfo.lastName,
+            date: expirationDate && formatDate(expirationDate),
+            bill: openBillCount,
+            amount: formatMoney(unpaidAmount)
+          }
+        }
+      );
+      var sentence = tokenizer(info, [
+        "<name>",
+        "<exp>",
+        "<not>",
+        "<open>",
+        "<unpaid>"
+      ]);
+      var result = _.map(sentence, function(s) {
+        switch(s.token) {
+          case "<name>": return <strong key="name">{s.text}</strong>;
+          case "<exp>": return <strong key="expiration" className="text-warning">{s.text}</strong>;
+          case "<not>": return <strong key="notMember" className="text-danger">{s.text}</strong>;
+          case "<open>": return <strong key="openBills" className="text-danger">{s.text}</strong>;
+          case "<unpaid>": return (
+            <strong
+              key="unpaid"
+              className={unpaidAmount ? "text-danger" : ""}
+            >
+              {s.text}
+            </strong>
+          );
+          default: return s.text;
+        }
+      });
+      customerInfoPanel = (
+        <div>
+          <p>
+            {result}.
+          </p>
+        </div>
+      );
+    } else if(!isWaiting && this.props.email) {
+      customerInfoPanel = (
+        <div>
+          <p>
+            <strong className="text-warning">
+              {__("transaction::unknownEmail")}.
+            </strong>
+          </p>
+        </div>
+      );
+    }
+
     return (
-      <div>
-        <label>
-          {__("transaction::customerEmail")}
+      <BSPanel>
+        {!readOnly ? [
           <BSInput
             type="email"
             valueLink={emailLink}
+            label={__("transaction::customerEmail")}
             bsStyle={inputStyle}
             addonBefore={<MKIcon glyph="envelope" fixedWidth />}
             addonAfter={emailAddon}
+          />,
+          this.props.email &&
+          <BSInput
+            type="checkbox"
+            checkedLink={this.props.sendInvoiceLink}
+            label={__("transaction::sendInvoice")}
           />
-        </label>
-      </div>
+        ] : [
+          <label key={1}>{__("transaction::customerEmail")}</label>,
+          <p key={2}>{this.props.email}</p>
+        ]}
+        {customerInfoPanel}
+      </BSPanel>
     );
   }
 

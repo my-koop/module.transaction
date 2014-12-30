@@ -3,11 +3,14 @@
   "role": "transaction",
   "mykoop": {
     "dependencies": {
-      "database": "^1.0.0-rc",
-      "user" : "^1.0.0-rc"
+      "database": "^1.0.0",
+      "user": "^1.0.0",
+      "core": "^1.0.0",
+      "communications": "^1.0.0",
+      "event": "^1.0.0"
     }
   },
-  "version": "1.0.0-rc",
+  "version": "1.0.0",
   "description": "transaction module for My Koop",
   "main": "index.js",
   "scripts": {
@@ -27,6 +30,10 @@
     "async": "^0.9.0",
     "lodash": "^2.4.1",
     "mykoop-logger": "git://github.com/my-koop/module.logger",
-    "mykoop-utils": "git://github.com/my-koop/module.utils#v1.0.0-rc
+    "mykoop-utils": "git://github.com/my-koop/module.utils",
+    "node-jsx": "^0.11.0"
+  },
+  "devDependencies": {
+    "react-tools": "^0.11.2"
   }
 }

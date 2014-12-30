@@ -1,7 +1,7 @@
 // see http://validatejs.org/ for documentation on how to do contraints
 import common = require("mykoop-utils/common");
 var validate = common.validation;
-import DiscountTypes = require("../common_modules/discountTypes");
+import DiscountTypes = require("../common/discountTypes");
 var _ = require("lodash");
 
 export function newBill(obj) {
@@ -34,7 +34,7 @@ export function newBill(obj) {
 
   var newBillConstraint = {
     total: {numericality: true},
-    customerEmail: {email: true},
+    customerEmail: {},
     archiveBill: {},
     items: {
       presence: true,

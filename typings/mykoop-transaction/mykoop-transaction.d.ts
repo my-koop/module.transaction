@@ -15,48 +15,97 @@ declare module mktransaction {
     (err: Error, res?: {idBill: number}): void;
   }
   export interface listBillsCallback {
-    (err: Error, res?: Transaction.Bill[]): void;
+    (err: Error, res?: mktransaction.Bill[]): void;
   }
   export interface Module extends mykoop.IModule {
     addBillTransaction(
-      params: Transaction.AddBillTransaction,
+      params: mktransaction.AddBillTransaction,
       callback: successCallback
     );
     openBill(
-      params: Transaction.OpenBill,
+      params: mktransaction.OpenBill,
       callback: successCallback
     );
     closeBill(
-      params: Transaction.BillId,
+      params: mktransaction.BillId,
       callback: successCallback
     );
     saveNewBill(
-      params: Transaction.NewBill,
+      params: mktransaction.NewBill,
       callback: saveNewBillCallback
     );
     listBills(
-      params: Transaction.ListBill,
+      params: mktransaction.ListBill,
       callback: listBillsCallback
     );
 
+    getTaxInformation(
+      params: mktransaction.GetTaxInformation.Params,
+      callback: mktransaction.GetTaxInformation.Callback
+    );
+    __getTaxInformation(
+      connection: mysql.IConnection,
+      params: mktransaction.GetTaxInformation.Params,
+      callback: mktransaction.GetTaxInformation.Callback
+    );
+
     getBill(
-      params: Transaction.GetBill.Params,
-      callback: Transaction.GetBill.Callback
+      params: mktransaction.GetBill.Params,
+      callback: mktransaction.GetBill.Callback
     );
     __getBill(
       connection: mysql.IConnection,
-      params: Transaction.GetBill.Params,
-      callback: Transaction.GetBill.Callback
+      params: mktransaction.GetBill.Params,
+      callback: mktransaction.GetBill.Callback
+    );
+
+    getBillDetails(
+      params: mktransaction.GetBillDetails.Params,
+      callback: mktransaction.GetBillDetails.Callback
+    );
+    __getBillDetails(
+      connection: mysql.IConnection,
+      params: mktransaction.GetBillDetails.Params,
+      callback: mktransaction.GetBillDetails.Callback
     );
 
     deleteBill(
-      params: Transaction.DeleteBill.Params,
-      callback: Transaction.DeleteBill.Callback
+      params: mktransaction.DeleteBill.Params,
+      callback: mktransaction.DeleteBill.Callback
     );
     __deleteBill(
       connection: mysql.IConnection,
-      params: Transaction.DeleteBill.Params,
-      callback: Transaction.DeleteBill.Callback
+      params: mktransaction.DeleteBill.Params,
+      callback: mktransaction.DeleteBill.Callback
+    );
+
+    updateBill(
+      params: mktransaction.UpdateBill.Params,
+      callback: mktransaction.UpdateBill.Callback
+    );
+    __updateBill(
+      connection: mysql.IConnection,
+      params: mktransaction.UpdateBill.Params,
+      callback: mktransaction.UpdateBill.Callback
+    );
+    getBillHistory(
+      params: mktransaction.GetBillHistory.Params,
+      callback: mktransaction.GetBillHistory.Callback
+    );
+    __getBillHistory(
+      connection: mysql.IConnection,
+      params: mktransaction.GetBillHistory.Params,
+      callback: mktransaction.GetBillHistory.Callback
+    );
+
+    getCustomerInformations(
+      params: mktransaction.GetCustomerInformations.Params,
+      callback: mktransaction.GetCustomerInformations.Callback
+    );
+    __getCustomerInformations(
+      connection: mysql.IConnection,
+      params: mktransaction.GetCustomerInformations.Params,
+      callback: mktransaction.GetCustomerInformations.Callback
     );
   }
 

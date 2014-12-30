@@ -1,26 +1,31 @@
 {
+  invoices: "Bills",
   newBillWelcome: "Create bill",
+  billDetailsWelcome: "Details of bill",
   itemList: "Item list",
   addItemToBill: "Add item to bill",
   billInfo : "Bill information",
+  linkToEvent: "Event linked to this bill",
   subtotal : "Subtotal",
   total : "Total",
   tax: "Taxes",
   tax_tps: "GST",
   tax_tvq: "QST",
+  showDetailsTooltip: "Show details",
   customItem: "Custom",
   billEnterCodeOrName: "Type item code, name or \"Custom\"",
   createdDate: "Date created",
+  closedDate: "Date closed",
   transactionCountHeader: "#Transactions",
   recordFullPayment: "Pay Now",
-  saveForLater: "Archive",
+  saveForLater: "Leave open",
   paid: "Paid",
   addTransactionTooltip: "Add payment/Refund",
   recordTransaction: "Record payment/Refund",
   transactionAmount: "Amount",
- deleteBillWarning: "Warning, deleting a bill DOES NOT delete transactions linked\
+  deleteBillWarning: "Warning, deleting a bill DOES NOT delete transactions linked\
  to it. Do a full refund beforehand to avoid orphaned transactions.",
-
+  missingPermissionsCreateBill: "You have the permission to create new bills, however you are missing the following permissions to be fully effective:",
   customerEmail: "Customer Email",
   billNotes: "Notes",
   billNotesPlaceholder: "Enter a note for this bill",
@@ -45,7 +50,6 @@
   switchBillState_closed: "Show open",
   closeBillTooltip: "Close this bill",
   openBillTooltip: "Reopen this bill",
-
   errors: {
     app: {
       id: {
@@ -55,5 +59,58 @@
         notEmpty: "This bill contains transactions and cannot be deleted"
       }
     }
-  }
+  },
+
+  //Report
+  financialReportWelcome : "Financial Report",
+  financialReportExplanation : "",
+  financialReportPanelHeaderStart :  "Report for transactions that occured between ",
+  financialReportPanelHeaderMid :  " and ",
+  financialReportCategory_product : "Products",
+  financialReportCategory_membership : "Memberships",
+  financialReportCategory_subscription : "Subscriptions",
+  financialReportFieldTotal : "Total",
+  financialReportFieldTotalSales : "Total sales",
+  financialReportFieldTotalRefunds : "Total refunds",
+  financialReportFieldTransactions : "transactions",
+  financialReportFieldSales : "sales",
+  financialReportFieldRefunds : "refunds",
+  financialReportSubmit : "Submit",
+  financialReportIN : " in ",
+  financialReportLabelFromDate : "Report start date",
+  financialReportLabelToDate : "Report end date",
+  financialReportNoResult: "No transaction occured in this time span",
+
+  //Bill History
+  billHistoryTab: "Bill History",
+  billHistoryDetailsTooltip: "View this bill in details",
+  status: "Closed/Open",
+  billIsClosed: "Open",
+  billIsClosed_1: "Closed",
+  billHistoryNoResult: "No bill to display",
+
+  unknownEmail: "This email is unknown to the system",
+  sendInvoice: "Send invoice by email",
+  customerInformations: "Customer informations",
+  customerName: "<name>__info.firstName__ __info.lastName__<name>",
+  customerInfo_active: "$t(transaction::customerName)'s membership expires on __info.date__",
+  customerInfo_inactive: "$t(transaction::customerName)'s membership <exp>expired on __info.date__<exp>",
+  customerInfo_notMember: "$t(transaction::customerName)<not> is not a member<not>",
+  customerOpenBills: " and has <open>__info.bill__ open bills<open> with a total of <unpaid>__info.amount__ unpaid<unpaid>",
+  customerInfo_activeBills: "$t(transaction::customerInfo_active) $t(transaction::customerOpenBills)",
+  customerInfo_inactiveBills: "$t(transaction::customerInfo_inactive) $t(transaction::customerOpenBills)",
+  customerInfo_notMemberBills: "$t(transaction::customerInfo_notMember) $t(transaction::customerOpenBills)",
+
+  navbar: {
+    invoices: "$t(transaction::invoices)",
+    quickActions: {
+      createInvoice: "Create a new bill"
+    }
+  },
+  sidebar: {
+    invoices: "$t(transaction::invoices)",
+    createInvoice: "$t(transaction::navbar.quickActions.createInvoice)",
+    listInvoices: "List bills",
+    reports: "Financial reports"
+  },
 }
